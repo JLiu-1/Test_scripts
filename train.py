@@ -161,12 +161,12 @@ if args.gpu:
     criterion=criterion.cuda()
 
 
-train_loader = torch.utils.data.DataLoader(
+train_loader = torch.utils.data.dataLoader(
         NYX(path,field,0,3,log=1,global_max=maximum[field],global_min=minimum[field],norm_min=args.norm_min),
         batch_size=bs, shuffle=True,
         num_workers=0, pin_memory=args.gpu)
 
-val_loader = torch.utils.data.DataLoader(
+val_loader = torch.utils.data.dataLoader(
         NYX(path,field,3,4,log=1,global_max=maximum[field],global_min=minimum[field],norm_min=args.norm_min),
         batch_size=128, shuffle=False,
         num_workers=0, pin_memory=args.gpu)
