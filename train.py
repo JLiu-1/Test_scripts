@@ -191,8 +191,8 @@ for epoch in range(epoch):
    
         # remember best prec@1 and save checkpoint
 
-if not os.path.exists(args.save)
-os.makedirs(args.save)
+if not os.path.exists(args.save):
+    os.makedirs(args.save)
 
 torch.save(model.state_dict(),os.path.join(args.save,"ckpt.pth"))
 
