@@ -40,10 +40,11 @@ class NYX(Dataset):
         #print(count)
         self.blocks=np.array(blocks,dtype=np.float32)
         self.regs=np.array(regs,dtype=np.float32)
+        self.regs=np.expand_dims(self.regs,axis=-1)
         print(self.blocks.shape[0])
 
         
     def __len__(self):
         return self.blocks.shape[0]
     def __getitem__(self,idx):
-        return self.blocks[idx],[self.regs[idx]]
+        return self.blocks[idx],self.regs[idx]
