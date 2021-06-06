@@ -7,7 +7,7 @@ import argparse
 import torch
 import torch.nn as nn
 import torch.optim
-from torch.utils.data import *
+from torch.utils.data import Dataloader
 class AverageMeter(object):
     """Computes and stores the average and current value"""
     def __init__(self):
@@ -161,12 +161,12 @@ if args.gpu:
     criterion=criterion.cuda()
 
 
-train_loader = torch.utils.data.dataLoader(
+train_loader = DataLoader(
         NYX(path,field,0,3,log=1,global_max=maximum[field],global_min=minimum[field],norm_min=args.norm_min),
         batch_size=bs, shuffle=True,
         num_workers=0, pin_memory=args.gpu)
 
-val_loader = torch.utils.data.dataLoader(
+val_loader = DataLoader(
         NYX(path,field,3,4,log=1,global_max=maximum[field],global_min=minimum[field],norm_min=args.norm_min),
         batch_size=128, shuffle=False,
         num_workers=0, pin_memory=args.gpu)
