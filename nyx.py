@@ -46,4 +46,4 @@ class NYX(Dataset):
     def __len__(self):
         return self.blocks.shape[0]
     def __getitem__(self,idx):
-        return self.blocks[idx],self.regs[idx]
+        return self.blocks[idx],[self.regs[idx]]

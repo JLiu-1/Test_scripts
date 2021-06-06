@@ -65,6 +65,8 @@ def train(train_loader, model, criterion, optimizer, epoch):
         # measure accuracy and record loss
         
         losses.update(loss.item(), input.size(0))
+
+        print([epoch,i,losses.avg])
         
 
         # measure elapsed time
