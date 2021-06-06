@@ -104,7 +104,7 @@ def validate(val_loader, model, criterion):
             loss = loss.float()
 
             # measure accuracy and record loss
-            prec1 = accuracy(output.data, target)[0]
+            #prec1 = accuracy(output.data, target)[0]
             losses.update(loss.item(), input.size(0))
             
 
