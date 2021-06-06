@@ -7,7 +7,7 @@ import argparse
 import torch
 import torch.nn as nn
 import torch.optim
-from torch.utils.data import Dataloader
+from torch.utils.data import DataLoader
 class AverageMeter(object):
     """Computes and stores the average and current value"""
     def __init__(self):
