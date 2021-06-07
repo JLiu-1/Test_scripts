@@ -65,7 +65,7 @@ def train(train_loader, model, criterion, optimizer, epoch):
         # measure accuracy and record loss
         
         losses.update(loss.item(), input.size(0))
-
+        
         print([epoch,i,losses.avg])
         
 
@@ -122,7 +122,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--learningrate','-l',type=float,default=1e-3)
 
 #parser.add_argument('--hidden_dims','-k',type=int,default=10)
-parser.add_argument('--batchsize','-b',type=int,default=128)
+parser.add_argument('--batchsize','-b',type=int,default=32768)
 parser.add_argument('--epoch','-e',type=int,default=100)
 parser.add_argument('--actv','-a',type=str,default='tanh')
 parser.add_argument('--field','-f',type=str,default='baryon_density')
@@ -170,7 +170,7 @@ train_loader = DataLoader(
 
 val_loader = DataLoader(
         NYX(path,field,3,4,log=1,global_max=maximum[field],global_min=minimum[field],norm_min=args.norm_min),
-        batch_size=128, shuffle=False,
+        batch_size=32768, shuffle=False,
         num_workers=0, pin_memory=args.gpu)
 #print(y[:100])
 
@@ -196,7 +196,7 @@ for epoch in range(epoch):
 if not os.path.exists(args.save):
     os.makedirs(args.save)
 
-torch.save(model.state_dict(),os.path.join(args.save,"ckpt.pth"))
+torch.save({"state_dict":model.state_dict(),"epoch":epoch,"lr":lr},os.path.join(args.save,"ckpt_%d.pth" % epoch))
 
 
 
