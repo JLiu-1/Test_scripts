@@ -132,6 +132,7 @@ parser.add_argument('--norm_min','-m',type=float,default=-1)
 #parser.add_argument('--vallog','-vl',type=str,default='val.log')
 parser.add_argument('--gpu','-g',type=int,default=1)
 parser.add_argument('--save','-s',type=str,default="ckpts")
+parser.add_argument('--save_interval','-i',type=int,default=10)
 args = parser.parse_args()
 actv_dict={"no":nn.Identity,"sigmoid":nn.Sigmoid,"tanh":nn.Tanh}
 actv=actv_dict[args.actv]
@@ -140,7 +141,8 @@ lr=args.learningrate
 field=args.field
 #k=args.hidden_dims
 
-epoch=args.epoch
+max_epoch=args.epoch
+interval=args.save_interval
 path="/home/jliu447/lossycompression/NYX"
 #val_path="/home/jliu447/lossycompression/NYX"
 maximum={"baryon_density":5.06394195556640625,"temperature":6.6796627044677734375,"dark_matter_density":4.1392154693603515625}
@@ -174,10 +176,11 @@ val_loader = DataLoader(
         num_workers=0, pin_memory=args.gpu)
 #print(y[:100])
 
+if not os.path.exists(args.save):
+    os.makedirs(args.save)
 
 
-
-for epoch in range(epoch):
+for epoch in range(max_epoch):
 
         # train for one epoch
    
@@ -192,11 +195,11 @@ for epoch in range(epoch):
     loss1 = validate(val_loader, model, criterion)
    
         # remember best prec@1 and save checkpoint
+    if epoch % interval==0 or epoch==max_epoch-1:
+        torch.save({"state_dict":model.state_dict(),"epoch":epoch,"lr":lr},os.path.join(args.save,"ckpt_%d.pth" % epoch))
 
-if not os.path.exists(args.save):
-    os.makedirs(args.save)
 
-torch.save({"state_dict":model.state_dict(),"epoch":epoch,"lr":lr},os.path.join(args.save,"ckpt_%d.pth" % epoch))
+
 
 
 
