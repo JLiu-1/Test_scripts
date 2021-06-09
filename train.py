@@ -173,7 +173,7 @@ train_loader = DataLoader(
         num_workers=0, pin_memory=args.gpu)
 
 val_loader = DataLoader(
-        NYX(path,field,3,4,,ratio=ratio,log=1,global_max=maximum[field],global_min=minimum[field],norm_min=args.norm_min),
+        NYX(path,field,3,4,ratio=ratio,log=1,global_max=maximum[field],global_min=minimum[field],norm_min=args.norm_min),
         batch_size=32768, shuffle=False,
         num_workers=0, pin_memory=args.gpu)
 #print(y[:100])
