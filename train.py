@@ -122,7 +122,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--learningrate','-l',type=float,default=1e-3)
 
 #parser.add_argument('--hidden_dims','-k',type=int,default=10)
-parser.add_argument('--batchsize','-b',type=int,default=32768)
+parser.add_argument('--batchsize','-b',type=int,default=2048)
 parser.add_argument('--epoch','-e',type=int,default=100)
 parser.add_argument('--actv','-a',type=str,default='tanh')
 parser.add_argument('--field','-f',type=str,default='baryon_density')
@@ -133,12 +133,14 @@ parser.add_argument('--norm_min','-m',type=float,default=-1)
 parser.add_argument('--gpu','-g',type=int,default=1)
 parser.add_argument('--save','-s',type=str,default="ckpts")
 parser.add_argument('--save_interval','-i',type=int,default=10)
+parser.add_argument('--ratio','-r',type=int,default=10)
 args = parser.parse_args()
 actv_dict={"no":nn.Identity,"sigmoid":nn.Sigmoid,"tanh":nn.Tanh}
 actv=actv_dict[args.actv]
 bs=args.batchsize
 lr=args.learningrate
 field=args.field
+ratio=args.ratio
 #k=args.hidden_dims
 
 max_epoch=args.epoch
@@ -166,12 +168,12 @@ if args.gpu:
 
 
 train_loader = DataLoader(
-        NYX(path,field,0,3,log=1,global_max=maximum[field],global_min=minimum[field],norm_min=args.norm_min),
+        NYX(path,field,0,3,ratio=ratio,log=1,global_max=maximum[field],global_min=minimum[field],norm_min=args.norm_min),
         batch_size=bs, shuffle=True,
         num_workers=0, pin_memory=args.gpu)
 
 val_loader = DataLoader(
-        NYX(path,field,3,4,log=1,global_max=maximum[field],global_min=minimum[field],norm_min=args.norm_min),
+        NYX(path,field,3,4,,ratio=ratio,log=1,global_max=maximum[field],global_min=minimum[field],norm_min=args.norm_min),
         batch_size=32768, shuffle=False,
         num_workers=0, pin_memory=args.gpu)
 #print(y[:100])
