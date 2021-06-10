@@ -14,10 +14,10 @@ for key in statedict:
     print(statedict[key])
     if count==0:
 
-        array[0:7]=statedict[key].detach().numpy()
+        array[0:7]=statedict[key].detach().cpu().numpy()
         count+=1
     else:
-        array[7]=statedict[key].detach().numpy()[0]
+        array[7]=statedict[key].detach().cpu().numpy()[0]
 
 array.tofile(output)
 
