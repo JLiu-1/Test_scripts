@@ -58,6 +58,10 @@ actv=actv_dict[args.actv]
 model=nn.Sequential(nn.Linear(7,1),actv())
 model.load_state_dict(torch.load(args.checkpoint)["state_dict"])
 model.eval()
+for name,parameters in model.named_parameters():
+    print(name)
+    print(parameters.detach().numpy())
+
 array=np.fromfile(args.input,dtype=np.float32).reshape((512,512,512))
 
 error_bound=args.error*(np.max(array)-np.min(array))
@@ -86,7 +90,7 @@ for x in range(512):
                 pred=model(torch.from_numpy(block)).detach().numpy()[0][0]
                 pred=(pred-args.norm_min)/(args.norm_max-args.norm_min)
                 pred=pred*(args.max-args.min)+args.min
-                print(pred)
+                #print(pred)
             q,decomp=quantize(orig,pred,error_bound)
             qs.append(q)
             if q==0:
