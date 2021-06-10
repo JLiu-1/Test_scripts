@@ -18,6 +18,6 @@ for key in statedict:
         count+=1
     else:
         array[7]=statedict[key].detach().cpu().numpy()[0]
-
+print(array)
 array.tofile(output)
 
