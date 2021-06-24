@@ -49,6 +49,7 @@ if __name__=='__main__':
 #scheduler.step()
 
     model=NNpredictor(actv)
+    experiment=Experiment(model,lr)
 
 
 
@@ -83,13 +84,14 @@ if __name__=='__main__':
     )
 
     runner = Trainer(min_epochs=1,
+                 max_epochs=max_epoch,
                  checkpoint_callback=True,
                  callbacks=checkpoint_callback,
-                 accelerator=args.accelerator,
-                 **config['trainer_params'],gpus=gpu_list)
+                 accelerator="ddp",
+                 gpus=gpu_list)
 
     print(f"======= Training =======")
-    runner.fit(experiment)
+    runner.fit(experiment,train_loader)
     runner.save_checkpoint(args.save+"/last.ckpt")
 
 

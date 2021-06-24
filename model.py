@@ -14,7 +14,7 @@ class NNpredictor(nn.Module):
     def forward(self,x):
         return self.model(x)
 
-class experiment(pl.LightningModule):
+class Experiment(pl.LightningModule):
     def __init__(self,model,lr=1e-3):
         self.model=model
         self.lr=lr
