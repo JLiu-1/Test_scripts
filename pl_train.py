@@ -6,7 +6,7 @@ import torch.nn as nn
 from torch.utils.data import DataLoader, random_split
 from model import *
 from pytorch_lightning import Trainer
-
+from pytorch_lightning.callbacks import ModelCheckpoint
 if __name__=='__main__':
     parser = argparse.ArgumentParser()
     #parser.add_argument('--dropout','-d',type=float,default=0)
@@ -57,7 +57,7 @@ if __name__=='__main__':
 
 
     train_loader = DataLoader(
-        NYX(path,field,0,3,ratio=ratio,log=1,global_max=maximum[field],global_min=minimum[field],norm_min=args.norm_min),
+        NYX(path,field,0,1,ratio=ratio,log=1,global_max=maximum[field],global_min=minimum[field],norm_min=args.norm_min),
         batch_size=bs, shuffle=True,
         num_workers=0)
     '''
