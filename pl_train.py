@@ -27,6 +27,7 @@ if __name__=='__main__':
 
     gpu_list=os.getenv("CUDA_VISIBLE_DEVICES")
     gpu_list=list(eval(gpu_list))
+    print(gpu_list)
 
     actv=args.actv
     bs=args.batchsize
@@ -85,7 +86,7 @@ if __name__=='__main__':
                  checkpoint_callback=True,
                  callbacks=checkpoint_callback,
                  accelerator=args.accelerator,
-                 **config['trainer_params'])
+                 **config['trainer_params'],gpus=gpu_list)
 
     print(f"======= Training =======")
     runner.fit(experiment)
