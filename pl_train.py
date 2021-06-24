@@ -80,7 +80,7 @@ if __name__=='__main__':
         #monitor='loss',
         #mode='min',
         
-        period=save_interval
+        period=interval
     )
 
     runner = Trainer(min_epochs=1,
