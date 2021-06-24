@@ -2,15 +2,14 @@ import os
 import torch
 from torch import nn
 import torch.nn.functional as F
-from torchvision import transforms
-from torch.utils.data import DataLoader, random_split
+
 import pytorch_lightning as pl
 
 class NNpredictor(nn.Module):
     def __init__(self,actv='tanh'):
         actv_dict={"no":nn.Identity,"sigmoid":nn.Sigmoid,"tanh":nn.Tanh}
-        actv=actv_dict[actv]
-        self.model=nn.Sequential(nn.Linear(7,1),actv())
+        actv_f=actv_dict[actv]
+        self.model=nn.Sequential(nn.Linear(7,1),actv_f())
     def forward(self,x):
         return self.model(x)
 
@@ -29,5 +28,5 @@ class experiment(pl.LightningModule):
         optimizer = torch.optim.Adam(self.parameters(), lr=lr)
         return optimizer
 
-   
+
 
