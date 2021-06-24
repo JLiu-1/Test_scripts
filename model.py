@@ -7,6 +7,7 @@ import pytorch_lightning as pl
 
 class NNpredictor(nn.Module):
     def __init__(self,actv='tanh'):
+        super(NNpredictor, self ).__init__() 
         actv_dict={"no":nn.Identity,"sigmoid":nn.Sigmoid,"tanh":nn.Tanh}
         actv_f=actv_dict[actv]
         self.model=nn.Sequential(nn.Linear(7,1),actv_f())
