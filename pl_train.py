@@ -18,6 +18,7 @@ if __name__=='__main__':
     parser.add_argument('--actv','-a',type=str,default='tanh')
     parser.add_argument('--field','-f',type=str,default='baryon_density')
     parser.add_argument('--norm_min','-m',type=float,default=-1)
+    parser.add_argument('--normalize','-n',type=float,default=1)
     #parser.add_argument('--noise','-n',type=float,default=0)
     #parser.add_argument('--gpu','-g',type=int,default=1)
     parser.add_argument('--save','-s',type=str,default="ckpts")
@@ -55,11 +56,16 @@ if __name__=='__main__':
 
 
 
-
-    train_loader = DataLoader(
-        NYX(path,field,0,3,ratio=ratio,log=1,global_max=maximum[field],global_min=minimum[field],norm_min=args.norm_min),
-        batch_size=bs, shuffle=True,
-        num_workers=0)
+    if args.normalize:
+        train_loader = DataLoader(
+            NYX(path,field,0,3,ratio=ratio,log=1,global_max=maximum[field],global_min=minimum[field],norm_min=args.norm_min),
+            batch_size=bs, shuffle=True,
+            num_workers=0)
+    if else:
+        train_loader = DataLoader(
+            NYX(path,field,0,3,ratio=ratio,log=1),
+            batch_size=bs, shuffle=True,
+            num_workers=0)
     '''
     val_loader = DataLoader(
             NYX(path,field,3,4,ratio=ratio,log=1,global_max=maximum[field],global_min=minimum[field],norm_min=args.norm_min),
