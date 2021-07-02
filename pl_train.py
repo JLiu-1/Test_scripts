@@ -61,7 +61,7 @@ if __name__=='__main__':
             NYX(path,field,0,3,ratio=ratio,log=1,global_max=maximum[field],global_min=minimum[field],norm_min=args.norm_min),
             batch_size=bs, shuffle=True,
             num_workers=0)
-    if else:
+    else:
         train_loader = DataLoader(
             NYX(path,field,0,3,ratio=ratio,log=1),
             batch_size=bs, shuffle=True,
