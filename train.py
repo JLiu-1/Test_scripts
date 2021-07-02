@@ -127,6 +127,7 @@ parser.add_argument('--epoch','-e',type=int,default=100)
 parser.add_argument('--actv','-a',type=str,default='tanh')
 parser.add_argument('--field','-f',type=str,default='baryon_density')
 parser.add_argument('--norm_min','-m',type=float,default=-1)
+parser.add_argument('--normalize','-n',type=float,default=1)
 #parser.add_argument('--noise','-n',type=float,default=0)
 #parser.add_argument('--trainlog','-tl',type=str,default='train.log')
 #parser.add_argument('--vallog','-vl',type=str,default='val.log')
@@ -167,15 +168,18 @@ if args.gpu:
     criterion=criterion.cuda()
 
 
-train_loader = DataLoader(
+if args.normalize:
+    train_loader = DataLoader(
         NYX(path,field,0,3,ratio=ratio,log=1,global_max=maximum[field],global_min=minimum[field],norm_min=args.norm_min),
         batch_size=bs, shuffle=True,
-        num_workers=0, pin_memory=args.gpu)
+        num_workers=0)
+else:
+    train_loader = DataLoader(
+        NYX(path,field,0,3,ratio=ratio,log=1),
+        batch_size=bs, shuffle=True,
+        num_workers=0)
 
-val_loader = DataLoader(
-        NYX(path,field,3,4,ratio=ratio,log=1,global_max=maximum[field],global_min=minimum[field],norm_min=args.norm_min),
-        batch_size=32768, shuffle=False,
-        num_workers=0, pin_memory=args.gpu)
+
 #print(y[:100])
 
 if not os.path.exists(args.save):
@@ -194,7 +198,7 @@ for epoch in range(max_epoch):
         
 
         # evaluate on validation set
-    loss1 = validate(val_loader, model, criterion)
+    #loss1 = validate(val_loader, model, criterion)
    
         # remember best prec@1 and save checkpoint
     if epoch % interval==0 or epoch==max_epoch-1:
