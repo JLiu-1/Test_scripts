@@ -92,7 +92,7 @@ if __name__=='__main__':
                  max_epochs=max_epoch,
                  checkpoint_callback=True,
                  callbacks=checkpoint_callback,
-                 accelerator="ddp",
+                 accelerator="dp",
                  gpus=gpu_list)
 
     print(f"======= Training =======")
