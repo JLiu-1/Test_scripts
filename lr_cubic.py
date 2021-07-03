@@ -3,7 +3,7 @@ from sklearn.linear_model import LinearRegression
 from nyx_cubic import NYX_cubic
 path="/home/jliu447/lossycompression/NYX"
 field="baryon_density"
-ratio=1
+ratio=2
 
 dataset=NYX_cubic(path,field,0,3,ratio=ratio,log=1)
 print("finished reading data")
