@@ -5,7 +5,7 @@ path="/home/jliu447/lossycompression/Hurricane/clean-data-Jinyang"
 
 ratio=2
 
-dataset=Hurricane_cubic(path,"U",0,10,ratio=ratio,global_max=85.17703,global_min=-79.47297)
+dataset=Hurricane_cubic(path,"U",1,11,ratio=ratio,global_max=85.17703,global_min=-79.47297)
 print("finished reading data")
 x=dataset.blocks
 y=dataset.regs.flatten()
