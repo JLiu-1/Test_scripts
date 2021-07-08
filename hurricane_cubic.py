@@ -1,11 +1,11 @@
 from torch.utils.data import Dataset
 import numpy as np
 import os
-class NYX_cubic(Dataset):
-    def __init__(self,path,field,start,end,ratio=10,log=0,global_max=None,global_min=None,norm_min=-1,epsilon=-1):
-        size_x=512
-        size_y=512
-        size_z=512
+class Hurricane_cubic(Dataset):
+    def __init__(self,path,field,start,end,ratio=10,global_max=None,global_min=None,norm_min=-1,epsilon=-1):
+        size_x=100
+        size_y=500
+        size_z=500
         blocks=[]
         regs=[]
        # count=[0,0,0,0]
@@ -13,9 +13,8 @@ class NYX_cubic(Dataset):
         for i in range(start,end):
             s=str(i)
             
-            filename="%s_%s.dat" % (field,s) 
-            if log:
-                filename+=".log10"
+            filename="%sf%s.bin" % (field,s)
+            
             filepath=os.path.join(path,filename)
             array=np.fromfile(filepath,dtype=np.float32).reshape((size_x,size_y,size_z))
         #print(array)
@@ -55,10 +54,12 @@ class NYX_cubic(Dataset):
                         
                             if global_max!=None:
                                
-                                if norm_min==0:
-                                    block=(block-global_min)/(global_max-global_min)
-                                else:
-                                    block=(block-global_min)*2/(global_max-global_min)-1
+                                rng=global_max-global_min
+                                if epsilon>0:
+                                    r=np.max(block)-np.min(block)
+                            
+                                if r<rng*epsilon:
+                                    continue
                             blocks.append(block)
                     #print(array[x:x+size,y:y+size])
                             regs.append(reg)
