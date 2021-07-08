@@ -12,7 +12,8 @@ class Hurricane_cubic(Dataset):
 
         for i in range(start,end):
             s=str(i)
-            
+            if i<10:
+                s="0"+s
             filename="%sf%s.bin" % (field,s)
             
             filepath=os.path.join(path,filename)
