@@ -59,8 +59,8 @@ class Hurricane_cubic(Dataset):
                                 if epsilon>0:
                                     r=np.max(block)-np.min(block)
                             
-                                if r<rng*epsilon:
-                                    continue
+                                    if r<rng*epsilon:
+                                        continue
                             blocks.append(block)
                     #print(array[x:x+size,y:y+size])
                             regs.append(reg)
