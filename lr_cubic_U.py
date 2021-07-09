@@ -3,9 +3,9 @@ from sklearn.linear_model import LinearRegression
 from hurricane_cubic import Hurricane_cubic
 path="/home/jliu447/lossycompression/Hurricane/clean-data-Jinyang"
 
-ratio=2
+ratio=1
 
-dataset=Hurricane_cubic(path,"U",1,11,ratio=ratio,global_max=85.17703,global_min=-79.47297,epsilon=1e-4)
+dataset=Hurricane_cubic(path,"U",1,11,ratio=ratio,global_max=85.17703,global_min=-79.47297,epsilon=-1)
 print("finished reading data")
 x=dataset.blocks
 y=dataset.regs.flatten()

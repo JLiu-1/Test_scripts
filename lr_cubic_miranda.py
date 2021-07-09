@@ -3,9 +3,9 @@ from sklearn.linear_model import LinearRegression
 from miranda_cubic import Miranda_cubic
 path="/home/jliu447/lossycompression/MIRANDA"
 
-ratio=2
+ratio=1
 
-dataset=Miranda_cubic(path,0,10,ratio=ratio,)
+dataset=Miranda_cubic(path,0,10,ratio=ratio,epsilon=-1)
 print("finished reading data")
 x=dataset.blocks
 y=dataset.regs.flatten()

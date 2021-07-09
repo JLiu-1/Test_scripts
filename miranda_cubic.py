@@ -50,7 +50,7 @@ class Miranda_cubic(Dataset):
                                 block[2]=array[x][y][z+1]
                                 block[3]=array[x][y][z+3]
                             rng=np.max(block)-np.min(block)
-                            if rng<=1e-4:
+                            if rng<=epsilon:
                                 continue
                         
                             if global_max!=None:
