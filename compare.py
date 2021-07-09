@@ -6,6 +6,7 @@ size_x=int(sys.argv[2])
 size_y=int(sys.argv[3])
 size_z=int(sys.argv[4])
 coefs=np.fromfile(sys.argv[5],dtype=np.float32)
+print(coefs)
 array=array.reshape((size_x,size_y,size_z))
 loss1=0
 loss2=0
