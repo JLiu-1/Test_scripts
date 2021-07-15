@@ -170,7 +170,7 @@ if args.gpu:
 
 
 train_loader = DataLoader(
-    NYX_cubic(path,field,0,1,ratio=ratio,log=1),
+    NYX_cubic(path,field,0,3,ratio=ratio,log=1),
     batch_size=bs, shuffle=True,
     num_workers=0)
 
