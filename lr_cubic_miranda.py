@@ -5,7 +5,7 @@ path="/home/jliu447/lossycompression/MIRANDA"
 
 ratio=1
 
-dataset=Miranda_cubic(path,0,10,ratio=ratio,epsilon=-1)
+dataset=Miranda_cubic(path,0,1,ratio=ratio,epsilon=-1)
 print("finished reading data")
 x=dataset.blocks
 y=dataset.regs.flatten()
