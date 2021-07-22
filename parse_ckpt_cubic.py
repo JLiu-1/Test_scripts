@@ -8,7 +8,7 @@ import torch.nn as nn
 checkpoint=sys.argv[1]
 output=sys.argv[2]
 statedict=torch.load(checkpoint,map_location='cpu')["state_dict"]
-array=np.zeros(8,dtype=np.float32)
+array=np.zeros(4,dtype=np.float32)
 count=0
 for key in statedict:
     print(statedict[key])
