@@ -126,6 +126,7 @@ parser.add_argument('--batchsize','-b',type=int,default=2048)
 parser.add_argument('--epoch','-e',type=int,default=10)
 #parser.add_argument('--actv','-a',type=str,default='tanh')
 parser.add_argument('--field','-f',type=str,default='baryon_density')
+parser.add_argument('--loss','-lo',type=int,default=2)
 #parser.add_argument('--norm_min','-m',type=float,default=-1)
 #parser.add_argument('--normalize','-n',type=float,default=1)
 #parser.add_argument('--noise','-n',type=float,default=0)
@@ -160,8 +161,10 @@ model=nn.Sequential(nn.Linear(4,1,bias=False))
 
 optimizer=torch.optim.Adam(model.parameters(), lr=lr)
 #optimizer=torch.optim.SGD(model.parameters(), lr=lr)
-
-criterion = nn.MSELoss()
+if args.loss==2:
+    criterion = nn.MSELoss()
+else:
+    criterion = nn.L1Loss()
 
 if args.gpu:
     model=model.cuda()
