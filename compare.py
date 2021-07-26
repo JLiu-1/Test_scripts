@@ -17,6 +17,8 @@ for x in range(1,size_x):
             if x%2==0 and y%2==0 and z%2==0:
                 continue
             for i in range(3):
+                if i!=0:
+                    continue
                 if i==0 and (x-3<0 or x+3>=size_x):
                     continue 
                 if i==1 and (y-3<0 or y+3>=size_y):
