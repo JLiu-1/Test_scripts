@@ -26,6 +26,10 @@ class Hurricane_cubic(Dataset):
                         if x%2==0 and y%2==0 and z%2==0:
                             continue
                         for i in range(3):
+                            if i!=0:
+                                continue
+
+
                             if i==0 and (x-3<0 or x+3>=size_x):
                                 continue 
                             if i==1 and (y-3<0 or y+3>=size_y):
@@ -42,11 +46,13 @@ class Hurricane_cubic(Dataset):
                                 block[2]=array[x+1][y][z]
                                 block[3]=array[x+3][y][z]
                             elif i==1:
+                                
                                 block[0]=array[x][y-3][z]
                                 block[1]=array[x][y-1][z]
                                 block[2]=array[x][y+1][z]
                                 block[3]=array[x][y+3][z]
                             else:
+                                
                                 block[0]=array[x][y][z-3]
                                 block[1]=array[x][y][z-1]
                                 block[2]=array[x][y][z+1]
