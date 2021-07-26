@@ -47,8 +47,8 @@ for x in range(1,size_x):
                 pred2=0
                 for i in range(4):
                     pred2+=coefs[i]*block[i]
-                loss1+=abs(pred1-target)
-                loss2+=abs(pred2-target)
+                loss1+=(pred1-target)**2
+                loss2+=(pred2-target)**2
                 
 
 
