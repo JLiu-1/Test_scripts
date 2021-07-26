@@ -7,8 +7,8 @@ ratio=1
 
 dataset=NYX_cubic(path,field,0,1,ratio=ratio,log=1)
 print("finished reading data")
-x=dataset.blocks
-y=dataset.regs.flatten()
+x=dataset.blocks.astype(np.float64)
+y=dataset.regs.astype(np.float64).flatten()
 print("start regression")
 reg=LinearRegression(fit_intercept=False).fit(x, y)
 
