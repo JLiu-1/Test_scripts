@@ -26,7 +26,7 @@ class Hurricane_cubic(Dataset):
                         if x%2==0 and y%2==0 and z%2==0:
                             continue
                         for i in range(3):
-                            if i!=0:
+                            if i!=2:
                                 continue
 
 

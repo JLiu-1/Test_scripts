@@ -25,7 +25,7 @@ class Miranda_cubic(Dataset):
                             continue
 
                         for i in range(3):
-                            if i!=0:
+                            if i!=2:
                                 continue
                             if i==0 and (x-3<0 or x+3>=size_x):
                                 continue 
