@@ -18,8 +18,8 @@ class Heat(Dataset):
             array_x=np.fromfile(filepath_x,dtype=np.float32).reshape((size_x,size_y))
             array_y=np.fromfile(filepath_y,dtype=np.float32).reshape((size_x,size_y))
         #print(array)
-            for x in range(1,size_x):
-                for y in range(1,size_y):
+            for x in range(1,size_x-1):
+                for y in range(1,size_y-1):
                     
                     if np.random.choice(ratio)>0:
                         continue
