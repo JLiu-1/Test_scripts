@@ -11,7 +11,7 @@ class Heat(Dataset):
            
             
             filename_x="%d.dat" % (i) 
-            filename_y="d.dat" % (i+1) 
+            filename_y="%d.dat" % (i+1) 
            
             filepath_x=os.path.join(path,filename_x)
             filepath_y=os.path.join(path,filename_y)
