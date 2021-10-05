@@ -7,8 +7,8 @@ ratio=1
 
 dataset=Heat(path,20000,21000,200,200,ratio=ratio)
 print("finished reading data")
-x=dataset.blocks
-y=dataset.regs.flatten()
+x=dataset.blocks.astype(np.float64)
+y=dataset.regs.flatten().astype(np.float64)
 print("start regression")
 reg=LinearRegression(fit_intercept=False).fit(x, y)
 
