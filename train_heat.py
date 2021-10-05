@@ -1,7 +1,7 @@
 import numpy as np 
 
 
-from nyx import NYX
+from heat import Heat
 import os
 import argparse
 import torch
