@@ -19,3 +19,7 @@ for i in range(start,end):
     array_x=np.fromfile(filepath_x,dtype=np.float32).reshape((size_x,size_y))
     array_y=np.fromfile(filepath_y,dtype=np.float32).reshape((size_x,size_y))
     array_predict=np.array(array_y,copy=True)
+    for x in range(1,size_x-1):
+        for y in range(1,size_y-1):
+            block=array_x[x-1:x+2,y-1:y+2].flatten()
+            reg=array_y[x][y]
