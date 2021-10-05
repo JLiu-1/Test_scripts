@@ -1,7 +1,7 @@
 import numpy as np 
 
 
-from heat import Heat
+from heat import *
 import os
 import argparse
 import torch
@@ -132,6 +132,7 @@ parser.add_argument('--normalize','-n',type=float,default=0)
 #parser.add_argument('--trainlog','-tl',type=str,default='train.log')
 #parser.add_argument('--vallog','-vl',type=str,default='val.log')
 parser.add_argument('--gpu','-g',type=int,default=1)
+parser.add_argument('--double','-d',type=int,default=0)
 parser.add_argument('--save','-s',type=str,default="ckpts_heat")
 parser.add_argument('--save_interval','-i',type=int,default=10)
 parser.add_argument('--ratio','-r',type=int,default=1)
@@ -157,6 +158,8 @@ path="/home/jliu447/lossycompression/Heat"
 #scheduler.step()
 
 model=nn.Sequential(nn.Linear(9,1),actv())
+if args.double:
+    model=model.double()
 
 optimizer=torch.optim.Adam(model.parameters(), lr=lr)
 #optimizer=torch.optim.SGD(model.parameters(), lr=lr)
@@ -169,15 +172,28 @@ if args.gpu:
 
 
 if args.normalize:
-    train_loader = DataLoader(
-        Heat(path,20000,21000,200,200,ratio=ratio,global_max=1000,global_min=0,norm_min=args.norm_min),
-        batch_size=bs, shuffle=True,
-        num_workers=0)
+    if args.double:
+        train_loader = DataLoader(
+            Heat_Double(path,20000,21000,200,200,ratio=ratio,global_max=1000,global_min=0,norm_min=args.norm_min),
+            batch_size=bs, shuffle=True,
+            num_workers=0)
+    else:
+        train_loader = DataLoader(
+            Heat(path,20000,21000,200,200,ratio=ratio,global_max=1000,global_min=0,norm_min=args.norm_min),
+            batch_size=bs, shuffle=True,
+            num_workers=0)
 else:
-    train_loader = DataLoader(
-        Heat(path,20000,21000,200,200,ratio=ratio),
-        batch_size=bs, shuffle=True,
-        num_workers=0)
+    if args.double:
+        train_loader = DataLoader(
+            Heat_Double(path,20000,21000,200,200,ratio=ratio),
+            batch_size=bs, shuffle=True,
+            num_workers=0)
+    else:
+        train_loader = DataLoader(
+            Heat(path,20000,21000,200,200,ratio=ratio),
+            batch_size=bs, shuffle=True,
+            num_workers=0)
+
 
 
 #print(y[:100])
