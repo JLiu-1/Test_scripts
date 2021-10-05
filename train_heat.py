@@ -156,7 +156,7 @@ path="/home/jliu447/lossycompression/Heat"
 #torch.optim.lr_scheduler.StepLR(optimizer, step_size, gamma=0.1, last_epoch=-1, verbose=False)
 #scheduler.step()
 
-model=nn.Sequential(nn.Linear(9,1).double(),actv().double())
+model=nn.Sequential(nn.Linear(9,1),actv())
 
 optimizer=torch.optim.Adam(model.parameters(), lr=lr)
 #optimizer=torch.optim.SGD(model.parameters(), lr=lr)
