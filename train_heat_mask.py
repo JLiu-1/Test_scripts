@@ -202,7 +202,7 @@ else:
             num_workers=0)
     else:
         train_loader = DataLoader(
-            Heat(path,20000,20100,200,200,ratio=ratio),
+            Heat(path,20000,21000,200,200,ratio=ratio),
             batch_size=bs, shuffle=True,
             num_workers=0)
 
