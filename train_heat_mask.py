@@ -14,6 +14,8 @@ class HeatMask(nn.Module):
         super().__init__()
         self.size=size 
         self.w=torch.ones(self.size)
+        if torch.cuda.is_available():
+            self.w=self.w.cuda()
         self.actv=nn.LeakyReLU()
     def forward(self,x):
         return self.actv(self.w)*x
