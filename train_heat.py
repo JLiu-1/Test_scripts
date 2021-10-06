@@ -132,7 +132,7 @@ parser.add_argument('--normalize','-n',type=float,default=0)
 #parser.add_argument('--trainlog','-tl',type=str,default='train.log')
 #parser.add_argument('--vallog','-vl',type=str,default='val.log')
 parser.add_argument('--gpu','-g',type=int,default=1)
-clarification
+parser.add_argument('--double','-d',type=int,default=0)
 parser.add_argument('--save','-s',type=str,default="ckpts_heat")
 parser.add_argument('--save_interval','-i',type=int,default=10)
 parser.add_argument('--ratio','-r',type=int,default=1)
