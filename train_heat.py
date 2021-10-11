@@ -119,7 +119,7 @@ def validate(val_loader, model, criterion):
 
 parser = argparse.ArgumentParser()
 #parser.add_argument('--dropout','-d',type=float,default=0)
-parser.add_argument('--learningrate','-l',type=float,default=1e-3)
+parser.add_argument('--learningrate','-l',type=float,default=1e-1)
 
 #parser.add_argument('--hidden_dims','-k',type=int,default=10)
 parser.add_argument('--batchsize','-b',type=int,default=4096)
@@ -161,7 +161,7 @@ model=nn.Sequential(nn.Linear(9,1),actv())
 if args.double:
     model=model.double()
 
-optimizer=torch.optim.Adam(model.parameters(), lr=lr)
+optimizer=torch.optim.SGD(model.parameters(), lr=lr)
 #optimizer=torch.optim.SGD(model.parameters(), lr=lr)
 
 criterion = nn.MSELoss()
@@ -174,23 +174,23 @@ if args.gpu:
 if args.normalize:
     if args.double:
         train_loader = DataLoader(
-            Heat_Double(path,20000,21000,200,200,ratio=ratio,global_max=1000,global_min=0,norm_min=args.norm_min),
+            Heat_Double(path,20000,20100,200,200,ratio=ratio,global_max=1000,global_min=0,norm_min=args.norm_min),
             batch_size=bs, shuffle=True,
             num_workers=0)
     else:
         train_loader = DataLoader(
-            Heat(path,20000,21000,200,200,ratio=ratio,global_max=1000,global_min=0,norm_min=args.norm_min),
+            Heat(path,20000,20100,200,200,ratio=ratio,global_max=1000,global_min=0,norm_min=args.norm_min),
             batch_size=bs, shuffle=True,
             num_workers=0)
 else:
     if args.double:
         train_loader = DataLoader(
-            Heat_Double(path,20000,21000,200,200,ratio=ratio),
+            Heat_Double(path,20000,20100,200,200,ratio=ratio),
             batch_size=bs, shuffle=True,
             num_workers=0)
     else:
         train_loader = DataLoader(
-            Heat(path,20000,21000,200,200,ratio=ratio),
+            Heat(path,20000,20100,200,200,ratio=ratio),
             batch_size=bs, shuffle=True,
             num_workers=0)
 
