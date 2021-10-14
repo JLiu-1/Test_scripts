@@ -8,6 +8,7 @@ import torch
 import torch.nn as nn
 import torch.optim
 from torch.utils.data import DataLoader
+from torchsummary import summary
 class AverageMeter(object):
     """Computes and stores the average and current value"""
     def __init__(self):
@@ -169,7 +170,7 @@ criterion = nn.MSELoss()
 if args.gpu:
     model=model.cuda()
     criterion=criterion.cuda()
-
+summary(model,(9))
 
 if args.normalize:
     if args.double:
