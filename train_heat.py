@@ -170,7 +170,7 @@ criterion = nn.MSELoss()
 if args.gpu:
     model=model.cuda()
     criterion=criterion.cuda()
-summary(model,(9))
+summary(model,(9,))
 
 if args.normalize:
     if args.double:
