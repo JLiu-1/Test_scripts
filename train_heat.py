@@ -170,7 +170,10 @@ criterion = nn.MSELoss()
 if args.gpu:
     model=model.cuda()
     criterion=criterion.cuda()
-summary(model,(9,))
+try:
+    summary(model,(9,))
+except:
+    print("Failed to summary")
 
 if args.normalize:
     if args.double:
