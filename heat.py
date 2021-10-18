@@ -113,6 +113,7 @@ class Heat_Random(Dataset):
         for i in range(size):
             block=np.random.rand(3,3)
             reg=(block[0,1]+block[1,0]+block[1,2]+block[2,1])/4
+            block=block.flatten()
             #print(block)
             #print(reg)
             blocks.append(block)
