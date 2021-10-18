@@ -105,3 +105,50 @@ class Heat_Double(Dataset):
         return self.blocks.shape[0]
     def __getitem__(self,idx):
         return self.blocks[idx],self.regs[idx]        
+
+class Heat_Random(Dataset):
+    def __init__(self,size):
+        blocks=[]
+        regs=[]
+        for i in range(size):
+            block=np.random.rand(3,3)
+            reg=(block[0,1]+block[1,0]+block[1,2]+block[2,1])/4
+        
+            blocks.append(block)
+                   
+            regs.append(reg)
+       
+        self.blocks=np.array(blocks,dtype=np.float32)
+        self.regs=np.array(regs,dtype=np.float32)
+        self.regs=np.expand_dims(self.regs,axis=-1)
+        print(self.blocks.shape[0])
+
+        
+    def __len__(self):
+        return self.blocks.shape[0]
+    def __getitem__(self,idx):
+        return self.blocks[idx],self.regs[idx]
+
+
+class Heat_Double_Random(Dataset):
+    def __init__(self,size):
+        blocks=[]
+        regs=[]
+        for i in range(size):
+            block=np.random.rand(3,3)
+            reg=(block[0,1]+block[1,0]+block[1,2]+block[2,1])/4
+        
+            blocks.append(block)
+                   
+            regs.append(reg)
+       
+        self.blocks=np.array(blocks,dtype=np.double)
+        self.regs=np.array(regs,dtype=np.double)
+        self.regs=np.expand_dims(self.regs,axis=-1)
+        print(self.blocks.shape[0])
+
+        
+    def __len__(self):
+        return self.blocks.shape[0]
+    def __getitem__(self,idx):
+        return self.blocks[idx],self.regs[idx]        

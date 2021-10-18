@@ -137,6 +137,7 @@ parser.add_argument('--double','-d',type=int,default=0)
 parser.add_argument('--save','-s',type=str,default="ckpts_heat")
 parser.add_argument('--save_interval','-i',type=int,default=10)
 parser.add_argument('--ratio','-r',type=int,default=1)
+parser.add_argument('--random','-rd',type=int,default=0)
 args = parser.parse_args()
 actv_dict={"no":nn.Identity,"sigmoid":nn.Sigmoid,"tanh":nn.Tanh}
 actv=actv_dict[args.actv]
@@ -175,7 +176,20 @@ try:
 except:
     print("Failed to summary")
 
-if args.normalize:
+if args.random:
+    if args.double:
+        train_loader = DataLoader(
+            Heat_Random_Double(path,100000),
+            batch_size=bs, shuffle=True,
+            num_workers=0)
+    else:
+        train_loader = DataLoader(
+            Heat_Random(path,100000),
+            batch_size=bs, shuffle=True,
+            num_workers=0)
+
+
+elif args.normalize:
     if args.double:
         train_loader = DataLoader(
             Heat_Double(path,20000,20100,200,200,ratio=ratio,global_max=1000,global_min=0,norm_min=args.norm_min),
