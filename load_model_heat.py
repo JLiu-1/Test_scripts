@@ -21,6 +21,12 @@ if args.double:
     model=model.double()
 model.load_state_dict(torch.load(args.checkpoint)["state_dict"])
 model.eval()
+
 for name,parameters in model.named_parameters():
     print(name)
-    print(parameters.detach().numpy())
+    a=parameters.detach().numpy()
+    print(a)
+    print(np.sum(a))
+x=torch.tensor([[1.0,1,1,1,1,1,1,1,1]])
+y=model(x)
+print(y)
