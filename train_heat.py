@@ -179,12 +179,12 @@ except:
 if args.random:
     if args.double:
         train_loader = DataLoader(
-            Heat_Random_Double(path,100000),
+            Heat_Random_Double(100000),
             batch_size=bs, shuffle=True,
             num_workers=0)
     else:
         train_loader = DataLoader(
-            Heat_Random(path,100000),
+            Heat_Random(100000),
             batch_size=bs, shuffle=True,
             num_workers=0)
 
