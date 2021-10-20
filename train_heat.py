@@ -159,7 +159,7 @@ path="/home/jliu447/lossycompression/Heat"
 #torch.optim.lr_scheduler.StepLR(optimizer, step_size, gamma=0.1, last_epoch=-1, verbose=False)
 #scheduler.step()
 lin=nn.Linear(9,1)
-ini=torch.Tensor([[0.01,0.24,0.01,0.24,-0.01,0.24,-0.01,0.24,0.01]])
+ini=torch.Tensor([[0.001,0.249,0.001,0.249,-0.001,0.249,-0.001,0.249,0.001]])
 lin.weight=torch.nn.Parameter(ini)
 model=nn.Sequential(lin,actv())
 if args.double:
