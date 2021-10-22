@@ -27,7 +27,7 @@ class AverageMeter(object):
         self.avg = self.sum / self.count
 
 
-def train(train_loader, model, criterion, optimizer, epoch):
+def train(train_loader, model, criterion, optimizer, epoch, l1_decay=0):
     """
         Run one train epoch
     """
@@ -55,7 +55,9 @@ def train(train_loader, model, criterion, optimizer, epoch):
        
        
         loss = criterion(output, target_var)
-
+        if l1decay>0:
+            for param in model.parameters():
+                loss+=l1decay*torch.sum((torch.abs(param)))
         # compute gradient and do SGD step
         optimizer.zero_grad()
         loss.backward()
@@ -138,6 +140,8 @@ parser.add_argument('--save','-s',type=str,default="ckpts_heat")
 parser.add_argument('--save_interval','-i',type=int,default=10)
 parser.add_argument('--ratio','-r',type=int,default=1)
 parser.add_argument('--random','-rd',type=int,default=0)
+parser.add_argument('--l2decay','-l2d',type=float,default=0)
+parser.add_argument('--l1decay','-l1d',type=float,default=0)
 args = parser.parse_args()
 actv_dict={"no":nn.Identity,"sigmoid":nn.Sigmoid,"tanh":nn.Tanh}
 actv=actv_dict[args.actv]
@@ -165,7 +169,7 @@ model=nn.Sequential(lin,actv())
 if args.double:
     model=model.double()
 
-optimizer=torch.optim.SGD(model.parameters(), lr=lr)
+optimizer=torch.optim.SGD(model.parameters(), lr=lr,weight_decay=args.l2decay)
 #optimizer=torch.optim.SGD(model.parameters(), lr=lr)
 
 criterion = nn.MSELoss()
