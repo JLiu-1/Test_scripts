@@ -55,9 +55,9 @@ def train(train_loader, model, criterion, optimizer, epoch, l1_decay=0):
        
        
         loss = criterion(output, target_var)
-        if l1decay>0:
+        if l1_decay>0:
             for param in model.parameters():
-                loss+=l1decay*torch.sum((torch.abs(param)))
+                loss+=l1_decay*torch.sum((torch.abs(param)))
         # compute gradient and do SGD step
         optimizer.zero_grad()
         loss.backward()
@@ -230,7 +230,7 @@ for epoch in range(max_epoch):
 
         # train for one epoch
    
-    loss_train=train(train_loader, model, criterion, optimizer, epoch)
+    loss_train=train(train_loader, model, criterion, optimizer, epoch, args.l1decay)
     print('Train * Loss@1 {loss_train:.3f}'
           .format(loss_train=loss_train))
     
