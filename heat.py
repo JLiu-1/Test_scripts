@@ -2,7 +2,7 @@ from torch.utils.data import Dataset
 import numpy as np
 import os
 class Heat(Dataset):
-    def __init__(self,path,start,end,size_x,size_y,ratio=10,global_max=None,global_min=None,norm_min=-1,epsilon=-1):
+    def __init__(self,path,start,end,size_x,size_y,stride=1,ratio=1,global_max=None,global_min=None,norm_min=-1,epsilon=-1):
         blocks=[]
         regs=[]
        # count=[0,0,0,0]
@@ -18,8 +18,8 @@ class Heat(Dataset):
             array_x=np.fromfile(filepath_x,dtype=np.float32).reshape((size_x,size_y))
             array_y=np.fromfile(filepath_y,dtype=np.float32).reshape((size_x,size_y))
         #print(array)
-            for x in range(1,size_x-1):
-                for y in range(1,size_y-1):
+            for x in range(1,size_x-1,stride):
+                for y in range(1,size_y-1,stride):
                     
                     if np.random.choice(ratio)>0:
                         continue
