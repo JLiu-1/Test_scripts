@@ -27,6 +27,8 @@ class Heat(Dataset):
                     reg=array_y[x][y]
                     if global_max!=None:
                         rng=global_max-global_min
+                        if np.max(block)>global_max or np.min(block)<global_min:
+                            continue
                         if epsilon>0:
                             r=np.max(block)-np.min(block)
                             
