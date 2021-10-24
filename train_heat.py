@@ -181,7 +181,12 @@ try:
     summary(model,(9,))
 except:
     print("Failed to summary")
-
+start=20000
+end=21000
+gmax=250
+gmin=200
+sizex=200
+sizey=200
 if args.random:
     if args.double:
         train_loader = DataLoader(
@@ -198,23 +203,23 @@ if args.random:
 elif args.normalize:
     if args.double:
         train_loader = DataLoader(
-            Heat_Double(path,20000,20100,200,200,ratio=ratio,global_max=1000,global_min=0,norm_min=args.norm_min),
+            Heat_Double(path,start,end,sizex,sizey,ratio=ratio,global_max=gmax,global_min=gmin,norm_min=args.norm_min),
             batch_size=bs, shuffle=True,
             num_workers=0)
     else:
         train_loader = DataLoader(
-            Heat(path,20000,20100,200,200,ratio=ratio,global_max=1000,global_min=0,norm_min=args.norm_min),
+            Heat(path,start,end,sizex,sizey,ratio=ratio,global_max=gmax,global_min=gmin,norm_min=args.norm_min),
             batch_size=bs, shuffle=True,
             num_workers=0)
 else:
     if args.double:
         train_loader = DataLoader(
-            Heat_Double(path,20000,20100,200,200,ratio=ratio),
+            Heat_Double(path,start,end,sizex,sizey,ratio=ratio),
             batch_size=bs, shuffle=True,
             num_workers=0)
     else:
         train_loader = DataLoader(
-            Heat(path,20000,20100,200,200,ratio=ratio),
+            Heat(path,start,end,sizex,sizey,ratio=ratio),
             batch_size=bs, shuffle=True,
             num_workers=0)
 
