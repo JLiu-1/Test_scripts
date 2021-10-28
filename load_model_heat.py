@@ -17,7 +17,7 @@ args = parser.parse_args()
 actv_dict={"no":nn.Identity,"sigmoid":nn.Sigmoid,"tanh":nn.Tanh}
 actv=actv_dict[args.actv]
 if args.conv:
-    layer=nn.Conv2d(1,1,3)
+    layer=nn.Conv2d(1,1,3,bias=False)
 else:
     layer=nn.Linear(9,1)
 model=nn.Sequential(layer,actv())
