@@ -183,7 +183,7 @@ if args.gpu:
     criterion=criterion.cuda()
 if args.conv:
     try:
-        summary(model,(3,3,))
+        summary(model,(1,3,3,))
     except:
         print("Failed to summary.")
 else:
