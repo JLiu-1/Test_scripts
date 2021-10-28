@@ -2,7 +2,7 @@ from torch.utils.data import Dataset
 import numpy as np
 import os
 class Heat(Dataset):
-    def __init__(self,path,start,end,size_x,size_y,stride=1,ratio=1,global_max=None,global_min=None,norm_min=-1,epsilon=-1):
+    def __init__(self,path,start,end,size_x,size_y,stride=1,ratio=1,global_max=None,global_min=None,norm_min=-1,epsilon=-1,flatten=True):
         blocks=[]
         regs=[]
        # count=[0,0,0,0]
@@ -23,7 +23,9 @@ class Heat(Dataset):
                     
                     if np.random.choice(ratio)>0:
                         continue
-                    block=array_x[x-1:x+2,y-1:y+2].flatten()
+                    block=array_x[x-1:x+2,y-1:y+2]
+                    if flatten:
+                        block=block.flatten()
                     reg=array_y[x][y]
                     if global_max!=None:
                         rng=global_max-global_min
@@ -45,6 +47,8 @@ class Heat(Dataset):
                     regs.append(reg)
         #print(count)
         self.blocks=np.array(blocks,dtype=np.float32)
+        if not flatten:
+            self.blocks=np.expand_dims(self.blocks,axis=1)
         self.regs=np.array(regs,dtype=np.float32)
         self.regs=np.expand_dims(self.regs,axis=-1)
         print(self.blocks.shape[0])
@@ -57,7 +61,7 @@ class Heat(Dataset):
 
 
 class Heat_Double(Dataset):
-    def __init__(self,path,start,end,size_x,size_y,ratio=10,global_max=None,global_min=None,norm_min=-1,epsilon=-1):
+    def __init__(self,path,start,end,size_x,size_y,ratio=10,global_max=None,global_min=None,norm_min=-1,epsilon=-1,flatten=True):
         blocks=[]
         regs=[]
        # count=[0,0,0,0]
@@ -78,7 +82,9 @@ class Heat_Double(Dataset):
                     
                     if np.random.choice(ratio)>0:
                         continue
-                    block=array_x[x-1:x+2,y-1:y+2].flatten()
+                    block=array_x[x-1:x+2,y-1:y+2]
+                    if flatten:
+                        block=block.flatten()
                     reg=array_y[x][y]
                     if global_max!=None:
                         rng=global_max-global_min
@@ -98,6 +104,8 @@ class Heat_Double(Dataset):
                     regs.append(reg)
         #print(count)
         self.blocks=np.array(blocks,dtype=np.double)
+        if not flatten:
+            self.blocks=np.expand_dims(self.blocks,axis=1)
         self.regs=np.array(regs,dtype=np.double)
         self.regs=np.expand_dims(self.regs,axis=-1)
         print(self.blocks.shape[0])

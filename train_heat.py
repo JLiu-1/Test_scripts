@@ -131,6 +131,7 @@ parser.add_argument('--actv','-a',type=str,default='no')
 #parser.add_argument('--field','-f',type=str,default='baryon_density')
 parser.add_argument('--norm_min','-m',type=float,default=-1)
 parser.add_argument('--normalize','-n',type=float,default=0)
+parser.add_argument('--conv','-c',type=int,default=0)
 #parser.add_argument('--noise','-n',type=float,default=0)
 #parser.add_argument('--trainlog','-tl',type=str,default='train.log')
 #parser.add_argument('--vallog','-vl',type=str,default='val.log')
@@ -162,10 +163,13 @@ path="/home/jliu447/lossycompression/Heat"
 
 #torch.optim.lr_scheduler.StepLR(optimizer, step_size, gamma=0.1, last_epoch=-1, verbose=False)
 #scheduler.step()
-lin=nn.Linear(9,1)
-ini=torch.Tensor([[0.001,0.249,0.001,0.249,-0.001,0.249,-0.001,0.249,0.001]])
-lin.weight=torch.nn.Parameter(ini)
-model=nn.Sequential(lin,actv())
+if args.conv:
+    layer=nn.Conv2d(1,1,3)
+else:
+    layer=nn.Linear(9,1)
+#ini=torch.Tensor([[0.001,0.249,0.001,0.249,-0.001,0.249,-0.001,0.249,0.001]])
+#lin.weight=torch.nn.Parameter(ini)
+model=nn.Sequential(layer,actv())
 if args.double:
     model=model.double()
 
@@ -203,23 +207,23 @@ if args.random:
 elif args.normalize:
     if args.double:
         train_loader = DataLoader(
-            Heat_Double(path,start,end,sizex,sizey,ratio=ratio,global_max=gmax,global_min=gmin,norm_min=args.norm_min),
+            Heat_Double(path,start,end,sizex,sizey,ratio=ratio,global_max=gmax,global_min=gmin,norm_min=args.norm_min,flatten=1-args.conv),
             batch_size=bs, shuffle=True,
             num_workers=0)
     else:
         train_loader = DataLoader(
-            Heat(path,start,end,sizex,sizey,ratio=ratio,global_max=gmax,global_min=gmin,norm_min=args.norm_min),
+            Heat(path,start,end,sizex,sizey,ratio=ratio,global_max=gmax,global_min=gmin,norm_min=args.norm_min,flatten=1-args.conv),
             batch_size=bs, shuffle=True,
             num_workers=0)
 else:
     if args.double:
         train_loader = DataLoader(
-            Heat_Double(path,start,end,sizex,sizey,ratio=ratio),
+            Heat_Double(path,start,end,sizex,sizey,ratio=ratio,global_max=gmax,global_min=gmin,norm_min=args.norm_min,flatten=1-args.conv),
             batch_size=bs, shuffle=True,
             num_workers=0)
     else:
         train_loader = DataLoader(
-            Heat(path,start,end,sizex,sizey,ratio=ratio),
+            Heat(path,start,end,sizex,sizey,ratio=ratio,global_max=gmax,global_min=gmin,norm_min=args.norm_min,flatten=1-args.conv),
             batch_size=bs, shuffle=True,
             num_workers=0)
 
