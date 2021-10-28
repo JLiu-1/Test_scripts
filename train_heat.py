@@ -181,10 +181,16 @@ criterion = nn.MSELoss()
 if args.gpu:
     model=model.cuda()
     criterion=criterion.cuda()
-try:
-    summary(model,(9,))
-except:
-    print("Failed to summary")
+if args.conv:
+    try:
+        summary(model,(3,3,))
+    except:
+        print("Failed to summary.")
+else:
+    try:
+        summary(model,(9,))
+    except:
+        print("Failed to summary.")
 start=20000
 end=20100
 gmax=1000
