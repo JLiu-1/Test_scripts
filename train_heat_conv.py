@@ -149,7 +149,7 @@ actv=actv_dict[args.actv]
 bs=args.batchsize
 lr=args.learningrate
 #field=args.field
-ratio=args.ratio
+#ratio=args.ratio
 #k=args.hidden_dims
 
 max_epoch=args.epoch
