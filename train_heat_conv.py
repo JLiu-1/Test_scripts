@@ -131,16 +131,16 @@ parser.add_argument('--actv','-a',type=str,default='no')
 #parser.add_argument('--field','-f',type=str,default='baryon_density')
 parser.add_argument('--norm_min','-m',type=float,default=-1)
 parser.add_argument('--normalize','-n',type=float,default=0)
-parser.add_argument('--conv','-c',type=int,default=0)
+#parser.add_argument('--conv','-c',type=int,default=0)
 #parser.add_argument('--noise','-n',type=float,default=0)
 #parser.add_argument('--trainlog','-tl',type=str,default='train.log')
 #parser.add_argument('--vallog','-vl',type=str,default='val.log')
 parser.add_argument('--gpu','-g',type=int,default=1)
-parser.add_argument('--double','-d',type=int,default=0)
+#parser.add_argument('--double','-d',type=int,default=0)
 parser.add_argument('--save','-s',type=str,default="ckpts_heat")
 parser.add_argument('--save_interval','-i',type=int,default=10)
-parser.add_argument('--ratio','-r',type=int,default=1)
-parser.add_argument('--random','-rd',type=int,default=0)
+#parser.add_argument('--ratio','-r',type=int,default=1)
+#parser.add_argument('--random','-rd',type=int,default=0)
 parser.add_argument('--l2decay','-l2d',type=float,default=0)
 parser.add_argument('--l1decay','-l1d',type=float,default=0)
 args = parser.parse_args()
@@ -163,10 +163,10 @@ path="/home/jliu447/lossycompression/Heat_256_100"
 
 #torch.optim.lr_scheduler.StepLR(optimizer, step_size, gamma=0.1, last_epoch=-1, verbose=False)
 #scheduler.step()
-if args.conv:
-    layer=nn.Conv2d(1,1,3,bias=False)
-else:
-    layer=nn.Linear(9,1)
+
+
+layer=nn.Conv2d(1,1,3,padding=1,bias=False)
+
 #ini=torch.Tensor([[0.001,0.249,0.001,0.249,-0.001,0.249,-0.001,0.249,0.001]])
 #lin.weight=torch.nn.Parameter(ini)
 model=nn.Sequential(layer,actv())
@@ -181,55 +181,40 @@ criterion = nn.MSELoss()
 if args.gpu:
     model=model.cuda()
     criterion=criterion.cuda()
-if args.conv:
-    try:
-        summary(model,(1,3,3,))
-    except:
-        print("Failed to summary.")
-else:
-    try:
-        summary(model,(9,))
-    except:
-        print("Failed to summary.")
-start=5000
-end=5200
+
+try:
+    summary(model,(1,256,256,))
+except:
+    print("Failed to summary.")
+
+start=3000
+end=8000
 gmax=100
 gmin=0
 sizex=256
 sizey=256
-if args.random:
+
+
+if args.normalize:
     if args.double:
         train_loader = DataLoader(
-            Heat_Random_Double(100000),
+            Heat_Full_Double(path,start,end,sizex,sizey,global_max=gmax,global_min=gmin,norm_min=args.norm_min),
             batch_size=bs, shuffle=True,
             num_workers=0)
     else:
         train_loader = DataLoader(
-            Heat_Random(100000),
-            batch_size=bs, shuffle=True,
-            num_workers=0)
-
-
-elif args.normalize:
-    if args.double:
-        train_loader = DataLoader(
-            Heat_Double(path,start,end,sizex,sizey,ratio=ratio,global_max=gmax,global_min=gmin,norm_min=args.norm_min,flatten=1-args.conv),
-            batch_size=bs, shuffle=True,
-            num_workers=0)
-    else:
-        train_loader = DataLoader(
-            Heat(path,start,end,sizex,sizey,ratio=ratio,global_max=gmax,global_min=gmin,norm_min=args.norm_min,flatten=1-args.conv),
+            Heat_Full(path,start,end,sizex,sizey,global_max=gmax,global_min=gmin,norm_min=args.norm_min),
             batch_size=bs, shuffle=True,
             num_workers=0)
 else:
     if args.double:
         train_loader = DataLoader(
-            Heat_Double(path,start,end,sizex,sizey,ratio=ratio,global_max=None,global_min=None,norm_min=args.norm_min,flatten=1-args.conv),
+            Heat_Full_Double(path,start,end,sizex,sizey,global_max=None,global_min=None,norm_min=args.norm_min),
             batch_size=bs, shuffle=True,
             num_workers=0)
     else:
         train_loader = DataLoader(
-            Heat(path,start,end,sizex,sizey,ratio=ratio,global_max=None,global_min=None,norm_min=args.norm_min,flatten=1-args.conv),
+            Heat_Full(path,start,end,sizex,sizey,global_max=None,global_min=None,norm_min=args.norm_min),
             batch_size=bs, shuffle=True,
             num_workers=0)
 

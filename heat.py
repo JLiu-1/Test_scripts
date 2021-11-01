@@ -168,7 +168,7 @@ class Heat_Double_Random(Dataset):
 class Heat_Full(Dataset):
     def __init__(self,path,start,end,size_x,size_y,interval=1,global_max=None,global_min=None,norm_min=-1):
         xs=[]
-        y=[]
+        ys=[]
        # count=[0,0,0,0]
 
         for i in range(start,end,interval):
@@ -203,7 +203,7 @@ class Heat_Full(Dataset):
         self.xs=np.expand_dims(self.xs,axis=1)
         self.ys=np.array(ys,dtype=np.float32)
         self.ys=np.expand_dims(self.ys,axis=1)
-        print(self.blocks.shape[0])
+        print(self.xs.shape[0])
 
         
     def __len__(self):
