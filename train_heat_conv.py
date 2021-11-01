@@ -187,8 +187,8 @@ try:
 except:
     print("Failed to summary.")
 
-start=21000
-end=29000
+start=20000
+end=24000
 gmax=1000
 gmin=0
 sizex=200
