@@ -189,7 +189,7 @@ except:
 
 start=3000
 end=8000
-gmax=100
+gmax=50
 gmin=0
 sizex=256
 sizey=256
