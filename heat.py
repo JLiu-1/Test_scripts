@@ -2,12 +2,12 @@ from torch.utils.data import Dataset
 import numpy as np
 import os
 class Heat(Dataset):
-    def __init__(self,path,start,end,size_x,size_y,stride=1,ratio=1,global_max=None,global_min=None,norm_min=-1,epsilon=-1,flatten=True):
+    def __init__(self,path,start,end,size_x,size_y,interval=1,stride=1,ratio=1,global_max=None,global_min=None,norm_min=-1,epsilon=-1,flatten=True):
         blocks=[]
         regs=[]
        # count=[0,0,0,0]
 
-        for i in range(start,end):
+        for i in range(start,end,interval):
            
             
             filename_x="%d.dat" % (i) 
@@ -61,12 +61,12 @@ class Heat(Dataset):
 
 
 class Heat_Double(Dataset):
-    def __init__(self,path,start,end,size_x,size_y,ratio=10,global_max=None,global_min=None,norm_min=-1,epsilon=-1,flatten=True):
+    def __init__(self,path,start,end,size_x,size_y,interval=1,ratio=1,global_max=None,global_min=None,norm_min=-1,epsilon=-1,flatten=True):
         blocks=[]
         regs=[]
        # count=[0,0,0,0]
 
-        for i in range(start,end):
+        for i in range(start,end,interval):
            
             
             filename_x="%d.dat" % (i) 
