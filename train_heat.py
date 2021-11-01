@@ -192,7 +192,7 @@ else:
     except:
         print("Failed to summary.")
 start=5000
-end=6000
+end=5200
 gmax=100
 gmin=0
 sizex=256

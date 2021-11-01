@@ -164,3 +164,49 @@ class Heat_Double_Random(Dataset):
         return self.blocks.shape[0]
     def __getitem__(self,idx):
         return self.blocks[idx],self.regs[idx]        
+
+class Heat_Full(Dataset):
+    def __init__(self,path,start,end,size_x,size_y,interval=1,global_max=None,global_min=None,norm_min=-1):
+        xs=[]
+        y=[]
+       # count=[0,0,0,0]
+
+        for i in range(start,end,interval):
+           
+            
+            filename_x="%d.dat" % (i) 
+            filename_y="%d.dat" % (i+1) 
+           
+            filepath_x=os.path.join(path,filename_x)
+            filepath_y=os.path.join(path,filename_y)
+            array_x=np.fromfile(filepath_x,dtype=np.float32).reshape((size_x,size_y))
+            array_y=np.fromfile(filepath_y,dtype=np.float32).reshape((size_x,size_y))
+        #print(array)
+            
+                    
+            if global_max!=None:
+                
+                        
+                            
+                if norm_min==0:
+                    array_x=(array_x-global_min)/(global_max-global_min)
+                    array_y=(array_y-global_min)/(global_max-global_min)
+                else:
+                    array_x=(array_x-global_min)*2/(global_max-global_min)-1
+                    array_y=(array_x-global_min)*2/(global_max-global_min)-1
+            xs.append(array_x)
+                    #print(array[x:x+size,y:y+size])
+            ys.append(array_y)
+        #print(count)
+        self.xs=np.array(xs,dtype=np.float32)
+        
+        self.xs=np.expand_dims(self.xs,axis=1)
+        self.ys=np.array(ys,dtype=np.float32)
+        self.ys=np.expand_dims(self.ys,axis=1)
+        print(self.blocks.shape[0])
+
+        
+    def __len__(self):
+        return self.xs.shape[0]
+    def __getitem__(self,idx):
+        return self.xs[idx],self.ys[idx]
