@@ -122,10 +122,10 @@ def validate(val_loader, model, criterion):
 
 parser = argparse.ArgumentParser()
 #parser.add_argument('--dropout','-d',type=float,default=0)
-parser.add_argument('--learningrate','-l',type=float,default=1e-1)
+parser.add_argument('--learningrate','-l',type=float,default=1e-3)
 
 #parser.add_argument('--hidden_dims','-k',type=int,default=10)
-parser.add_argument('--batchsize','-b',type=int,default=4096)
+parser.add_argument('--batchsize','-b',type=int,default=64)
 parser.add_argument('--epoch','-e',type=int,default=100)
 parser.add_argument('--actv','-a',type=str,default='no')
 #parser.add_argument('--field','-f',type=str,default='baryon_density')
