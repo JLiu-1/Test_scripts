@@ -194,8 +194,8 @@ else:
 start=20000
 end=24500
 interval=10
-gmax=1000
-gmin=0
+gmax=250
+gmin=200
 sizex=200
 sizey=200
 if args.random:
