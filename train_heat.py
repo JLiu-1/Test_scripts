@@ -193,8 +193,8 @@ else:
         print("Failed to summary.")
 start=20000
 end=20500
-gmax=100
-gmin=50
+gmax=250
+gmin=200
 sizex=200
 sizey=200
 if args.random:
