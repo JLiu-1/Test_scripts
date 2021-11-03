@@ -5,7 +5,7 @@ path="/home/jliu447/lossycompression/Heat"
 
 ratio=1
 
-dataset=Heat(path,20000,20100,200,200,ratio=ratio)
+dataset=Heat(path,20000,24500,200,200,interval=10,ratio=ratio)
 print("finished reading data")
 x=dataset.blocks.astype(np.float64)
 y=dataset.regs.flatten().astype(np.float64)
