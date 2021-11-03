@@ -18,8 +18,8 @@ class Heat(Dataset):
             array_x=np.fromfile(filepath_x,dtype=np.float32).reshape((size_x,size_y))
             array_y=np.fromfile(filepath_y,dtype=np.float32).reshape((size_x,size_y))
         #print(array)
-            for x in range(1,size_x-1,stride):
-                for y in range(1,size_y-1,stride):
+            for x in range(2,size_x-2,stride):
+                for y in range(2,size_y-2,stride):
                     
                     if np.random.choice(ratio)>0:
                         continue
@@ -77,8 +77,8 @@ class Heat_Double(Dataset):
             array_x=np.fromfile(filepath_x,dtype=np.float32).reshape((size_x,size_y))
             array_y=np.fromfile(filepath_y,dtype=np.float32).reshape((size_x,size_y))
         #print(array)
-            for x in range(1,size_x-1):
-                for y in range(1,size_y-1):
+            for x in range(2,size_x-2):
+                for y in range(2,size_y-2):
                     
                     if np.random.choice(ratio)>0:
                         continue
@@ -179,8 +179,8 @@ class Heat_Full(Dataset):
            
             filepath_x=os.path.join(path,filename_x)
             filepath_y=os.path.join(path,filename_y)
-            array_x=np.fromfile(filepath_x,dtype=np.float32).reshape((size_x,size_y))
-            array_y=np.fromfile(filepath_y,dtype=np.float32).reshape((size_x,size_y))
+            array_x=np.fromfile(filepath_x,dtype=np.float32).reshape((size_x,size_y))[1:size_x-1,1:size_y-1]
+            array_y=np.fromfile(filepath_y,dtype=np.float32).reshape((size_x,size_y))[1:size_x-1,1:size_y-1]
         #print(array)
             
                     
