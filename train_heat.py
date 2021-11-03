@@ -192,7 +192,8 @@ else:
     except:
         print("Failed to summary.")
 start=20000
-end=21000
+end=29000
+interval=10
 gmax=250
 gmin=200
 sizex=200
@@ -213,23 +214,23 @@ if args.random:
 elif args.normalize:
     if args.double:
         train_loader = DataLoader(
-            Heat_Double(path,start,end,sizex,sizey,ratio=ratio,global_max=gmax,global_min=gmin,norm_min=args.norm_min,flatten=1-args.conv),
+            Heat_Double(path,start,end,sizex,sizey,interval=interval,ratio=ratio,global_max=gmax,global_min=gmin,norm_min=args.norm_min,flatten=1-args.conv),
             batch_size=bs, shuffle=True,
             num_workers=0)
     else:
         train_loader = DataLoader(
-            Heat(path,start,end,sizex,sizey,ratio=ratio,global_max=gmax,global_min=gmin,norm_min=args.norm_min,flatten=1-args.conv),
+            Heat(path,start,end,sizex,sizey,interval=interval,ratio=ratio,global_max=gmax,global_min=gmin,norm_min=args.norm_min,flatten=1-args.conv),
             batch_size=bs, shuffle=True,
             num_workers=0)
 else:
     if args.double:
         train_loader = DataLoader(
-            Heat_Double(path,start,end,sizex,sizey,ratio=ratio,global_max=None,global_min=None,norm_min=args.norm_min,flatten=1-args.conv),
+            Heat_Double(path,start,end,sizex,sizey,interval=interval,ratio=ratio,global_max=None,global_min=None,norm_min=args.norm_min,flatten=1-args.conv),
             batch_size=bs, shuffle=True,
             num_workers=0)
     else:
         train_loader = DataLoader(
-            Heat(path,start,end,sizex,sizey,ratio=ratio,global_max=None,global_min=None,norm_min=args.norm_min,flatten=1-args.conv),
+            Heat(path,start,end,sizex,sizey,interval=interval,ratio=ratio,global_max=None,global_min=None,norm_min=args.norm_min,flatten=1-args.conv),
             batch_size=bs, shuffle=True,
             num_workers=0)
 
