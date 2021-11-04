@@ -167,13 +167,13 @@ if args.conv:
     layer=nn.Conv2d(1,1,3,bias=False)
 else:
     layer=nn.Linear(9,1)
-ini=torch.Tensor([[0.01,0.24,-0.01,0.26,-0.001,0.24,-0.01,0.26,0.01]])
-layer.weight=torch.nn.Parameter(ini)
+#ini=torch.Tensor([[0.01,0.24,-0.01,0.26,-0.001,0.24,-0.01,0.26,0.01]])
+#layer.weight=torch.nn.Parameter(ini)
 model=nn.Sequential(layer,actv())
 if args.double:
     model=model.double()
 
-optimizer=torch.optim.Adam(model.parameters(), lr=lr,weight_decay=args.l2decay)
+optimizer=torch.optim.SGD(model.parameters(), lr=lr,weight_decay=args.l2decay)
 #optimizer=torch.optim.SGD(model.parameters(), lr=lr)
 
 criterion = nn.MSELoss()
