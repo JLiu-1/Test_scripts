@@ -154,7 +154,7 @@ ratio=args.ratio
 
 max_epoch=args.epoch
 interval=args.save_interval
-path="/home/jliu447/lossycompression/Heat_rd100"
+path="/home/jliu447/lossycompression/Heat_256_100"
 #val_path="/home/jliu447/lossycompression/NYX"
 #maximum={"baryon_density":5.06394195556640625,"temperature":6.6796627044677734375,"dark_matter_density":4.1392154693603515625}
 #minimum={"baryon_density":-1.306397557258605957,"temperature":2.7645518779754638672,"dark_matter_density":-10}
@@ -167,8 +167,8 @@ if args.conv:
     layer=nn.Conv2d(1,1,3,bias=False)
 else:
     layer=nn.Linear(9,1)
-#ini=torch.Tensor([[0.001,0.249,0.001,0.249,-0.001,0.249,-0.001,0.249,0.001]])
-#lin.weight=torch.nn.Parameter(ini)
+ini=torch.Tensor([[0.001,0.249,0.001,0.249,-0.001,0.249,-0.001,0.249,0.001]])
+lin.weight=torch.nn.Parameter(ini)
 model=nn.Sequential(layer,actv())
 if args.double:
     model=model.double()
@@ -191,13 +191,13 @@ else:
         summary(model,(9,))
     except:
         print("Failed to summary.")
-start=0
+start=5000
 end=9000
-interval=100
+interval=10
 gmax=100
 gmin=0
-sizex=128
-sizey=128
+sizex=256
+sizey=256
 if args.random:
     if args.double:
         train_loader = DataLoader(
