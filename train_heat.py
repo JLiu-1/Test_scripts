@@ -191,9 +191,9 @@ else:
         summary(model,(9,))
     except:
         print("Failed to summary.")
-start=1000
-end=10000
-interval=10
+start=0
+end=100
+interval=1
 gmax=100
 gmin=0
 sizex=128
