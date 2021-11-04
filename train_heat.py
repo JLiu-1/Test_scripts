@@ -192,8 +192,8 @@ else:
     except:
         print("Failed to summary.")
 start=0
-end=9000
-interval=100
+end=1000
+interval=10
 gmax=100
 gmin=0
 sizex=128
