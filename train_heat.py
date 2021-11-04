@@ -125,7 +125,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--learningrate','-l',type=float,default=1e-1)
 
 #parser.add_argument('--hidden_dims','-k',type=int,default=10)
-parser.add_argument('--batchsize','-b',type=int,default=1024)
+parser.add_argument('--batchsize','-b',type=int,default=64)
 parser.add_argument('--epoch','-e',type=int,default=100)
 parser.add_argument('--actv','-a',type=str,default='no')
 #parser.add_argument('--field','-f',type=str,default='baryon_density')
@@ -154,7 +154,7 @@ ratio=args.ratio
 
 max_epoch=args.epoch
 interval=args.save_interval
-path="/home/jliu447/lossycompression/Heat_rd100"
+path="/home/jliu447/lossycompression/Heat_256_100"
 #val_path="/home/jliu447/lossycompression/NYX"
 #maximum={"baryon_density":5.06394195556640625,"temperature":6.6796627044677734375,"dark_matter_density":4.1392154693603515625}
 #minimum={"baryon_density":-1.306397557258605957,"temperature":2.7645518779754638672,"dark_matter_density":-10}
@@ -191,13 +191,13 @@ else:
         summary(model,(9,))
     except:
         print("Failed to summary.")
-start=0
-end=100
-interval=1
+start=6000
+end=9000
+interval=10
 gmax=100
 gmin=0
-sizex=128
-sizey=128
+sizex=256
+sizey=256
 if args.random:
     if args.double:
         train_loader = DataLoader(
