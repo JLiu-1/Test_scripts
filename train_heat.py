@@ -168,7 +168,7 @@ if args.conv:
 else:
     layer=nn.Linear(9,1)
 ini=torch.Tensor([[0.001,0.249,0.001,0.249,-0.001,0.249,-0.001,0.249,0.001]])
-lin.weight=torch.nn.Parameter(ini)
+layer.weight=torch.nn.Parameter(ini)
 model=nn.Sequential(layer,actv())
 if args.double:
     model=model.double()
