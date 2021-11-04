@@ -173,7 +173,7 @@ model=nn.Sequential(layer,actv())
 if args.double:
     model=model.double()
 
-optimizer=torch.optim.SGD(model.parameters(), lr=lr,weight_decay=args.l2decay)
+optimizer=torch.optim.Adam(model.parameters(), lr=lr,weight_decay=args.l2decay)
 #optimizer=torch.optim.SGD(model.parameters(), lr=lr)
 
 criterion = nn.MSELoss()
