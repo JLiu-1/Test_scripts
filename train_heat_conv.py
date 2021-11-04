@@ -154,7 +154,7 @@ lr=args.learningrate
 
 max_epoch=args.epoch
 interval=args.save_interval
-path="/home/jliu447/lossycompression/Heat"
+path="/home/jliu447/lossycompression/Heat_rd100"
 #val_path="/home/jliu447/lossycompression/NYX"
 #maximum={"baryon_density":5.06394195556640625,"temperature":6.6796627044677734375,"dark_matter_density":4.1392154693603515625}
 #minimum={"baryon_density":-1.306397557258605957,"temperature":2.7645518779754638672,"dark_matter_density":-10}
@@ -187,12 +187,12 @@ try:
 except:
     print("Failed to summary.")
 
-start=20000
-end=24000
-gmax=1000
+start=0
+end=9000
+gmax=100
 gmin=0
-sizex=200
-sizey=200
+sizex=128
+sizey=128
 
 
 if args.normalize:
