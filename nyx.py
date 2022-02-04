@@ -41,8 +41,8 @@ class NYX(Dataset):
                     #print(array[x:x+size,y:y+size])
                         regs.append(block[7])
         #print(count)
-        self.blocks=np.array(blocks,dtype=np.double)
-        self.regs=np.array(regs,dtype=np.double)
+        self.blocks=np.array(blocks,dtype=np.float32)
+        self.regs=np.array(regs,dtype=np.float32)
         self.regs=np.expand_dims(self.regs,axis=-1)
         print(self.blocks.shape[0])
 
