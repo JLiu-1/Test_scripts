@@ -53,7 +53,7 @@ parser.add_argument('--level','-l',type=int,
                    default=2)
 
 args = parser.parse_args()
-
+level=args.level
 #actv_dict={"no":nn.Identity,"sigmoid":nn.Sigmoid,"tanh":nn.Tanh}
 #actv=actv_dict[args.actv]
 #model=nn.Sequential(nn.Linear(7,1),actv())
