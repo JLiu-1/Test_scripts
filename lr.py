@@ -21,4 +21,4 @@ print("start regression")
 reg=LinearRegression(fit_intercept=False).fit(x, y)
 
 print(reg.coef_)
-reg.coef_.tofile("lr_b.dat")
+reg.coef_.tofile(outfile)
