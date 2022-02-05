@@ -88,7 +88,7 @@ for x in range(512):
                 #block=(block-args.min)/(args.max-args.min)
                 #block=block*(args.norm_max-args.norm_min)+args.norm_min
                 #block=np.expand_dims(block,axis=0)
-                pred=block*coefs
+                pred=np.sum(block*coefs)
                 #pred=(pred-args.norm_min)/(args.norm_max-args.norm_min)
                 #pred=pred*(args.max-args.min)+args.min
                 #print(pred)
