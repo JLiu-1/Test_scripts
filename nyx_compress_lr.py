@@ -49,7 +49,8 @@ parser.add_argument('--max','-mx',type=float,
                    default=5.06394195556640625)
 parser.add_argument('--min','-mi',type=float,
                    default=-1.306397557258605957)
-
+parser.add_argument('--level','-l',type=int,
+                   default=2)
 
 args = parser.parse_args()
 
@@ -68,11 +69,12 @@ error_bound=args.error*(np.max(array)-np.min(array))
 
 qs=[]
 us=[]
+size=level**3-1
 for x in range(512):
     for y in range(512):
         for z in range(512):
             orig=array[x][y][z]
-            if not (x and y and z):
+            if not (x>=level-1 and y>=level-1 and z>=level-1):
                 f_011=array[x-1][y][z] if x else 0
                 f_101=array[x][y-1][z] if y else 0
                 f_110=array[x][y][z-1] if z else 0
@@ -84,7 +86,7 @@ for x in range(512):
                 pred=f_000+f_011+f_101+f_110-f_001-f_010-f_100
                 
             else:
-                block=array[x-1:x+1,y-1:y+1,z-1:z+1].flatten()[:7]
+                block=array[x-level+1:x+1,y-level+1:y+1,z-level+1:z+1].flatten()[:size]
                 #block=(block-args.min)/(args.max-args.min)
                 #block=block*(args.norm_max-args.norm_min)+args.norm_min
                 #block=np.expand_dims(block,axis=0)
