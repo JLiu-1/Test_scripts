@@ -17,7 +17,7 @@ if len(sys.argv)>=4:
 else:
     outfile="lr_cldhgh.dat"
 
-dataset=CLDHGH(path,field,start=0,end=50,level=level,ratio=ratio)
+dataset=CESM(path,field,start=0,end=50,level=level,ratio=ratio)
 print("finished reading data")
 x=dataset.blocks.astype(np.double)
 y=dataset.regs.astype(np.double).flatten()
