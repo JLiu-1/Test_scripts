@@ -7,9 +7,9 @@ def fit(X, params):
 def cost_function(params, X, y):
     return np.sum(np.abs(y - fit(X, params)))
 
-X = np.asarray([np.ones((100,)), np.arange(0, 100)]).T
+X = np.asarray([np.ones((100,)), np.arange(0, 100)],dtype=np.double).T
 print(X.shape)
-y = 10 + 5 * np.arange(0, 100) + 25 * np.random.random((100,))
+y = 10 + 5 * np.arange(0, 100) + 25 * np.random.random((100,),dtype=np.double)
 
-output = minimize(cost_function, x0=np.array([5.,10.]).T, args=(X, y))
+output = minimize(cost_function, x0=np.array([5.,10.],dtype=np.double).T, args=(X, y))
 print(output)
