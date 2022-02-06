@@ -163,12 +163,14 @@ model=nn.Sequential(nn.Linear(7,1),actv())
 
 optimizer=torch.optim.Adam(model.parameters(), lr=lr)
 #optimizer=torch.optim.SGD(model.parameters(), lr=lr)
-
-criterion = [nn.MSELoss(),nn.L1Loss()]
-
 if args.gpu:
+    criterion = [nn.MSELoss().cuda(),nn.L1Loss().cuda()]
     model=model.cuda()
-    criterion=criterion.cuda()
+else:
+    criterion = [nn.MSELoss(),nn.L1Loss()]
+
+
+    
 
 
 if args.normalize:
