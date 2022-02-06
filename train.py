@@ -51,9 +51,12 @@ def train(train_loader, model, criterion, optimizer, epoch):
         # compute output
 
         output = model(input_var)
-       
-       
-        loss = criterion(output, target_var)
+        if isinstance(criterion,list):
+            loss=0.0
+            for c in criterion:
+                loss+=c(output, target_var)
+        else:
+            loss = criterion(output, target_var)
 
         # compute gradient and do SGD step
         optimizer.zero_grad()
@@ -124,7 +127,7 @@ parser.add_argument('--learningrate','-l',type=float,default=1e-3)
 #parser.add_argument('--hidden_dims','-k',type=int,default=10)
 parser.add_argument('--batchsize','-b',type=int,default=2048)
 parser.add_argument('--epoch','-e',type=int,default=100)
-parser.add_argument('--actv','-a',type=str,default='tanh')
+parser.add_argument('--actv','-a',type=str,default='no')
 parser.add_argument('--field','-f',type=str,default='baryon_density')
 parser.add_argument('--norm_min','-m',type=float,default=-1)
 parser.add_argument('--normalize','-n',type=float,default=1)
@@ -133,7 +136,7 @@ parser.add_argument('--normalize','-n',type=float,default=1)
 #parser.add_argument('--vallog','-vl',type=str,default='val.log')
 parser.add_argument('--gpu','-g',type=int,default=1)
 parser.add_argument('--save','-s',type=str,default="ckpts")
-parser.add_argument('--save_interval','-i',type=int,default=10)
+parser.add_argument('--save_interval','-i',type=int,default=20)
 parser.add_argument('--ratio','-r',type=int,default=10)
 args = parser.parse_args()
 actv_dict={"no":nn.Identity,"sigmoid":nn.Sigmoid,"tanh":nn.Tanh}
@@ -161,7 +164,7 @@ model=nn.Sequential(nn.Linear(7,1),actv())
 optimizer=torch.optim.Adam(model.parameters(), lr=lr)
 #optimizer=torch.optim.SGD(model.parameters(), lr=lr)
 
-criterion = nn.MSELoss()
+criterion = [nn.MSELoss(),nn.L1Loss()]
 
 if args.gpu:
     model=model.cuda()
