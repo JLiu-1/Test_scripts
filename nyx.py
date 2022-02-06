@@ -9,7 +9,7 @@ class NYX(Dataset):
         blocks=[]
         regs=[]
        # count=[0,0,0,0]
-
+        size=level**3-1
         for i in range(start,end):
             s=str(i)
             if i>=0:
@@ -20,7 +20,7 @@ class NYX(Dataset):
                 filename+=".log10"
             filepath=os.path.join(path,filename)
             array=np.fromfile(filepath,dtype=np.float32).reshape((size_x,size_y,size_z))
-            size=level**3-1
+            
         #print(array)
             for x in range(level-1,size_x):
                 for y in range(level-1,size_y):
