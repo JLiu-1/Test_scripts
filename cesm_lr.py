@@ -2,6 +2,7 @@ import numpy as np
 from sklearn.linear_model import LinearRegression
 from nyx import NYX
 import sys
+from cesm import *
 path="../cesm-multisnapshot-5fields"
 field="CLDHGH"
 if len(sys.argv)>=2:

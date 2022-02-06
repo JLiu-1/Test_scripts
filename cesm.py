@@ -1,7 +1,7 @@
 from torch.utils.data import Dataset
 import numpy as np
 import os
-
+from cesm import *
 
 class CESM(Dataset):
     def __init__(self,path,field='CLDHGH',start,end,level=2,ratio=10,global_max=None,global_min=None,epsilon=-1):
