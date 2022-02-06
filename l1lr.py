@@ -10,5 +10,5 @@ def cost_function(params, X, y):
 X = np.asarray([np.ones((100,)), np.arange(0, 100)]).T
 y = 10 + 5 * np.arange(0, 100) + 25 * np.random.random((100,))
 
-output = minimize(cost_function, x0=np.ones(len(y)), args=(X, y))
+output = minimize(cost_function, x0=np.ones(2), args=(X, y))
 print(output)
