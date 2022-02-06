@@ -22,7 +22,7 @@ print("finished reading data")
 x=dataset.blocks.astype(np.double)
 y=dataset.regs.astype(np.double).flatten()
 print("start regression")
-reg=Lasso(alpha=0.0,fit_intercept=False).fit(x, y)
+reg=Lasso(alpha=1.0,fit_intercept=False).fit(x, y)
 
 print(reg.coef_)
 reg.coef_.tofile(outfile)

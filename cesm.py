@@ -47,7 +47,7 @@ class CESM(Dataset):
         self.regs=np.array(regs,dtype=np.float32)
         self.regs=np.expand_dims(self.regs,axis=-1)
         print(self.blocks.shape[0])
-        self.picts=np.array(picts)
+        
     def __len__(self):
         return self.blocks.shape[0]
     def __getitem__(self,idx):
