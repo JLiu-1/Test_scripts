@@ -12,4 +12,4 @@ print(X.shape)
 y = 3 + 2 * np.arange(0, 100) + 5 * np.random.random((100,))
 
 output = minimize(cost_function, x0=np.array([1.,3.],dtype=np.double).T, args=(X, y))
-print(output)
+print(output.x)
