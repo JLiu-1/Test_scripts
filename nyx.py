@@ -12,8 +12,10 @@ class NYX(Dataset):
 
         for i in range(start,end):
             s=str(i)
-            
-            filename="%s_%s.dat" % (field,s) 
+            if i>=0:
+                filename="%s_%s.dat" % (field,s) 
+            else:
+                filename="%s.dat" % field
             if log:
                 filename+=".log10"
             filepath=os.path.join(path,filename)
