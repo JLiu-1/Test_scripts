@@ -96,5 +96,5 @@ for x in range(1800):
 quants=np.array(qs,dtype=np.int32)
 unpreds=np.array(us,dtype=np.float32)
 array.tofile(args.output)
-quants.tofile("q.dat")
-unpreds.tofile("u.dat")
+quants.tofile("cld_q.dat")
+unpreds.tofile("cld_u.dat")
