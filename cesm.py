@@ -4,7 +4,7 @@ import os
 
 
 class CESM(Dataset):
-    def __init__(self,path,start,end,level=2,ratio=10,field='CLDHGH',global_max=None,global_min=None,epsilon=-1):
+    def __init__(self,path,field='CLDHGH',start,end,level=2,ratio=10,global_max=None,global_min=None,epsilon=-1):
         height=1800
         width=3600
         blocks=[]
@@ -21,8 +21,8 @@ class CESM(Dataset):
             filepath=os.path.join(path,filename)
             array=np.fromfile(filepath,dtype=np.float32).reshape((height,width))
         #print(array)
-            for x in range(0,height,size):
-                for y in range(0,width,size):
+            for x in range(level-1,height):
+                for y in range(level-1,width):
                     if np.random.choice(ratio)>0:
                         continue
                     block=array[x-level+1:x+1,y-level+1:y+1].flatten()
