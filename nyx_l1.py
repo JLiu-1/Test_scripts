@@ -28,7 +28,12 @@ print("finished reading data")
 x=dataset.blocks.astype(np.double)
 y=dataset.regs.astype(np.double).flatten()
 print("start regression")
-
-output = minimize(cost_function, x0=np.ones(x.shape[-1]), args=(x, y))
+init_2=np.array([1.,-1,-1,1,-1,1,1])
+init_3=np.ones(x.shape[-1])
+if level==2:
+    init=init_2
+else:
+    init=init_3
+output = minimize(cost_function, x0=init, args=(x, y))
 print(output)
 np.array(output.x).tofile(outfile)
