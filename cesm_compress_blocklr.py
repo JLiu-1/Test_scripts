@@ -4,6 +4,7 @@ import os
 import argparse
 import torch
 import torch.nn as nn
+from sklearn.linear_model import LinearRegression
 def quantize(data,pred,error_bound):
     radius=32768
     
@@ -81,8 +82,23 @@ coef_array=np.zeros((blocked_size_x,blocked_size_y,size),dtype=np.double)
 qs=[]
 us=[]
 
-for x in range(0,size_x,block):
-    for y in range(0,size_y,block): 
+for x_idx,x_start in enumerate(range(0,size_x,block_size)):
+    for y_idx,y_start in enumerate(range(0,size_y,block_size)): 
+        reg_xs=[]
+        reg_ys=[]
+        x_end=min(x_start+block_size,size_x)
+        y_end=min(y_start+block_size,size_y)
+        for x in range(x_start,x_end):
+            for y in range(y_start,y_end):
+                if not (x>=level-1 and y>=level-1):
+                    continue
+                block=array[x-level+1:x+1,y-level+1:y+1].flatten()
+                reg_xs.append(block[:size])
+                reg_ys.append(block[size])
+        reg_xs=np.array(reg_xs).astype(np.double)
+        reg_ys=np.array(reg_ys).astype(np.double)
+        coef_array[x_idx][y_idx]=LinearRegression(fit_intercept=False).fit(reg_xs, reg_ys)
+
 
 
 
@@ -100,7 +116,9 @@ for x in range(size_x):
                 
         else:
             block=array[x-level+1:x+1,y-level+1:y+1].flatten()[:size]
-                
+            blockid_x=get_block_index(x,block_size)
+            blockid_y=get_block_index(y,block_size)
+            coefs=coef_array[blockid_x][blocked_size_y]
             pred=np.sum(block*coefs)
                 
         q,decomp=quantize(orig,pred,error_bound)
