@@ -97,7 +97,7 @@ for x_idx,x_start in enumerate(range(0,size_x,block_size)):
                 reg_ys.append(block[size])
         reg_xs=np.array(reg_xs).astype(np.double)
         reg_ys=np.array(reg_ys).astype(np.double)
-        coef_array[x_idx][y_idx]=LinearRegression(fit_intercept=False).fit(reg_xs, reg_ys)
+        coef_array[x_idx][y_idx]=LinearRegression(fit_intercept=False).fit(reg_xs, reg_ys).coef_
 
 
 
