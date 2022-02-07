@@ -25,13 +25,18 @@ def fit(X, params):
 
 def cost_function(params, X, y):
     return np.sum(np.abs(y - fit(X, params)))
-
+init_2=np.array([-1.,1,1])
+init_3=np.array([-1,2,-1,2,-4,2,-1,2])
+if level==2:
+    init=init_2
+else:
+    init=init_3
 
 dataset=CESM(path,field,start=0,end=50,level=level,ratio=ratio)
 print("finished reading data")
 x=dataset.blocks.astype(np.double)
 y=dataset.regs.astype(np.double).flatten()
 print("start regression")
-output = minimize(cost_function, x0=np.ones(x.shape[-1]), args=(x, y))
+output = minimize(cost_function, x0=init, args=(x, y))
 print(output)
 np.array(output.x).tofile(outfile)
