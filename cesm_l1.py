@@ -30,7 +30,7 @@ init_3=np.array([-1,2,-1,2,-4,2,-1,2])
 if level==2:
     init=init_2
 else:
-    init=np.ones(7)
+    init=np.ones(8)
 
 dataset=CESM(path,field,start=0,end=50,level=level,ratio=ratio)
 print("finished reading data")
