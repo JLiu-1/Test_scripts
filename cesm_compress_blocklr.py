@@ -118,7 +118,7 @@ for x in range(size_x):
             block=array[x-level+1:x+1,y-level+1:y+1].flatten()[:size]
             blockid_x=get_block_index(x,block_size)
             blockid_y=get_block_index(y,block_size)
-            coefs=coef_array[blockid_x][blocked_size_y]
+            coefs=coef_array[blockid_x][blockid_y]
             pred=np.sum(block*coefs)
                 
         q,decomp=quantize(orig,pred,error_bound)
