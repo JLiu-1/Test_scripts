@@ -82,6 +82,7 @@ blocked_size_x=(size_x-1)//block_size+1
 blocked_size_y=(size_y-1)//block_size+1
 size=level**2-1
 coef_array=np.zeros((blocked_size_x,blocked_size_y,size),dtype=np.double)
+intercept_array=np.zeros((blocked_size_x,blocked_size_y),dtype=np.double)
 qs=[]
 us=[]
 
@@ -104,7 +105,9 @@ for x_idx,x_start in enumerate(range(0,size_x,block_size)):
                 reg_ys.append(block[size])
         reg_xs=np.array(reg_xs).astype(np.double)
         reg_ys=np.array(reg_ys).astype(np.double)
-        coef_array[x_idx][y_idx]=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys).coef_
+        res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
+        coef_array[x_idx][y_idx]=res.coef_
+        intercept_array[x_idx][y_idx]=res.intercept_
 
 print(coef_array[0][0].shape)
 
@@ -127,7 +130,7 @@ for x in range(size_x):
             blockid_x=get_block_index(x,block_size)
             blockid_y=get_block_index(y,block_size)
             coefs=coef_array[blockid_x][blockid_y]
-            pred=np.sum(np.concatenate( (block,np.array([1.])) )*coefs)
+            pred=np.sum(block*coefs)+intercept_array[blockid_x][blockid_y]
                 
         q,decomp=quantize(orig,pred,error_bound)
         qs.append(q)
