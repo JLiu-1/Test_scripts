@@ -77,7 +77,7 @@ def get_block_index(x,block):
 block_size=args.block
 blocked_size_x=(size_x-1)//block_size+1
 blocked_size_y=(size_y-1)//block_size+1
-size=(level**2-1)
+size=2*(level**2-1)
 coef_array=np.zeros((blocked_size_x,blocked_size_y,size),dtype=np.double)
 qs=[]
 us=[]
@@ -93,7 +93,7 @@ for x_idx,x_start in enumerate(range(0,size_x,block_size)):
                 if not (x>=level-1 and y>=level-1):
                     continue
                 block=array[x-level+1:x+1,y-level+1:y+1].flatten()
-                reg_xs.append( np.concatenate((block[:size],block[:size]**2)) )
+                reg_xs.append( np.concatenate((block[:size//2],block[:size//2]**2)) )
                 reg_ys.append(block[size])
         reg_xs=np.array(reg_xs).astype(np.double)
         reg_ys=np.array(reg_ys).astype(np.double)
@@ -115,7 +115,7 @@ for x in range(size_x):
             pred=f_01+f_10-f_00
                 
         else:
-            block=array[x-level+1:x+1,y-level+1:y+1].flatten()[:2*size]
+            block=array[x-level+1:x+1,y-level+1:y+1].flatten()[:size]
             block=np.concatenate((block,block**2))
             blockid_x=get_block_index(x,block_size)
             blockid_y=get_block_index(y,block_size)
