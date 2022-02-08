@@ -4,7 +4,7 @@ import os
 import argparse
 import torch
 import torch.nn as nn
-from sklearn.linear_model import LinearRegression,Lasso
+from sklearn.linear_model import LinearRegression,Lasso,ElasticNet
 def quantize(data,pred,error_bound):
     radius=32768
     
@@ -113,7 +113,7 @@ for x_idx,x_start in enumerate(range(0,size_x,block_size)):
                 reg_ys.append(block[size])
         reg_xs=np.array(reg_xs).astype(np.double)
         reg_ys=np.array(reg_ys).astype(np.double)
-        res=Lasso(alpha=args.alpha,fit_intercept=args.intercept,max_iter=args.max_iter,tol=args.tol).fit(reg_xs, reg_ys)
+        res=ElasticNet(alpha=args.alpha,fit_intercept=args.intercept,max_iter=args.max_iter,tol=args.tol).fit(reg_xs, reg_ys)
         coef_array[x_idx][y_idx]=res.coef_
         intercept_array[x_idx][y_idx]=res.intercept_
 
