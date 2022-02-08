@@ -94,7 +94,7 @@ for x_idx,x_start in enumerate(range(0,size_x,block_size)):
                     continue
                 block=array[x-level+1:x+1,y-level+1:y+1].flatten()
                 reg_xs.append( np.concatenate((block[:size//2],block[:size//2]**2)) )
-                reg_ys.append(block[size])
+                reg_ys.append(block[size//2])
         reg_xs=np.array(reg_xs).astype(np.double)
         reg_ys=np.array(reg_ys).astype(np.double)
         coef_array[x_idx][y_idx]=LinearRegression(fit_intercept=False).fit(reg_xs, reg_ys).coef_
