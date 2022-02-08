@@ -53,9 +53,12 @@ parser.add_argument('--min','-mi',type=float,
                    default=0)
 parser.add_argument('--level','-l',type=int,
                    default=2)
+parser.add_argument('--noise','-n',type=bool,
+                   default=False)
 
 args = parser.parse_args()
 level=args.level
+
 #actv_dict={"no":nn.Identity,"sigmoid":nn.Sigmoid,"tanh":nn.Tanh}
 #actv=actv_dict[args.actv]
 #model=nn.Sequential(nn.Linear(7,1),actv())
@@ -93,6 +96,10 @@ for x_idx,x_start in enumerate(range(0,size_x,block_size)):
                 if not (x>=level-1 and y>=level-1):
                     continue
                 block=array[x-level+1:x+1,y-level+1:y+1].flatten()
+                reg_x=block[:size]
+                if args.noise:
+                    reg_x+=error_bound*np.random.rand(size)
+                reg_y=block[size]
                 reg_xs.append(block[:size])
                 reg_ys.append(block[size])
         reg_xs=np.array(reg_xs).astype(np.double)
