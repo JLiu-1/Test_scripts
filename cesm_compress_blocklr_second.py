@@ -115,7 +115,7 @@ for x in range(size_x):
             pred=f_01+f_10-f_00
                 
         else:
-            block=array[x-level+1:x+1,y-level+1:y+1].flatten()[:size]
+            block=array[x-level+1:x+1,y-level+1:y+1].flatten()[:2*size]
             block=np.concatenate((block,block**2))
             blockid_x=get_block_index(x,block_size)
             blockid_y=get_block_index(y,block_size)
