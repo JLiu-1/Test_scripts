@@ -145,6 +145,7 @@ for x in range(size_x):
         if q==0:
             us.append(decomp)
         array[x][y]=decomp
+        print(abs(orig-decomp))
 
 quants=np.array(qs,dtype=np.int32)
 unpreds=np.array(us,dtype=np.float32)
