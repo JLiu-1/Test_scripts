@@ -92,8 +92,8 @@ for x in range(2*(level-1),size_x,2):
         if args.noise:
             reg_x+=error_bound*np.random.rand(size)
         reg_y=block[size]
-        reg_xs.append(block[:size])
-        reg_ys.append(block[size])
+        reg_xs.append(reg_x)
+        reg_ys.append(reg_y)
 res=LinearRegression(fit_intercept=args.intercept).fit(reg_xs, reg_ys)
 coefs=res.coef_
 if args.intercept:
