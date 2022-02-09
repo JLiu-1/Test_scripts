@@ -85,7 +85,7 @@ def get_block_index(x,block):
 
 #intercept_array=np.zeros((blocked_size_x,blocked_size_y),dtype=np.double)
 qs=[]
-max_level=int(math.log(args.block,2))
+max_level=int(math.log(step,2))
 
 us=[]
 lorenzo_qs=[]
