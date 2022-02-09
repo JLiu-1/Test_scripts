@@ -228,7 +228,7 @@ for x_start in range(0,size_x,block_size):
             qs[0].append(q)
             if q==0:
                 us.append(decomp)
-
+            array[x_end-1][y_start]=decomp
             orig=array[x_start][y_end-1]
             if x_start:
                 pred=array[x_start-1][y_end-1]
@@ -238,7 +238,7 @@ for x_start in range(0,size_x,block_size):
             qs[0].append(q)
             if q==0:
                 us.append(decomp)
-
+            array[x_start][y_end-1]=decomp
             orig=array[x_end-1][y_end-1]
             
             pred=array[x_end-1][y_start]+array[x_start][y_end-1]-array[x_start][y_start]
@@ -246,6 +246,7 @@ for x_start in range(0,size_x,block_size):
             qs[0].append(q)
             if q==0:
                 us.append(decomp)
+            array[x_end-1][y_end-1]=decomp
             interp(array[x_start:x_end,y_start:y_end],max_level)
 
 
