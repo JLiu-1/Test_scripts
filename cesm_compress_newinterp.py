@@ -125,7 +125,7 @@ def interp(array,level=0):#only 2^n+1 square array
     side_length=array.shape[0]
 
     sparse_grid=array[0:side_length:2,0:side_length:2]
-    cur_eb=error_bound/(2**level)
+    cur_eb=error_bound/1#(2**level)
     if cur_eb<error_bound/10:
         cur_eb=error_bound/10
     interp(sparse_grid,level+1)

@@ -1,3 +1,4 @@
+
 import numpy as np 
 
 import os
@@ -5,6 +6,7 @@ import argparse
 import torch
 import torch.nn as nn
 from sklearn.linear_model import LinearRegression
+import math
 def quantize(data,pred,error_bound):
     radius=32768
     
@@ -44,7 +46,7 @@ parser.add_argument('--input','-i',type=str)
 parser.add_argument('--output','-o',type=str)
 #parser.add_argument('--actv','-a',type=str,default='tanh')
 #parser.add_argument('--checkpoint','-c',type=str,default=None)
-#parser.add_argument('--block','-b',type=int,default=64)
+parser.add_argument('--block','-b',type=int,default=9)
 #parser.add_argument('--norm_max','-nx',type=float,default=1)
 #parser.add_argument('--norm_min','-ni',type=float,default=-1)
 #parser.add_argument('--max','-mx',type=float,default=1)
@@ -82,7 +84,11 @@ blocked_size_x=(size_x-1)//block_size+1
 
 #intercept_array=np.zeros((blocked_size_x,blocked_size_y),dtype=np.double)
 qs=[]
+max_level=int(math.log(args.block,2))
+for i in range(max_level+1):
+    qs.append([])
 us=[]
+lorenzo_qs=[]
 '''
 for x_idx,x_start in enumerate(range(0,size_x,block_size)):
     for y_idx,y_start in enumerate(range(0,size_y,block_size)): 
@@ -119,16 +125,17 @@ for x_idx,x_start in enumerate(range(0,size_x,block_size)):
 print(coef_array[0][0].shape)
 
 '''
-def interp(array,level=0):#only 2^n+1 square array
+block_size=args.block
+def interp(array,level=1):#only 2^n+1 square array
     if array.shape[0]==2:
         return 
     side_length=array.shape[0]
 
     sparse_grid=array[0:side_length:2,0:side_length:2]
-    cur_eb=error_bound/(2**level)
+    cur_eb=error_bound#/(2**level)
     if cur_eb<error_bound/10:
         cur_eb=error_bound/10
-    interp(sparse_grid,level+1)
+    interp(sparse_grid,level-1)
     #print(array.shape)
     for x in range(0,side_length,2):
         for y in range(1,side_length,2):
@@ -136,8 +143,8 @@ def interp(array,level=0):#only 2^n+1 square array
                 continue
             orig=array[x][y]
             pred=(array[x][y-1]+array[x][y+1])/2
-            q,decomp=quantize(orig,pred,error_bound)
-            qs.append(q)
+            q,decomp=quantize(orig,pred,cur_eb)
+            qs[level].append(q)
             if q==0:
                 us.append(decomp)
             array[x][y]=decomp
@@ -150,7 +157,7 @@ def interp(array,level=0):#only 2^n+1 square array
             orig=array[x][y]
             pred=(array[x-1][y]+array[x+1][y])/2
             q,decomp=quantize(orig,pred,error_bound)
-            qs.append(q)
+            qs[level].append(q)
             if q==0:
                 us.append(decomp)
             array[x][y]=decomp
@@ -161,12 +168,96 @@ def interp(array,level=0):#only 2^n+1 square array
             orig=array[x][y]
             pred=(array[x-1][y]+array[x+1][y]+array[x][y-1]+array[x][y+1])/4
             q,decomp=quantize(orig,pred,error_bound)
-            qs.append(q)
+            qs[level].append(q)
             if q==0:
                 us.append(decomp)
             array[x][y]=decomp
 
-interp(array)
+def lorenzo_2d(array,x_start,x_end,y_start,y_end):
+    for x in range(x_start,x_end):
+        for y in range(y_start,y_end):
+
+            orig=array[x][y]
+        
+            f_01=array[x-1][y] if x else 0
+            f_10=array[x][y-1] if y else 0
+            
+            f_00=array[x-1][y-1] if x and y else 0
+                
+            pred=f_01+f_10-f_00
+                
+        
+                
+            q,decomp=quantize(orig,pred,error_bound)
+            lorenzo_qs.append(q)
+            if q==0:
+                us.append(decomp)
+            array[x][y]=decomp
+
+
+for x_start in range(0,size_x,block_size):
+    for y_start in range(0_size_y,block_size):
+        x_end=min(x_start+block_size,size_x)
+        y_end=min(y_start+block_size,size_y)
+        if x_end-x_start<block_size or y_end-y_start<block_size:
+            lorenzo_2d(array,x_start,x_end,y_start,y_end)
+        else:
+            orig=array[x_start][y_start]
+        
+            f_01=array[x_start-1][y_start] if x_start else 0
+            f_10=array[x_start][y_start-1] if y_start else 0
+            
+            f_00=array[x_start-1][y_start-1] if x_start and y_start else 0
+                
+            pred=f_01+f_10-f_00
+                
+        
+                
+            q,decomp=quantize(orig,pred,error_bound)
+            qs[0].append(q)
+            if q==0:
+                us.append(decomp)
+            array[x_start][y_start]=decomp
+
+            orig=array[x_end-1][y_start]
+            if y_start:
+                pred=array[x_end-1][y_start-1]
+            else:
+                pred=array[x_start][y_start]
+            q,decomp=quantize(orig,pred,error_bound)
+            qs[0].append(q)
+            if q==0:
+                us.append(decomp)
+
+            orig=array[x_start][y_end-1]
+            if x_start:
+                pred=array[x_start-1][y_end-1]
+            else:
+                pred=array[x_start][y_start]
+            q,decomp=quantize(orig,pred,error_bound)
+            qs[0].append(q)
+            if q==0:
+                us.append(decomp)
+
+            orig=array[x_end-1][y_end-1]
+            
+            pred=array[x_end-1][y_start]+array[x_start][y_end-1]-array[x_start][y_start]
+            q,decomp=quantize(orig,pred,error_bound)
+            qs[0].append(q)
+            if q==0:
+                us.append(decomp)
+            interp(array[x_start:x_end,y_start:y_end],max_level)
+
+
+
+
+
+
+
+
+
+
+
 
 '''
 for x in range(0,size_x,2):
@@ -250,7 +341,7 @@ if size_y%2==0:
             us.append(decomp)
         array[x][size_y-1]=decomp
 '''
-quants=np.array(qs,dtype=np.int32)
+quants=np.concatenate((np.array(qs,dtype=np.int32).flatten(),np.array(lorenzo_qs,dtype=np.int32)))
 unpreds=np.array(us,dtype=np.float32)
 array.tofile(args.output)
 quants.tofile("cld_q.dat")
