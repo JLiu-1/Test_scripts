@@ -142,8 +142,9 @@ print(coef_array[0][0].shape)
 
 for x in range(0,size_x,2):
     for y in range(0,size_y,2):
+        orig=array[x][y]
         if not (x>=2*(level-1) and y>=2*(level-1)):
-            orig=array[x][y]
+            
         
             f_01=array[x-2][y] if x>=2 else 0
             f_10=array[x][y-2] if y>=2 else 0
