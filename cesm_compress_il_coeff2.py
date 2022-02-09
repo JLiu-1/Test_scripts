@@ -144,6 +144,7 @@ print(coef_array[0][0].shape)
 
 '''
 
+
 for x in range(0,size_x,2):
     for y in range(0,size_y,2):
         if args.block>0 and x%args.block==0 and y%args.block==0:
@@ -168,6 +169,23 @@ for x in range(0,size_x,2):
         if q==0:
             us.append(decomp)
         array[x][y]=decomp
+
+
+for x in range(1,size_x,2):
+    for y in range(1,size_y,2):
+        if args.block>0 and x%args.block==0 and y%args.block==0:
+            continue
+        if x==size_x-1 or y==size_y-1:
+            continue
+        orig=array[x][y]
+        pred=(array[x-1][y-1]+array[x-1][y+1]+array[x+1][y-1]+array[x+1][y+1])/4
+        q,decomp=quantize(orig,pred,error_bound)
+        qs.append(q)
+        if q==0:
+            us.append(decomp)
+        array[x][y]=decomp
+
+
 for x in range(0,size_x,2):
     for y in range(1,size_y,2):
         if args.block>0 and x%args.block==0 and y%args.block==0:
@@ -175,10 +193,10 @@ for x in range(0,size_x,2):
         if y==size_y-1:
             continue
         orig=array[x][y]
-        if (not args.cubic) or y-3<0 or y+3>=size_y:
+        if x==0:
             pred=(array[x][y-1]+array[x][y+1])/2
         else:
-            pred=(-array[x][y-3]+9*array[x][y-1]+9*array[x][y+1]-array[x][y+3])/16
+            pred=([x-1][y]+array[x+1][y]+array[x][y-1]+array[x][y+1])/4
         q,decomp=quantize(orig,pred,error_bound)
         qs.append(q)
         if q==0:
@@ -193,29 +211,17 @@ for x in range(1,size_x,2):
         if x==size_x-1:
             continue
         orig=array[x][y]
-        if (not args.cubic) or x-3<0 or x+3>=size_x:
+        if y==0:
             pred=(array[x-1][y]+array[x+1][y])/2
         else:
-            pred=(-array[x-3][y]+9*array[x-1][y]+9*array[x+1][y]-array[x+3][y])/16
+            pred=([x-1][y]+array[x+1][y]+array[x][y-1]+array[x][y+1])/4
+        q,decomp=quantize(orig,pred,error_bound)
         q,decomp=quantize(orig,pred,error_bound)
         qs.append(q)
         if q==0:
             us.append(decomp)
         array[x][y]=decomp
 
-for x in range(1,size_x,2):
-    for y in range(1,size_y,2):
-        if args.block>0 and x%args.block==0 and y%args.block==0:
-            continue
-        if x==size_x-1 or y==size_y-1:
-            continue
-        orig=array[x][y]
-        pred=(array[x-1][y]+array[x+1][y]+array[x][y-1]+array[x][y+1])/4
-        q,decomp=quantize(orig,pred,error_bound)
-        qs.append(q)
-        if q==0:
-            us.append(decomp)
-        array[x][y]=decomp
 
 if size_x%2==0:
 
