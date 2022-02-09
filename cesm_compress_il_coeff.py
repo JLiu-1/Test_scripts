@@ -142,6 +142,8 @@ print(coef_array[0][0].shape)
 
 for x in range(0,size_x,2):
     for y in range(0,size_y,2):
+        if block>0 and x%block==0 and y%block==0:
+            continue
         orig=array[x][y]
         if not (x>=2*(level-1) and y>=2*(level-1)):
             
@@ -164,6 +166,8 @@ for x in range(0,size_x,2):
         array[x][y]=decomp
 for x in range(0,size_x,2):
     for y in range(1,size_y,2):
+        if block>0 and x%block==0 and y%block==0:
+            continue
         if y==size_y-1:
             continue
         orig=array[x][y]
@@ -177,6 +181,8 @@ for x in range(0,size_x,2):
 
 for x in range(1,size_x,2):
     for y in range(0,size_y,2):
+        if block>0 and x%block==0 and y%block==0:
+            continue
         if x==size_x-1:
             continue
         orig=array[x][y]
@@ -188,6 +194,8 @@ for x in range(1,size_x,2):
         array[x][y]=decomp
 for x in range(1,size_x,2):
     for y in range(1,size_y,2):
+        if block>0 and x%block==0 and y%block==0:
+            continue
         if x==size_x-1 or y==size_y-1:
             continue
         orig=array[x][y]
@@ -198,6 +206,7 @@ for x in range(1,size_x,2):
             us.append(decomp)
         array[x][y]=decomp
 if size_x%2==0:
+    
     for i in range(0,size_y-1):
         f_01=array[size_x-2][y] 
         f_10=array[size_x-1][y-1] if y else 0
