@@ -187,7 +187,7 @@ for x in range(0,size_x,2):
 
 
 for x in range(1,size_x,2):
-    for y in range(0,size_y,2):
+    for y in range(0,size_y,1):
         if args.block>0 and x%args.block==0 and y%args.block==0:
             continue
         if x==size_x-1:
@@ -202,6 +202,7 @@ for x in range(1,size_x,2):
         if q==0:
             us.append(decomp)
         array[x][y]=decomp
+'''
 for x in range(1,size_x,2):
     for y in range(1,size_y,2):
         if args.block>0 and x%args.block==0 and y%args.block==0:
@@ -215,6 +216,7 @@ for x in range(1,size_x,2):
         if q==0:
             us.append(decomp)
         array[x][y]=decomp
+'''
 if size_x%2==0:
 
     for i in range(0,size_y-1):
