@@ -53,7 +53,7 @@ parser.add_argument('--rate','-r',type=float,default=1.0)
 #parser.add_argument('--min','-mi',type=float,default=0)
 parser.add_argument('--level','-l',type=int,default=2)
 parser.add_argument('--noise','-n',type=bool,default=False)
-#parser.add_argument('--intercept','-t',type=bool,default=False)
+parser.add_argument('--intercept','-t',type=bool,default=False)
 args = parser.parse_args()
 #level=args.level
 
