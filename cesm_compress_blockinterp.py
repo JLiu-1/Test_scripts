@@ -65,8 +65,8 @@ args = parser.parse_args()
 #for name,parameters in model.named_parameters():
 #    print(name)
 #    print(parameters.detach().numpy())
-size_x=1025
-size_y=1025
+size_x=1800
+size_y=3600
 array=np.fromfile(args.input,dtype=np.float32).reshape((size_x,size_y))
 #coefs=np.fromfile(args.checkpoint,dtype=np.float64)
 error_bound=args.error*(np.max(array)-np.min(array))
