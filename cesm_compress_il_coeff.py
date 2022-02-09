@@ -164,7 +164,7 @@ for x in range(0,size_x,2):
         qs.append(q)
         if q==0:
             us.append(decomp)
-        array[x][y]=decomp
+        #array[x][y]=decomp
 for x in range(0,size_x,2):
     for y in range(1,size_y,2):
         if args.block>0 and x%args.block==0 and y%args.block==0:
