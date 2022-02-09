@@ -196,7 +196,7 @@ def lorenzo_2d(array,x_start,x_end,y_start,y_end):
 
 
 for x_start in range(0,size_x,block_size):
-    for y_start in range(0_size_y,block_size):
+    for y_start in range(0,size_y,block_size):
         x_end=min(x_start+block_size,size_x)
         y_end=min(y_start+block_size,size_y)
         if x_end-x_start<block_size or y_end-y_start<block_size:
