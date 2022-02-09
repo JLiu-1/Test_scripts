@@ -243,7 +243,7 @@ if size_y%2==0:
             us.append(decomp)
         array[x][size_y-1]=decomp
 
-quants=np.array(sorted(qs),dtype=np.int32)
+quants=np.array(qs,dtype=np.int32)
 unpreds=np.array(us,dtype=np.float32)
 array.tofile(args.output)
 quants.tofile("cld_q.dat")
