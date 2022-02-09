@@ -133,7 +133,7 @@ def interp(array,level=0):#only 2^n+1 square array
                 continue
             orig=array[x][y]
             pred=(array[x][y-1]+array[x][y+1])/2
-            q,decomp=quantize(orig,pred,error_bound/(1+(level>=3)+2*(level>=6)))
+            q,decomp=quantize(orig,pred,error_bound/(1+(level>=3)*9)
             qs.append(q)
             if q==0:
                 us.append(decomp)
