@@ -199,7 +199,7 @@ for x in range(0,size_x,2):
             pred=np.sum(block*coefs)+intercept
         
                 
-        q,decomp=quantize(orig,pred,error_bound/2)
+        q,decomp=quantize(orig,pred,error_bound/3)
         qs.append(q)
         if q==0:
             us.append(decomp)
