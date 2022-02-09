@@ -53,7 +53,7 @@ parser.add_argument('--block','-b',type=int,default=64)
 #parser.add_argument('--noise','-n',type=bool,default=False)
 #parser.add_argument('--intercept','-t',type=bool,default=False)
 args = parser.parse_args()
-level=args.level
+#level=args.level
 
 #actv_dict={"no":nn.Identity,"sigmoid":nn.Sigmoid,"tanh":nn.Tanh}
 #actv=actv_dict[args.actv]
