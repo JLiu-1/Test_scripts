@@ -73,8 +73,8 @@ def get_block_index(x,block):
     
     return x//block
 
-block_size=args.block
-blocked_size_x=(size_x-1)//block_size+1
+#block_size=args.block
+#blocked_size_x=(size_x-1)//block_size+1
 
 size=level**2-1
 intercept=0.0
