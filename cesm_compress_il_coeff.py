@@ -52,6 +52,7 @@ parser.add_argument('--block','-b',type=int,default=0)
 parser.add_argument('--level','-l',type=int,default=2)
 parser.add_argument('--noise','-n',type=bool,default=False)
 parser.add_argument('--intercept','-t',type=bool,default=False)
+parser.add_argument('--cubic','-c',type=bool,default=False)
 args = parser.parse_args()
 level=args.level
 
@@ -171,7 +172,7 @@ for x in range(0,size_x,2):
         if y==size_y-1:
             continue
         orig=array[x][y]
-        if y-3<0 or y+3>=size_y:
+        if (not args.cubic) or y-3<0 or y+3>=size_y:
             pred=(array[x][y-1]+array[x][y+1])/2
         else:
             pred=(-array[x][y-3]+9*array[x][y-1]+9*array[x][y+1]-array[x][y+3])/16
@@ -189,7 +190,7 @@ for x in range(1,size_x,2):
         if x==size_x-1:
             continue
         orig=array[x][y]
-        if x-3<0 or x+3>=size_x:
+        if (not args.cubic) or x-3<0 or x+3>=size_x:
             pred=(array[x-1][y]+array[x+1][y])/2
         else:
             pred=(-array[x-3][y]+9*array[x-1][y]+9*array[x+1][y]-array[x+3][y])/16
