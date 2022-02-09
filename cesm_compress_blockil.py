@@ -72,6 +72,7 @@ array=np.fromfile(args.input,dtype=np.float32).reshape((size_x,size_y))
 error_bound=args.error*(np.max(array)-np.min(array))
 step=args.step
 rate=args.rate
+rated_error_bound=error_bound/rate
 def get_block_index(x,block):
     
     return x//block
@@ -84,7 +85,10 @@ def get_block_index(x,block):
 
 #intercept_array=np.zeros((blocked_size_x,blocked_size_y),dtype=np.double)
 qs=[]
+max_level=int(math.log(args.block,2))
+
 us=[]
+lorenzo_qs=[]
 '''
 for x_idx,x_start in enumerate(range(0,size_x,block_size)):
     for y_idx,y_start in enumerate(range(0,size_y,block_size)): 
@@ -136,26 +140,26 @@ for x in range(0,size_x,step):
                 
         
                 
-        q,decomp=quantize(orig,pred,error_bound/rate)
+        q,decomp=quantize(orig,pred,rated_error_bound)
         qs.append(q)
         if q==0:
             us.append(decomp)
         array[x][y]=decomp
 
-def interp(array,level=1):#only 2^n+1 square array
-    if array.shape[0]==2:
+def interp(array,level=0):#only 2^n+1 square array
+    if level==max_level:
         return 
-    side_length=array.shape[0]
-
-    sparse_grid=array[0:side_length:2,0:side_length:2]
+    side_length_x=array.shape[0]
+    side_length_y=array.shape[1]
+    sparse_grid=array[0:side_length_x:2,0:side_length_y:2]
     cur_eb=error_bound#/(2**level)
     if cur_eb<error_bound/10:
         cur_eb=error_bound/10
-    interp(sparse_grid,level-1)
+    interp(sparse_grid,level+1)
     #print(array.shape)
-    for x in range(0,side_length,2):
-        for y in range(1,side_length,2):
-            if y==side_length-1:
+    for x in range(0,side_length_x,2):
+        for y in range(1,side_length_y,2):
+            if y==side_length_y-1:
                 continue
             orig=array[x][y]
             pred=(array[x][y-1]+array[x][y+1])/2
@@ -164,74 +168,57 @@ def interp(array,level=1):#only 2^n+1 square array
             if q==0:
                 us.append(decomp)
             array[x][y]=decomp       
-for x in range(0,size_x,2):
-    for y in range(1,size_y,2):
-        if y==size_y-1:
-            continue
-        orig=array[x][y]
-        pred=(array[x][y-1]+array[x][y+1])/2
-        q,decomp=quantize(orig,pred,error_bound)
-        qs.append(q)
-        if q==0:
-            us.append(decomp)
-        array[x][y]=decomp
-
-
-for x in range(1,size_x,2):
-    for y in range(0,size_y,2):
-        if x==size_x-1:
-            continue
-        orig=array[x][y]
-        pred=(array[x-1][y]+array[x+1][y])/2
-        q,decomp=quantize(orig,pred,error_bound)
-        qs.append(q)
-        if q==0:
-            us.append(decomp)
-        array[x][y]=decomp
-for x in range(1,size_x,2):
-    for y in range(1,size_y,2):
-        if x==size_x-1 or y==size_y-1:
-            continue
-        orig=array[x][y]
-        pred=(array[x-1][y]+array[x+1][y]+array[x][y-1]+array[x][y+1])/4
-        q,decomp=quantize(orig,pred,error_bound)
-        qs.append(q)
-        if q==0:
-            us.append(decomp)
-        array[x][y]=decomp
+    for x in range(1,side_length_x,2):
+        for y in range(0,side_length_y,2):
+            if x==side_length_x-1:
+                continue
+            orig=array[x][y]
+            pred=(array[x-1][y]+array[x+1][y])/2
+            q,decomp=quantize(orig,pred,error_bound)
+            qs.append(q)
+            if q==0:
+                us.append(decomp)
+            array[x][y]=decomp
+    for x in range(1,side_length_x,2):
+        for y in range(1,side_length_y,2):
+            if x==side_length_x-1 or y==side_length_y-1:
+                continue
+            orig=array[x][y]
+            pred=(array[x-1][y]+array[x+1][y]+array[x][y-1]+array[x][y+1])/4
+            q,decomp=quantize(orig,pred,error_bound)
+            qs.append(q)
+            if q==0:
+                us.append(decomp)
+            array[x][y]=decomp
 
 last_x=((size_x-1)//step)*step
 last_y=((size_y-1)//step)*step
+interp(array[:last_x+1,:last_y+1])
+def lorenzo_2d(array,x_start,x_end,y_start,y_end):
+    for x in range(x_start,x_end):
+        for y in range(y_start,y_end):
 
-
-if size_x%2==0:
-    for i in range(0,size_y-1):
-        f_01=array[size_x-2][y] 
-        f_10=array[size_x-1][y-1] if y else 0
+            orig=array[x][y]
+        
+            f_01=array[x-1][y] if x else 0
+            f_10=array[x][y-1] if y else 0
             
-        f_00=array[size_x-2][y-1] if y else 0
-        orig=array[size_x-1][y]
-        pred=f_01+f_10-f_00
-        q,decomp=quantize(orig,pred,error_bound)
-        qs.append(q)
-        if q==0:
-            us.append(decomp)
-        array[size_x-1][y]=decomp
-if size_y%2==0:
-    for i in range(0,size_x):
-        f_01=array[x-1][size_y-1] if x else 0
-        f_10=array[x][size_y-2] 
-            
-        f_00=array[x-1][size_y-2] if x else 0
-        orig=array[x][size_y-1]
-        pred=f_01+f_10-f_00
-        q,decomp=quantize(orig,pred,error_bound)
-        qs.append(q)
-        if q==0:
-            us.append(decomp)
-        array[x][size_y-1]=decomp
+            f_00=array[x-1][y-1] if x and y else 0
+                
+            pred=f_01+f_10-f_00
+                
+        
+                
+            q,decomp=quantize(orig,pred,error_bound)
+            lorenzo_qs.append(q)
+            if q==0:
+                us.append(decomp)
+            array[x][y]=decomp
+lorenzo_2d(0,last_x+1,last_y+1,size_y)
+lorenzo_2d(last_x+1,size_x,0,size_y)
 
-quants=np.array(qs,dtype=np.int32)
+
+quants=np.concatenate( (np.array(lorenzo_qs,dtype=np.int32),np.array(qs,dtype=np.int32) ) )
 unpreds=np.array(us,dtype=np.float32)
 array.tofile(args.output)
 quants.tofile("cld_q.dat")

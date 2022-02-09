@@ -86,7 +86,7 @@ blocked_size_x=(size_x-1)//block_size+1
 
 #intercept_array=np.zeros((blocked_size_x,blocked_size_y),dtype=np.double)
 qs=[]
-max_level=int(math.log(args.block,2))
+max_level=int(math.log(args.block-1,2))
 for i in range(max_level+1):
     qs.append([])
 us=[]
