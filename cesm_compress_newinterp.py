@@ -119,13 +119,13 @@ for x_idx,x_start in enumerate(range(0,size_x,block_size)):
 print(coef_array[0][0].shape)
 
 '''
-def interp(array):#only 2^n+1 square array
+def interp(array,level=0):#only 2^n+1 square array
     if array.shape[0]==2:
         return 
     side_length=array.shape[0]
 
     sparse_grid=array[0:side_length:2,0:side_length:2]
-    interp(sparse_grid)
+    interp(sparse_grid,level+1)
     #print(array.shape)
     for x in range(0,side_length,2):
         for y in range(1,side_length,2):
@@ -133,7 +133,7 @@ def interp(array):#only 2^n+1 square array
                 continue
             orig=array[x][y]
             pred=(array[x][y-1]+array[x][y+1])/2
-            q,decomp=quantize(orig,pred,error_bound)
+            q,decomp=quantize(orig,pred,error_bound/(1+if level>=3))
             qs.append(q)
             if q==0:
                 us.append(decomp)
