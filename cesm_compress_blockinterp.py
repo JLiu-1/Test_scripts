@@ -47,6 +47,7 @@ parser.add_argument('--output','-o',type=str)
 #parser.add_argument('--actv','-a',type=str,default='tanh')
 #parser.add_argument('--checkpoint','-c',type=str,default=None)
 parser.add_argument('--block','-b',type=int,default=9)
+parser.add_argument('--rate','-r',type=float,default=1.0)
 #parser.add_argument('--norm_max','-nx',type=float,default=1)
 #parser.add_argument('--norm_min','-ni',type=float,default=-1)
 #parser.add_argument('--max','-mx',type=float,default=1)
@@ -67,6 +68,7 @@ args = parser.parse_args()
 #    print(parameters.detach().numpy())
 size_x=1800
 size_y=3600
+rate=args.rate
 array=np.fromfile(args.input,dtype=np.float32).reshape((size_x,size_y))
 #coefs=np.fromfile(args.checkpoint,dtype=np.float64)
 error_bound=args.error*(np.max(array)-np.min(array))
@@ -193,7 +195,7 @@ def lorenzo_2d(array,x_start,x_end,y_start,y_end):
             if q==0:
                 us.append(decomp)
             array[x][y]=decomp
-
+rated_error_bound=error_bound/rate
 
 for x_start in range(0,size_x,block_size):
     for y_start in range(0,size_y,block_size):
@@ -213,7 +215,7 @@ for x_start in range(0,size_x,block_size):
                 
         
                 
-            q,decomp=quantize(orig,pred,error_bound)
+            q,decomp=quantize(orig,pred,rated_error_bound)
             qs[0].append(q)
             if q==0:
                 us.append(decomp)
@@ -224,7 +226,7 @@ for x_start in range(0,size_x,block_size):
                 pred=array[x_end-1][y_start-1]
             else:
                 pred=array[x_start][y_start]
-            q,decomp=quantize(orig,pred,error_bound)
+            q,decomp=quantize(orig,pred,rated_error_bound)
             qs[0].append(q)
             if q==0:
                 us.append(decomp)
@@ -234,7 +236,7 @@ for x_start in range(0,size_x,block_size):
                 pred=array[x_start-1][y_end-1]
             else:
                 pred=array[x_start][y_start]
-            q,decomp=quantize(orig,pred,error_bound)
+            q,decomp=quantize(orig,pred,rated_error_bound)
             qs[0].append(q)
             if q==0:
                 us.append(decomp)
@@ -242,7 +244,7 @@ for x_start in range(0,size_x,block_size):
             orig=array[x_end-1][y_end-1]
             
             pred=array[x_end-1][y_start]+array[x_start][y_end-1]-array[x_start][y_start]
-            q,decomp=quantize(orig,pred,error_bound)
+            q,decomp=quantize(orig,pred,rated_error_bound)
             qs[0].append(q)
             if q==0:
                 us.append(decomp)
