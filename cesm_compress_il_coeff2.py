@@ -90,16 +90,51 @@ for x in range(2*(level-1),size_x,2):
         #print(block)
         reg_x=block[:size]
         if args.noise:
-            reg_x+=error_bound*np.random.rand(size)
+            reg_x+=error_bound*np.random.rand(size)/2
         reg_y=block[size]
-        reg_xs.append(block[:size])
-        reg_ys.append(block[size])
+        reg_xs.append(reg_x)
+        reg_ys.append(reg_y)
 res=LinearRegression(fit_intercept=args.intercept).fit(reg_xs, reg_ys)
 coefs=res.coef_
 if args.intercept:
     intercept=res.intercept_
 
 
+reg_xs=[]
+reg_ys=[]
+for x in range(1,size_x-1,2):
+    for y in range(1,size_y-1,2):
+        
+        #print(block)
+        reg_x=np.array([array[x-1][y-1],array[x-1][y+1],array[x+1][y-1],array[x+1][y+1]])
+        if args.noise:
+            reg_x+=error_bound*np.random.rand(size)/2
+        reg_y=array[x][y]
+        reg_xs.append(reg_x)
+        reg_ys.append(reg_y)
+res=LinearRegression(fit_intercept=args.intercept).fit(reg_xs, reg_ys)
+diag_coefs=res.coef_
+if args.intercept:
+    diag_intercept=res.intercept_
+else:
+    diag_intercept=0.0
+for x in range(1,size_x-1):
+    for y in range(1,size_y-1):
+        if x%2 and y%2 or (x%2==0 and y%2==0):
+            continue
+        #print(block)
+        reg_x=np.array([array[x][y-1],array[x][y+1],array[x-1][y],array[x+1][y]])
+        if args.noise:
+            reg_x+=error_bound*np.random.rand(size)/2
+        reg_y=array[x][y]
+        reg_xs.append(reg_x)
+        reg_ys.append(reg_y)
+res=LinearRegression(fit_intercept=args.intercept).fit(reg_xs, reg_ys)
+cross_coefs=res.coef_
+if args.intercept:
+    cross_intercept=res.intercept_
+else:
+    cross_intercept=0.0
 #blocked_size_y=(size_y-1)//block_size+1
 
 #coef_array=np.zeros((blocked_size_x,blocked_size_y,size),dtype=np.double)
@@ -178,7 +213,7 @@ for x in range(1,size_x,2):
         if x==size_x-1 or y==size_y-1:
             continue
         orig=array[x][y]
-        pred=(array[x-1][y-1]+array[x-1][y+1]+array[x+1][y-1]+array[x+1][y+1])/4
+        pred=np.dot(diag_coefs,np.array([array[x-1][y-1],array[x-1][y+1],array[x+1][y-1],array[x+1][y+1]]))+diag_intercept
         q,decomp=quantize(orig,pred,error_bound)
         qs.append(q)
         if q==0:
@@ -196,7 +231,7 @@ for x in range(0,size_x,2):
         if x==0 or x==size_x-1:
             pred=(array[x][y-1]+array[x][y+1])/2
         else:
-            pred=(array[x-1][y]+array[x+1][y]+array[x][y-1]+array[x][y+1])/4
+            pred=np.dot(cross_coefs,np.array([array[x][y-1],array[x][y+1],array[x-1][y],array[x+1][y]]))+cross_intercept
         q,decomp=quantize(orig,pred,error_bound)
         qs.append(q)
         if q==0:
@@ -214,7 +249,7 @@ for x in range(1,size_x,2):
         if y==0 or y==size_y-1:
             pred=(array[x-1][y]+array[x+1][y])/2
         else:
-            pred=(array[x-1][y]+array[x+1][y]+array[x][y-1]+array[x][y+1])/4
+            pred=np.dot(cross_coefs,np.array([array[x][y-1],array[x][y+1],array[x-1][y],array[x+1][y]]))+cross_intercept
         q,decomp=quantize(orig,pred,error_bound)
         q,decomp=quantize(orig,pred,error_bound)
         qs.append(q)
