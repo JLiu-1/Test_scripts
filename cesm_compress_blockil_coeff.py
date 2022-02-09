@@ -238,8 +238,8 @@ def lorenzo_2d(array,x_start,x_end,y_start,y_end):
 lorenzo_2d(array,0,last_x+1,last_y+1,size_y)
 lorenzo_2d(array,last_x+1,size_x,0,size_y)
 
-print(lorenzo_qs)
-quants=np.concatenate( (np.array(lorenzo_qs.reverse(),dtype=np.int32),np.array(qs,dtype=np.int32) ) )
+#print(lorenzo_qs)
+quants=np.concatenate( (np.array(lorenzo_qs[::-1],dtype=np.int32),np.array(qs,dtype=np.int32) ) )
 unpreds=np.array(us,dtype=np.float32)
 array.tofile(args.output)
 quants.tofile("cld_q.dat")
