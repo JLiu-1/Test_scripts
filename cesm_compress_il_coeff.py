@@ -181,7 +181,7 @@ for x in range(0,size_x,2):
 
 for x in range(1,size_x,2):
     for y in range(0,size_y,2):
-        if args.block>0 and x%args.block==0 and y%args.block==0:s
+        if args.block>0 and x%args.block==0 and y%args.block==0:
             continue
         if x==size_x-1:
             continue
