@@ -126,7 +126,7 @@ def interp(array):#only 2^n+1 square array
 
     sparse_grid=array[0:side_length:2,0:side_length:2]
     interp(sparse_grid)
-    print(array.shape)
+    #print(array.shape)
     for x in range(0,side_length,2):
         for y in range(1,side_length,2):
             if y==side_length-1:
@@ -151,8 +151,8 @@ def interp(array):#only 2^n+1 square array
             if q==0:
                 us.append(decomp)
             array[x][y]=decomp
-    for x in range(1,size_x,2):
-        for y in range(1,size_y,2):
+    for x in range(1,side_length,2):
+        for y in range(1,side_length,2):
             if x==side_length-1 or y==side_length-1:
                 continue
             orig=array[x][y]
