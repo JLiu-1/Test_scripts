@@ -1,4 +1,3 @@
-
 import numpy as np 
 
 import os
@@ -45,8 +44,8 @@ parser.add_argument('--error','-e',type=float,default=1e-3)
 parser.add_argument('--input','-i',type=str)
 parser.add_argument('--output','-o',type=str)
 #parser.add_argument('--actv','-a',type=str,default='tanh')
-#parser.add_argument('--checkpoint','-c',type=str,default=None)
-parser.add_argument('--block','-b',type=int,default=9)
+parser.add_argument('--checkpoint','-c',type=str,default=None)
+parser.add_argument('--step','-s',type=int,default=4)
 parser.add_argument('--rate','-r',type=float,default=1.0)
 #parser.add_argument('--norm_max','-nx',type=float,default=1)
 #parser.add_argument('--norm_min','-ni',type=float,default=-1)
@@ -68,29 +67,24 @@ args = parser.parse_args()
 #    print(parameters.detach().numpy())
 size_x=1800
 size_y=3600
-rate=args.rate
 array=np.fromfile(args.input,dtype=np.float32).reshape((size_x,size_y))
 #coefs=np.fromfile(args.checkpoint,dtype=np.float64)
 error_bound=args.error*(np.max(array)-np.min(array))
-'''
+step=args.step
+rate=args.rate
 def get_block_index(x,block):
     
     return x//block
 
-block_size=args.block
-blocked_size_x=(size_x-1)//block_size+1
-'''
+#block_size=args.block
+#blocked_size_x=(size_x-1)//block_size+1
 #blocked_size_y=(size_y-1)//block_size+1
 #size=level**2-1
 #coef_array=np.zeros((blocked_size_x,blocked_size_y,size),dtype=np.double)
 
 #intercept_array=np.zeros((blocked_size_x,blocked_size_y),dtype=np.double)
 qs=[]
-max_level=int(math.log(args.block,2))
-for i in range(max_level+1):
-    qs.append([])
 us=[]
-lorenzo_qs=[]
 '''
 for x_idx,x_start in enumerate(range(0,size_x,block_size)):
     for y_idx,y_start in enumerate(range(0,size_y,block_size)): 
@@ -127,7 +121,27 @@ for x_idx,x_start in enumerate(range(0,size_x,block_size)):
 print(coef_array[0][0].shape)
 
 '''
-block_size=args.block
+
+for x in range(0,size_x,step):
+    for y in range(0,size_y,step):
+        
+        orig=array[x][y]
+        
+        f_01=array[x-step][y] if x>=step else 0
+        f_10=array[x][y-step] if y>=step else 0
+            
+        f_00=array[x-step][y-step] if x>=step and y>=step else 0
+                
+        pred=f_01+f_10-f_00
+                
+        
+                
+        q,decomp=quantize(orig,pred,error_bound/rate)
+        qs.append(q)
+        if q==0:
+            us.append(decomp)
+        array[x][y]=decomp
+
 def interp(array,level=1):#only 2^n+1 square array
     if array.shape[0]==2:
         return 
@@ -149,139 +163,7 @@ def interp(array,level=1):#only 2^n+1 square array
             qs[level].append(q)
             if q==0:
                 us.append(decomp)
-            array[x][y]=decomp
-
-
-    for x in range(1,side_length,2):
-        for y in range(0,side_length,2):
-            if x==side_length-1:
-                continue
-            orig=array[x][y]
-            pred=(array[x-1][y]+array[x+1][y])/2
-            q,decomp=quantize(orig,pred,error_bound)
-            qs[level].append(q)
-            if q==0:
-                us.append(decomp)
-            array[x][y]=decomp
-    for x in range(1,side_length,2):
-        for y in range(1,side_length,2):
-            if x==side_length-1 or y==side_length-1:
-                continue
-            orig=array[x][y]
-            pred=(array[x-1][y]+array[x+1][y]+array[x][y-1]+array[x][y+1])/4
-            q,decomp=quantize(orig,pred,error_bound)
-            qs[level].append(q)
-            if q==0:
-                us.append(decomp)
-            array[x][y]=decomp
-
-def lorenzo_2d(array,x_start,x_end,y_start,y_end):
-    for x in range(x_start,x_end):
-        for y in range(y_start,y_end):
-
-            orig=array[x][y]
-        
-            f_01=array[x-1][y] if x else 0
-            f_10=array[x][y-1] if y else 0
-            
-            f_00=array[x-1][y-1] if x and y else 0
-                
-            pred=f_01+f_10-f_00
-                
-        
-                
-            q,decomp=quantize(orig,pred,error_bound)
-            lorenzo_qs.append(q)
-            if q==0:
-                us.append(decomp)
-            array[x][y]=decomp
-rated_error_bound=error_bound/rate
-
-for x_start in range(0,size_x,block_size):
-    for y_start in range(0,size_y,block_size):
-        x_end=min(x_start+block_size,size_x)
-        y_end=min(y_start+block_size,size_y)
-        if x_end-x_start<block_size or y_end-y_start<block_size:
-            lorenzo_2d(array,x_start,x_end,y_start,y_end)
-        else:
-            orig=array[x_start][y_start]
-        
-            f_01=array[x_start-1][y_start] if x_start else 0
-            f_10=array[x_start][y_start-1] if y_start else 0
-            
-            f_00=array[x_start-1][y_start-1] if x_start and y_start else 0
-                
-            pred=f_01+f_10-f_00
-                
-        
-                
-            q,decomp=quantize(orig,pred,rated_error_bound)
-            qs[0].append(q)
-            if q==0:
-                us.append(decomp)
-            array[x_start][y_start]=decomp
-
-            orig=array[x_end-1][y_start]
-            if y_start:
-                pred=array[x_end-1][y_start-1]
-            else:
-                pred=array[x_start][y_start]
-            q,decomp=quantize(orig,pred,rated_error_bound)
-            qs[0].append(q)
-            if q==0:
-                us.append(decomp)
-            array[x_end-1][y_start]=decomp
-            orig=array[x_start][y_end-1]
-            if x_start:
-                pred=array[x_start-1][y_end-1]
-            else:
-                pred=array[x_start][y_start]
-            q,decomp=quantize(orig,pred,rated_error_bound)
-            qs[0].append(q)
-            if q==0:
-                us.append(decomp)
-            array[x_start][y_end-1]=decomp
-            orig=array[x_end-1][y_end-1]
-            
-            pred=array[x_end-1][y_start]+array[x_start][y_end-1]-array[x_start][y_start]
-            q,decomp=quantize(orig,pred,rated_error_bound)
-            qs[0].append(q)
-            if q==0:
-                us.append(decomp)
-            array[x_end-1][y_end-1]=decomp
-            interp(array[x_start:x_end,y_start:y_end],max_level)
-
-
-
-
-
-
-
-
-
-
-
-
-'''
-for x in range(0,size_x,2):
-    for y in range(0,size_y,2):
-        
-        orig=array[x][y]
-        
-        f_01=array[x-2][y] if x>=2 else 0
-        f_10=array[x][y-2] if y>=2 else 0
-            
-        f_00=array[x-2][y-2] if x>=2 and y>=2 else 0
-                
-        pred=f_01+f_10-f_00
-                
-        
-                
-        q,decomp=quantize(orig,pred,error_bound)
-        qs.append(q)
-        if q==0:
-            us.append(decomp)
-        array[x][y]=decomp
+            array[x][y]=decomp       
 for x in range(0,size_x,2):
     for y in range(1,size_y,2):
         if y==size_y-1:
@@ -317,6 +199,11 @@ for x in range(1,size_x,2):
         if q==0:
             us.append(decomp)
         array[x][y]=decomp
+
+last_x=((size_x-1)//step)*step
+last_y=((size_y-1)//step)*step
+
+
 if size_x%2==0:
     for i in range(0,size_y-1):
         f_01=array[size_x-2][y] 
@@ -343,8 +230,8 @@ if size_y%2==0:
         if q==0:
             us.append(decomp)
         array[x][size_y-1]=decomp
-'''
-quants=np.concatenate( (np.array(lorenzo_qs,dtype=np.int32),np.array(sum(qs,[]),dtype=np.int32) ) )
+
+quants=np.array(qs,dtype=np.int32)
 unpreds=np.array(us,dtype=np.float32)
 array.tofile(args.output)
 quants.tofile("cld_q.dat")
