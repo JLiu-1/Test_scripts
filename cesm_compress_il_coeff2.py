@@ -196,7 +196,7 @@ for x in range(0,size_x,2):
         if x==0 or x==size_x-1:
             pred=(array[x][y-1]+array[x][y+1])/2
         else:
-            pred=([x-1][y]+array[x+1][y]+array[x][y-1]+array[x][y+1])/4
+            pred=(array[x-1][y]+array[x+1][y]+array[x][y-1]+array[x][y+1])/4
         q,decomp=quantize(orig,pred,error_bound)
         qs.append(q)
         if q==0:
@@ -214,7 +214,7 @@ for x in range(1,size_x,2):
         if y==0 or y==size_y-1:
             pred=(array[x-1][y]+array[x+1][y])/2
         else:
-            pred=([x-1][y]+array[x+1][y]+array[x][y-1]+array[x][y+1])/4
+            pred=(array[x-1][y]+array[x+1][y]+array[x][y-1]+array[x][y+1])/4
         q,decomp=quantize(orig,pred,error_bound)
         q,decomp=quantize(orig,pred,error_bound)
         qs.append(q)
