@@ -214,8 +214,8 @@ def lorenzo_2d(array,x_start,x_end,y_start,y_end):
             if q==0:
                 us.append(decomp)
             array[x][y]=decomp
-lorenzo_2d(0,last_x+1,last_y+1,size_y)
-lorenzo_2d(last_x+1,size_x,0,size_y)
+lorenzo_2d(array,0,last_x+1,last_y+1,size_y)
+lorenzo_2d(array,last_x+1,size_x,0,size_y)
 
 
 quants=np.concatenate( (np.array(lorenzo_qs,dtype=np.int32),np.array(qs,dtype=np.int32) ) )
