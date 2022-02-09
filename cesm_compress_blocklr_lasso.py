@@ -66,7 +66,8 @@ parser.add_argument('--intercept','-t',type=bool,
 args = parser.parse_args()
 level=args.level
 
-#actv_dict={"no":nn.Identity,"sigmoid":nn.Sigmoid,"tanh":nn.Tanh}
+
+
 #actv=actv_dict[args.actv]
 #model=nn.Sequential(nn.Linear(7,1),actv())
 #model.load_state_dict(torch.load(args.checkpoint)["state_dict"])
@@ -145,7 +146,7 @@ for x in range(size_x):
         if q==0:
             us.append(decomp)
         array[x][y]=decomp
-        print(abs(orig-decomp))
+        #print(abs(orig-decomp))
 
 quants=np.array(qs,dtype=np.int32)
 unpreds=np.array(us,dtype=np.float32)
