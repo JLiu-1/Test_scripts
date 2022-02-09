@@ -125,7 +125,7 @@ for x_idx,x_start in enumerate(range(0,size_x,block_size)):
 print(coef_array[0][0].shape)
 
 '''
-
+level=args.level
 size=level**2-1
 intercept=0.0
 reg_xs=[]
