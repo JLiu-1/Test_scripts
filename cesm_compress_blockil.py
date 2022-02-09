@@ -47,16 +47,11 @@ parser.add_argument('--checkpoint','-c',type=str,default=None)
 parser.add_argument('--block','-b',type=int,default=64)
 #parser.add_argument('--norm_max','-nx',type=float,default=1)
 #parser.add_argument('--norm_min','-ni',type=float,default=-1)
-#parser.add_argument('--max','-mx',type=float,
-                   default=1)
-#parser.add_argument('--min','-mi',type=float,
-                   default=0)
-#parser.add_argument('--level','-l',type=int,
-                   default=2)
-#parser.add_argument('--noise','-n',type=bool,
-                   default=False)
-#parser.add_argument('--intercept','-t',type=bool,
-                   default=False)
+#parser.add_argument('--max','-mx',type=float,default=1)
+#parser.add_argument('--min','-mi',type=float,default=0)
+#parser.add_argument('--level','-l',type=int,default=2)
+#parser.add_argument('--noise','-n',type=bool,default=False)
+#parser.add_argument('--intercept','-t',type=bool,default=False)
 args = parser.parse_args()
 level=args.level
 
