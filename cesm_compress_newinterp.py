@@ -123,8 +123,10 @@ def interp(array):#only 2^n+1 square array
     if array.shape[0]==2:
         return 
     side_length=array.shape[0]
+
     sparse_grid=array[0:side_length:2,0:side_length:2]
     interp(sparse_grid)
+    print(array.shape)
     for x in range(0,side_length,2):
         for y in range(1,side_length,2):
             if y==side_length-1:
