@@ -136,7 +136,7 @@ for x in range(step*(level-1),size_x,step):
         #print(block)
         reg_x=block[:size]
         if args.noise:
-            reg_x+=error_bound*np.random.rand(size)/2
+            reg_x+=rated_error_bound*np.random.rand(size)/2
         reg_y=block[size]
         reg_xs.append(reg_x)
         reg_ys.append(reg_y)
