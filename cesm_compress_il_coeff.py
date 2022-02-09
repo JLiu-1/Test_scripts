@@ -5,6 +5,9 @@ import argparse
 import torch
 import torch.nn as nn
 from sklearn.linear_model import LinearRegression
+
+
+
 def quantize(data,pred,error_bound):
     radius=32768
     
@@ -160,7 +163,7 @@ for x in range(0,size_x,2):
             pred=np.sum(block*coefs)+intercept
         
                 
-        q,decomp=quantize(orig,pred,error_bound/2)
+        q,decomp=quantize(orig,pred,error_bound)
         qs.append(q)
         if q==0:
             us.append(decomp)
@@ -240,7 +243,7 @@ if size_y%2==0:
             us.append(decomp)
         array[x][size_y-1]=decomp
 
-quants=np.array(qs,dtype=np.int32)
+quants=np.array(sorted(qs),dtype=np.int32)
 unpreds=np.array(us,dtype=np.float32)
 array.tofile(args.output)
 quants.tofile("cld_q.dat")
