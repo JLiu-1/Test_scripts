@@ -83,6 +83,7 @@ reg_ys=[]
 for x in range(2*(level-1),size_x,2):
     for y in range(2*(level-1),size_y,2):
         block=array[x-2*(level-1):x+1:2,y-2*(level-1):y+1:2]
+        print(block)
         reg_x=block[:size]
         if args.noise:
             reg_x+=error_bound*np.random.rand(size)
