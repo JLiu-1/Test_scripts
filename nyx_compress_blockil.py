@@ -157,7 +157,7 @@ for x in range(0,size_x,step):
 def interp(array,level,eb):#only 2^n+1 cubic array
     if level==max_level:
         return 
-    print(array.shape)
+    #print(array.shape)
     side_length_x=array.shape[0]
     side_length_y=array.shape[1]
     side_length_z=array.shape[2]
@@ -173,10 +173,10 @@ def interp(array,level,eb):#only 2^n+1 cubic array
     
     for x in range(0,side_length_x,2):
         for y in range(0,side_length_y,2):
-            for z in (1,side_length_z,2):
+            for z in range(1,side_length_z,2):
                 if z==side_length_z-1:
                     continue
-                print((x,y,z))
+                
                 orig=array[x][y][z]
                 pred=(array[x][y][z-1]+array[x][y][z+1])/2
                 q,decomp=quantize(orig,pred,eb)
@@ -188,7 +188,7 @@ def interp(array,level,eb):#only 2^n+1 cubic array
 
     for x in range(0,side_length_x,2):
         for y in range(1,side_length_y,2):
-            for z in (0,side_length_z,2):
+            for z in range(0,side_length_z,2):
                 if y==side_length_y-1:
                     continue
                 orig=array[x][y][z]
@@ -200,7 +200,7 @@ def interp(array,level,eb):#only 2^n+1 cubic array
                 array[x][y][z]=decomp 
     for x in range(1,side_length_x,2):
         for y in range(0,side_length_y,2):
-            for z in (0,side_length_z,2):
+            for z in range(0,side_length_z,2):
                 if x==side_length_x-1:
                     continue
                 orig=array[x][y][z]
