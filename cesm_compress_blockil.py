@@ -203,7 +203,7 @@ def interp(array,level=0,eb):#only 2^n+1 square array
 
 last_x=((size_x-1)//step)*step
 last_y=((size_y-1)//step)*step
-interp(array[:last_x+1,:last_y+1])
+interp(array[:last_x+1,:last_y+1],0,error_bound)
 def lorenzo_2d(array,x_start,x_end,y_start,y_end):
     for x in range(x_start,x_end):
         for y in range(y_start,y_end):
