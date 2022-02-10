@@ -144,9 +144,13 @@ res=LinearRegression(fit_intercept=args.intercept).fit(reg_xs, reg_ys)
 coefs=res.coef_
 if args.intercept:
     intercept=res.intercept_
-
-for x in range(0,size_x,step):
-    for y in range(0,size_y,step):
+last_x=((size_x-1)//step)*step
+last_y=((size_y-1)//step)*step
+for x_start in range(0,size_x,step):
+    x=x_start
+    y=0
+    while 1:
+   
         
         orig=array[x][y]
         if not (x>=step*(level-1) and y>=step*(level-1)):
@@ -166,7 +170,40 @@ for x in range(0,size_x,step):
         if q==0:
             us.append(decomp)
         array[x][y]=decomp
-
+        x-=step
+        y+=step
+        if not (x>=0 and y<size_y):
+            break
+    
+for y_start in range(step,size_y,step):
+    y=y_start
+    x=last_x
+    while 1:
+   
+        
+        orig=array[x][y]
+        if not (x>=step*(level-1) and y>=step*(level-1)):
+            f_01=array[x-step][y] if x>=step else 0
+            f_10=array[x][y-step] if y>=step else 0
+            
+            f_00=array[x-step][y-step] if x>=step and y>=step else 0
+                
+            pred=f_01+f_10-f_00
+        else:
+            block=array[x-step*(level-1):x+1:step,y-step*(level-1):y+1:step].flatten()[:size]
+            pred=np.sum(block*coefs)+intercept
+        
+                
+        q,decomp=quantize(orig,pred,rated_error_bound)
+        qs.append(q)
+        if q==0:
+            us.append(decomp)
+        array[x][y]=decomp
+        x-=step
+        y+=step
+        if not (x>=0 and y<size_y):
+            break
+qs=qs[::-1]
 def interp(array,level=0):#only 2^n+1 square array
     if level==max_level:
         return 
@@ -212,8 +249,7 @@ def interp(array,level=0):#only 2^n+1 square array
                 us.append(decomp)
             array[x][y]=decomp
 
-last_x=((size_x-1)//step)*step
-last_y=((size_y-1)//step)*step
+
 interp(array[:last_x+1,:last_y+1])
 def lorenzo_2d(array,x_start,x_end,y_start,y_end):
     for x in range(x_start,x_end):
