@@ -44,11 +44,12 @@ parser.add_argument('--error','-e',type=float,default=1e-3)
 parser.add_argument('--input','-i',type=str)
 parser.add_argument('--output','-o',type=str)
 #parser.add_argument('--actv','-a',type=str,default='tanh')
-parser.add_argument('--checkpoint','-c',type=str,default=None)
+parser.add_argument('--cubic','-c',type=bool,default=False)
 parser.add_argument('--step','-s',type=int,default=4)
 parser.add_argument('--rate','-r',type=float,default=1.0)
 parser.add_argument('--level_rate','-lr',type=float,default=1.0)
 parser.add_argument('--anchor','-a',type=int,default=-1)
+
 #parser.add_argument('--norm_max','-nx',type=float,default=1)
 #parser.add_argument('--norm_min','-ni',type=float,default=-1)
 #parser.add_argument('--max','-mx',type=float,default=1)
@@ -178,7 +179,10 @@ def interp(array,level,eb):#only 2^n+1 cubic array
                     continue
                 
                 orig=array[x][y][z]
-                pred=(array[x][y][z-1]+array[x][y][z+1])/2
+                if args.cubic and z>=3 and z+3<side_length_z:
+                    pred=(-array[x][y][z-3]+9*array[x][y][z-1]+9*array[x][y][z+1]-array[x][y][z+3])/16
+                else:
+                    pred=(array[x][y][z-1]+array[x][y][z+1])/2
                 q,decomp=quantize(orig,pred,eb)
                 qs.append(q)
                 if q==0:
@@ -192,7 +196,10 @@ def interp(array,level,eb):#only 2^n+1 cubic array
                 if y==side_length_y-1:
                     continue
                 orig=array[x][y][z]
-                pred=(array[x][y-1][z]+array[x][y+1][z])/2
+                if args.cubic and y>=3 and y+3<side_length_y:
+                    pred=(-array[x][y-3][z]+9*array[x][y-1][z]+9*array[x][y+1][z]-array[x][y+3][z])/16
+                else:
+                    pred=(array[x][y-1][z]+array[x][y+1][z])/2
                 q,decomp=quantize(orig,pred,eb)
                 qs.append(q)
                 if q==0:
@@ -204,7 +211,10 @@ def interp(array,level,eb):#only 2^n+1 cubic array
                 if x==side_length_x-1:
                     continue
                 orig=array[x][y][z]
-                pred=(array[x-1][y][z]+array[x+1][y][z])/2
+                if args.cubic and x>=3 and x+3<side_length_x:
+                    pred=(-array[x-3][y][z]+9*array[x-1][y][z]+9*array[x+1][y][z]-array[x+3][y][z])/16
+                else:
+                    pred=(array[x-1][y][z]+array[x+1][y][z])/2
                 q,decomp=quantize(orig,pred,eb)
                 qs.append(q)
                 if q==0:
