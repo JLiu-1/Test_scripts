@@ -171,7 +171,7 @@ def interp(array,level=0):#only 2^n+1 square array
                 us.append(decomp)
             array[x][y]=decomp       
     for x in range(1,side_length_x,2):
-        for y in range(0,side_length_y,2):
+        for y in range(0,side_length_y,1):
             if x==side_length_x-1:
                 continue
             orig=array[x][y]
@@ -181,6 +181,7 @@ def interp(array,level=0):#only 2^n+1 square array
             if q==0:
                 us.append(decomp)
             array[x][y]=decomp
+    '''
     for x in range(1,side_length_x,2):
         for y in range(1,side_length_y,2):
             if x==side_length_x-1 or y==side_length_y-1:
@@ -192,6 +193,7 @@ def interp(array,level=0):#only 2^n+1 square array
             if q==0:
                 us.append(decomp)
             array[x][y]=decomp
+    '''
 
 last_x=((size_x-1)//step)*step
 last_y=((size_y-1)//step)*step
