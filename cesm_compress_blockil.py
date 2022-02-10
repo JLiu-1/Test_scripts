@@ -47,6 +47,7 @@ parser.add_argument('--output','-o',type=str)
 parser.add_argument('--checkpoint','-c',type=str,default=None)
 parser.add_argument('--step','-s',type=int,default=4)
 parser.add_argument('--rate','-r',type=float,default=1.0)
+parser.add_argument('--level_rate','-lr',type=float,default=1.0)
 parser.add_argument('--anchor','-a',type=int,default=-1)
 #parser.add_argument('--norm_max','-nx',type=float,default=1)
 #parser.add_argument('--norm_min','-ni',type=float,default=-1)
@@ -74,6 +75,7 @@ error_bound=args.error*(np.max(array)-np.min(array))
 step=args.step
 rate=args.rate
 rated_error_bound=error_bound/rate
+lr=args.level_rate
 def get_block_index(x,block):
     
     return x//block
@@ -148,16 +150,18 @@ for x in range(0,size_x,step):
             us.append(decomp)
         array[x][y]=decomp
 
-def interp(array,level=0):#only 2^n+1 square array
+def interp(array,level=0,eb):#only 2^n+1 square array
     if level==max_level:
         return 
     side_length_x=array.shape[0]
     side_length_y=array.shape[1]
     sparse_grid=array[0:side_length_x:2,0:side_length_y:2]
+    '''
     cur_eb=error_bound#/(2**level)
     if cur_eb<error_bound/10:
         cur_eb=error_bound/10
-    interp(sparse_grid,level+1)
+    '''
+    interp(sparse_grid,level+1,eb/level_rate)
     #print(array.shape)
       
     
@@ -167,7 +171,7 @@ def interp(array,level=0):#only 2^n+1 square array
                 continue
             orig=array[x][y]
             pred=(array[x][y-1]+array[x][y+1])/2
-            q,decomp=quantize(orig,pred,cur_eb)
+            q,decomp=quantize(orig,pred,eb)
             qs.append(q)
             if q==0:
                 us.append(decomp)
@@ -178,7 +182,7 @@ def interp(array,level=0):#only 2^n+1 square array
                 continue
             orig=array[x][y]
             pred=(array[x-1][y]+array[x+1][y])/2
-            q,decomp=quantize(orig,pred,error_bound)
+            q,decomp=quantize(orig,pred,eb)
             qs.append(q)
             if q==0:
                 us.append(decomp)
@@ -190,7 +194,7 @@ def interp(array,level=0):#only 2^n+1 square array
                 continue
             orig=array[x][y]
             pred=(array[x-1][y]+array[x+1][y]+array[x][y-1]+array[x][y+1])/4
-            q,decomp=quantize(orig,pred,error_bound)
+            q,decomp=quantize(orig,pred,eb)
             qs.append(q)
             if q==0:
                 us.append(decomp)
