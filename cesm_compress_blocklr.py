@@ -82,9 +82,9 @@ block_size=args.block
 blocked_size_x=(size_x-1)//block_size+1
 blocked_size_y=(size_y-1)//block_size+1
 size=level**2-1
-coef_array=np.zeros((blocked_size_x,blocked_size_y,size),dtype=np.float32)
+coef_array=np.zeros((blocked_size_x,blocked_size_y,size),dtype=np.double)
 
-intercept_array=np.zeros((blocked_size_x,blocked_size_y),dtype=np.float32)
+intercept_array=np.zeros((blocked_size_x,blocked_size_y),dtype=np.double)
 qs=[]
 us=[]
 
