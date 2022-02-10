@@ -47,6 +47,7 @@ parser.add_argument('--output','-o',type=str)
 parser.add_argument('--checkpoint','-c',type=str,default=None)
 parser.add_argument('--step','-s',type=int,default=4)
 parser.add_argument('--rate','-r',type=float,default=1.0)
+parser.add_argument('--anchor','-a',type=int,default=-1)
 #parser.add_argument('--norm_max','-nx',type=float,default=1)
 #parser.add_argument('--norm_min','-ni',type=float,default=-1)
 #parser.add_argument('--max','-mx',type=float,default=1)
@@ -125,10 +126,11 @@ for x_idx,x_start in enumerate(range(0,size_x,block_size)):
 print(coef_array[0][0].shape)
 
 '''
-
+anchor=args.anchor
 for x in range(0,size_x,step):
     for y in range(0,size_y,step):
-        
+        if anchor>0 and x%anchor==0 and y%anchor==0:
+            continue
         orig=array[x][y]
         
         f_01=array[x-step][y] if x>=step else 0
