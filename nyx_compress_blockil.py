@@ -176,6 +176,7 @@ def interp(array,level,eb):#only 2^n+1 cubic array
             for z in (1,side_length_z,2):
                 if z==side_length_z-1:
                     continue
+                print((x,y,z))
                 orig=array[x][y][z]
                 pred=(array[x][y][z-1]+array[x][y][z+1])/2
                 q,decomp=quantize(orig,pred,eb)
