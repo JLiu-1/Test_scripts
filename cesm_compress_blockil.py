@@ -159,19 +159,9 @@ def interp(array,level=0):#only 2^n+1 square array
         cur_eb=error_bound/10
     interp(sparse_grid,level+1)
     #print(array.shape)
-    for x in range(0,side_length_x,2):
-        for y in range(1,side_length_y,2):
-            if y==side_length_y-1:
-                continue
-            orig=array[x][y]
-            pred=(array[x][y-1]+array[x][y+1])/2
-            q,decomp=quantize(orig,pred,cur_eb)
-            qs.append(q)
-            if q==0:
-                us.append(decomp)
-            array[x][y]=decomp       
+      
     for x in range(1,side_length_x,2):
-        for y in range(0,side_length_y,1):
+        for y in range(0,side_length_y,2):
             if x==side_length_x-1:
                 continue
             orig=array[x][y]
@@ -181,6 +171,17 @@ def interp(array,level=0):#only 2^n+1 square array
             if q==0:
                 us.append(decomp)
             array[x][y]=decomp
+    for x in range(0,side_length_x,1):
+        for y in range(1,side_length_y,2):
+            if y==side_length_y-1:
+                continue
+            orig=array[x][y]
+            pred=(array[x][y-1]+array[x][y+1])/2
+            q,decomp=quantize(orig,pred,cur_eb)
+            qs.append(q)
+            if q==0:
+                us.append(decomp)
+            array[x][y]=decomp     
     '''
     for x in range(1,side_length_x,2):
         for y in range(1,side_length_y,2):
