@@ -161,7 +161,7 @@ def interp(array,level=0,eb):#only 2^n+1 square array
     if cur_eb<error_bound/10:
         cur_eb=error_bound/10
     '''
-    interp(sparse_grid,level+1,eb/level_rate)
+    interp(sparse_grid,level+1,eb/lr)
     #print(array.shape)
       
     
