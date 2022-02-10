@@ -150,7 +150,7 @@ for x in range(0,size_x,step):
             us.append(decomp)
         array[x][y]=decomp
 
-def interp(array,level=0,eb):#only 2^n+1 square array
+def interp(array,level,eb):#only 2^n+1 square array
     if level==max_level:
         return 
     side_length_x=array.shape[0]
