@@ -48,6 +48,7 @@ parser.add_argument('--max_step','-s',type=int,default=-1)
 parser.add_argument('--rate','-r',type=float,default=1.0)
 parser.add_argument('--maximum_rate','-m',type=float,default=10.0)
 parser.add_argument('--cubic','-c',type=bool,default=False)
+parser.add_argument('--multidim','-d',type=bool,default=False)
 #parser.add_argument('--level_rate','-lr',type=float,default=1.0)
 parser.add_argument('--anchor_rate','-a',type=float,default=0)
 
@@ -232,6 +233,51 @@ while step>0:#currently no recursive lorenzo
                 cur_array[x][y]=decomp
         if absloss<best_absloss:
             selected_algo="interp_cubic"
+            best_preds=np.copy(cur_array)
+            best_absloss=absloss
+            best_qs=cur_qs.copy()
+            best_us=cur_us.copy()
+    if args.multidim:
+        absloss=0
+        cur_qs=[]
+        cur_us=[]
+        cur_array=np.copy(array[0:last_x+1:step,0:last_y+1:step])#reset cur_array
+        for x in range(1,cur_size_x,2):
+            for y in range(1,cur_size_y,2):
+                if x==cur_size_x-1 or y==cur_size_y-1:
+                    continue
+                orig=cur_array[x][y]
+                pred=(cur_array[x-1][y-1]+cur_array[x-1][y+1]+cur_array[x+1][y-1]+cur_array[x+1][y+1])/4
+                absloss+=abs(orig-pred)
+                q,decomp=quantize(orig,pred,cur_eb)
+            
+                cur_qs.append(q)
+                if q==0:
+                    cur_us.append(decomp)
+                    #absloss+=abs(decomp)
+                cur_array[x][y]=decomp
+        for x in range(0,cur_size_x):
+            for y in range(1-(x%2),cur_size_y,2):
+                if x==cur_size_x-1 or y==cur_size_y-1:
+                    continue
+                orig=cur_array[x][y]
+                if x and y:
+                    pred=(cur_array[x][y-1]+cur_array[x][y+1]+cur_array[x-1][y]+cur_array[x+1][y])/4
+                elif x==0:
+                    pred=(cur_array[x][y-1]+cur_array[x][y+1])/2
+                else:
+                    pred=(cur_array[x-1][y]+cur_array[x+1][y])/2
+                absloss+=abs(orig-pred)
+                q,decomp=quantize(orig,pred,cur_eb)
+                cur_qs.append(q)
+            
+
+                if q==0:
+                    cur_us.append(decomp)
+                #absloss+=abs(decomp)
+                cur_array[x][y]=decomp
+        if absloss<best_absloss:
+            selected_algo="interp_multidim"
             best_preds=np.copy(cur_array)
             best_absloss=absloss
             best_qs=cur_qs.copy()
