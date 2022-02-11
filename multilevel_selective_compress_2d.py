@@ -279,7 +279,7 @@ while step>0:#currently no recursive lorenzo
 
 
 
-quants=np.concatenate( qs )
+quants=np.array(qs,dtype=np.int32)
 unpreds=np.array(us,dtype=np.float32)
 array.tofile(args.output)
 quants.tofile("cld_q.dat")
