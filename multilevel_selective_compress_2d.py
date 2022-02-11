@@ -46,7 +46,7 @@ parser.add_argument('--output','-o',type=str)
 
 parser.add_argument('--max_step','-s',type=int,default=-1)
 parser.add_argument('--rate','-r',type=float,default=1.0)
-parser.add_argument('--maximum_rate','-r',type=float,default=10.0)
+parser.add_argument('--maximum_rate','-m',type=float,default=10.0)
 parser.add_argument('--cubic','-c',type=bool,default=False)
 #parser.add_argument('--level_rate','-lr',type=float,default=1.0)
 parser.add_argument('--anchor_rate','-a',type=float,default=0)
