@@ -36,11 +36,11 @@ for i,eb in enumerate(ebs):
 		cr=eval(lines[4].split("=")[-1])
 		if args.anchor_rate==0:
 			anchor_ratio=1/(args.max_step**2)
-    		cr=1/((1-anchor_ratio)/cr+anchor_ratio/2)
+			cr=1/((1-anchor_ratio)/cr+anchor_ratio/2)
     command3="compareData -f %s %s" % (args.input,dout)
     with os.popen(command3) as f:
-    	lines=f.read().splitlines()
-    	psnr=eval(lines[6].split(',')[0].split('=')[1])
+		lines=f.read().splitlines()
+		psnr=eval(lines[6].split(',')[0].split('=')[1])
     
     data[i+1][1][0]=cr
     data[i+1][1][1]=psnr
