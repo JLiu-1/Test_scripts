@@ -274,8 +274,8 @@ while step>0:#currently no recursive lorenzo
     level-=1
 
 
-    
- def lorenzo_2d(array,x_start,x_end,y_start,y_end):
+
+def lorenzo_2d(array,x_start,x_end,y_start,y_end):
     for x in range(x_start,x_end):
         for y in range(y_start,y_end):
 
