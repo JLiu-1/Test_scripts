@@ -169,6 +169,7 @@ while step>0:#currently no recursive lorenzo
                 cur_us.append(decomp)
                 #absloss+=abs(decomp)
             cur_array[x][y]=decomp
+    print(np.max(np.abs(array[0:last_x+1:step,0:last_y+1:step]-cur_array)))
     best_preds=np.copy(cur_array)
     best_absloss=absloss
     best_qs=cur_qs.copy()
@@ -268,7 +269,7 @@ while step>0:#currently no recursive lorenzo
         best_us=cur_us.copy()
         selected_algo="lorenzo"
     mean_l1_loss=best_absloss/best_preds.size
-    print(np.max(np.abs(array[0:last_x+1:step,0:last_y+1:step]-best_preds)))
+    #print(np.max(np.abs(array[0:last_x+1:step,0:last_y+1:step]-best_preds)))
     array[0:last_x+1:step,0:last_y+1:step]=best_preds
     qs+=cur_qs
     us+=cur_us
