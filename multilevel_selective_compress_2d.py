@@ -61,8 +61,8 @@ args = parser.parse_args()
 size_x=args.size_x
 size_y=args.size_y
 array=np.fromfile(args.input,dtype=np.float32).reshape((size_x,size_y))
-
-error_bound=args.error*(np.max(array)-np.min(array))
+rng=(np.max(array)-np.min(array))
+error_bound=args.error*rng
 max_step=args.max_step
 rate=args.rate
 
@@ -267,8 +267,9 @@ while step>0:#currently no recursive lorenzo
         best_qs=cur_qs.copy()
         best_us=cur_us.copy()
         selected_algo="lorenzo"
-    mean_l1_loss=best_absloss/cur_array.size
-    array[0:last_x+1:step,0:last_y+1:step]=cur_array
+    mean_l1_loss=best_absloss/best_preds.size
+    #print(np.max(np.abs()))
+    array[0:last_x+1:step,0:last_y+1:step]=best_preds
     qs+=cur_qs
     us+=cur_us
     #print(len(qs))
