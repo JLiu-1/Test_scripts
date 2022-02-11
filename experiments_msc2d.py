@@ -11,8 +11,8 @@ parser.add_argument('--min_coeff_level','-cl',type=int,default=99)
 parser.add_argument('--rate','-r',type=float,default=1.0)
 parser.add_argument('--maximum_rate','-m',type=float,default=10.0)
 parser.add_argument('--anchor_rate','-a',type=float,default=0.0)
-parser.add_argument('--size_x','-x',type=float,default=1800)
-parser.add_argument('--size_y','-y',type=float,default=3600)
+parser.add_argument('--size_x','-x',type=int,default=1800)
+parser.add_argument('--size_y','-y',type=int,default=3600)
 
 
 args = parser.parse_args()
