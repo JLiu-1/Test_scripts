@@ -243,12 +243,12 @@ while step>0:#currently no recursive lorenzo
     cur_us=[]
     for x in range(cur_size_x):
         for y in range(1-(x%2),cur_size_y,2-(x%2)):
-            orig=array[x][y]
+            orig=cur_array[x][y]
         
-            f_01=array[x-1][y] if x else 0
-            f_10=array[x][y-1] if y else 0
+            f_01=cur_array[x-1][y] if x else 0
+            f_10=cur_array[x][y-1] if y else 0
             
-            f_00=array[x-1][y-1] if x and y else 0
+            f_00=cur_array[x-1][y-1] if x and y else 0
                 
             pred=f_01+f_10-f_00
                 
@@ -261,7 +261,7 @@ while step>0:#currently no recursive lorenzo
                 cur_us.append(decomp)
                 #absloss+=abs(decomp)
             cur_array[x][y]=decomp
-    print(np.max(np.abs(array[0:last_x+1:step,0:last_y+1:step]-cur_array)))
+    #print(np.max(np.abs(array[0:last_x+1:step,0:last_y+1:step]-cur_array)))
     if absloss<best_absloss:
         best_preds=np.copy(cur_array)
         best_absloss=absloss
