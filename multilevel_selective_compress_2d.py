@@ -103,11 +103,11 @@ if max_step>0:
 else:
     pass#todo,some preparations before level start
 
-step=max_step//2
-level=max_level-1
+
 last_x=((size_x-1)//step)*step
 last_y=((size_y-1)//step)*step   
-
+step=max_step//2
+level=max_level-1
 while step>0:#currently no recursive lorenzo
     cur_qs=[]
     cur_us=[]
@@ -273,6 +273,30 @@ while step>0:#currently no recursive lorenzo
     step=step//2
     level-=1
 
+
+    
+ def lorenzo_2d(array,x_start,x_end,y_start,y_end):
+    for x in range(x_start,x_end):
+        for y in range(y_start,y_end):
+
+            orig=array[x][y]
+        
+            f_01=array[x-1][y] if x else 0
+            f_10=array[x][y-1] if y else 0
+            
+            f_00=array[x-1][y-1] if x and y else 0
+                
+            pred=f_01+f_10-f_00
+                
+        
+                
+            q,decomp=quantize(orig,pred,error_bound)
+            qs.append(q)
+            if q==0:
+                us.append(decomp)
+            array[x][y]=decomp
+lorenzo_2d(array,0,last_x+1,last_y+1,size_y)
+lorenzo_2d(array,last_x+1,size_x,0,size_y)
 
 
 
