@@ -2,8 +2,8 @@ import numpy as np
 
 import os
 import argparse
-import torch
-import torch.nn as nn
+#import torch
+#import torch.nn as nn
 from sklearn.linear_model import LinearRegression
 import math
 def quantize(data,pred,error_bound):
@@ -43,15 +43,16 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--error','-e',type=float,default=1e-3)
 parser.add_argument('--input','-i',type=str)
 parser.add_argument('--output','-o',type=str)
-
+parser.add_argument('--quant','-q',type=str,deafult="ml2_q.dat")
+parser.add_argument('--unpred','-u',type=str,deafult="ml2_u.dat")
 parser.add_argument('--max_step','-s',type=int,default=-1)
-parser.add_argument('--min_coeff_level','-cl',type=int,default=10)
+parser.add_argument('--min_coeff_level','-cl',type=int,default=99)
 parser.add_argument('--rate','-r',type=float,default=1.0)
 parser.add_argument('--maximum_rate','-m',type=float,default=10.0)
 parser.add_argument('--cubic','-c',type=bool,default=False)
 parser.add_argument('--multidim','-d',type=bool,default=False)
 #parser.add_argument('--level_rate','-lr',type=float,default=1.0)
-parser.add_argument('--anchor_rate','-a',type=float,default=0)
+parser.add_argument('--anchor_rate','-a',type=float,default=0.0)
 
 parser.add_argument('--size_x','-x',type=float,default=1800)
 parser.add_argument('--size_y','-y',type=float,default=3600)
@@ -513,5 +514,5 @@ lorenzo_2d(array,last_x+1,size_x,0,size_y)
 quants=np.concatenate( (np.array(lorenzo_qs,dtype=np.int32),np.array(qs,dtype=np.int32) ) )
 unpreds=np.array(us,dtype=np.float32)
 array.tofile(args.output)
-quants.tofile("ml2_q.dat")
-unpreds.tofile("ml2_u.dat")
+quants.tofile(args.quant)
+unpreds.tofile(args.unpred)
