@@ -421,6 +421,7 @@ while step>0:#currently no recursive lorenzo
     absloss=0
     cur_qs=[]
     cur_us=[]
+    '''
     if max_level>=min_coeff_level:
         reg_xs=[]
         reg_ys=[]
@@ -433,11 +434,11 @@ while step>0:#currently no recursive lorenzo
                 res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
                 coef=res.coef_ 
                 ince=res.intercept_
-
+    '''
     for x in range(cur_size_x):
         for y in range(1-(x%2),cur_size_y,2-(x%2)):
             orig=cur_array[x][y]
-            if x and y and max_level>=min_coeff_level:
+            if 0:#if x and y and max_level>=min_coeff_level:
                 pred=np.dot(coef,np.array([array[x-1][y-1],array[x-1][y],array[x][y-1]]))+ince
             else:
 
