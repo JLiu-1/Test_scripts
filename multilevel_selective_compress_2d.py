@@ -112,7 +112,7 @@ while step>0:#currently no recursive lorenzo
     cur_qs=[]
     cur_us=[]
     cur_eb=error_bound/(rate**level)
-    cur_array=np.copy(array[0:last_x+1:step,0_last_y+1:step])
+    cur_array=np.copy(array[0:last_x+1:step,0:last_y+1:step])
     cur_size_x,cur_size_y=cur_array.shape
     best_preds=None#need to copy
     best_absloss=None
@@ -173,7 +173,7 @@ while step>0:#currently no recursive lorenzo
         absloss=0
         cur_qs=[]
         cur_us=[]
-        cur_array=np.copy(array[0:last_x+1:step,0_last_y+1:step])#reset cur_array
+        cur_array=np.copy(array[0:last_x+1:step,0:last_y+1:step])#reset cur_array
         for x in range(0,cur_size_x,2):
             for y in range(1,cur_size_y,2):
                 if y==cur_size_y-1:
@@ -228,7 +228,7 @@ while step>0:#currently no recursive lorenzo
             best_qs=cur_qs.copy()
             best_us=cur_us.copy()
     #lorenzo
-    cur_array=np.copy(array[0:last_x+1:step,0_last_y+1:step])#reset cur_array
+    cur_array=np.copy(array[0:last_x+1:step,0:last_y+1:step])#reset cur_array
     absloss=0
     cur_qs=[]
     cur_us=[]
