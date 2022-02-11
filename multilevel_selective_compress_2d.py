@@ -240,7 +240,7 @@ while step>0:#currently no recursive lorenzo
     cur_qs=[]
     cur_us=[]
     for x in range(cur_size_x):
-        for y in range(1-x%2,cur_size_y,2-x%2):
+        for y in range(1-(x%2),cur_size_y,2-(x%2)):
             orig=array[x][y]
         
             f_01=array[x-1][y] if x else 0
