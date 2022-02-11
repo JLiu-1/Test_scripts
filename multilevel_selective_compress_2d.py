@@ -79,6 +79,7 @@ if max_step>0:
     anchor_rate=args.anchor_rate
     if anchor_rate>0:
         anchor_eb=error_bound/anchor_rate
+        print("Anchor eb:%f" % anchor_eb)
  
    
     for x in range(0,size_x,max_step):
