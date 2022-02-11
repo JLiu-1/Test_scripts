@@ -115,6 +115,7 @@ while step>0:#currently no recursive lorenzo
     cur_eb=error_bound/(rate**level)
     cur_array=np.copy(array[0:last_x+1:step,0:last_y+1:step])
     cur_size_x,cur_size_y=cur_array.shape
+    print(cur_size_x,cur_size_y)
     print("Level %d started. Current step: %d. Current error_bound: %s." % (level,step,cur_eb))
     best_preds=None#need to copy
     best_absloss=None
@@ -132,11 +133,11 @@ while step>0:#currently no recursive lorenzo
             pred=(cur_array[x][y-1]+cur_array[x][y+1])/2
             absloss+=abs(orig-pred)
             q,decomp=quantize(orig,pred,cur_eb)
-            qs.append(q)
+            cur_qs.append(q)
             
 
             if q==0:
-                us.append(decomp)
+                cur_us.append(decomp)
                 #absloss+=abs(decomp)
             cur_array[x][y]=decomp     
     for x in range(1,cur_size_x,2):
@@ -148,9 +149,9 @@ while step>0:#currently no recursive lorenzo
             absloss+=abs(orig-pred)
             q,decomp=quantize(orig,pred,cur_eb)
            
-            qs.append(q)
+            cur_qs.append(q)
             if q==0:
-                us.append(decomp)
+                cur_us.append(decomp)
                 #absloss+=abs(decomp)
             cur_array[x][y]=decomp
     
@@ -163,9 +164,9 @@ while step>0:#currently no recursive lorenzo
             absloss+=abs(orig-pred)
             q,decomp=quantize(orig,pred,cur_eb)
             
-            qs.append(q)
+            cur_qs.append(q)
             if q==0:
-                us.append(decomp)
+                cur_us.append(decomp)
                 #absloss+=abs(decomp)
             cur_array[x][y]=decomp
     best_preds=np.copy(cur_array)
@@ -190,10 +191,10 @@ while step>0:#currently no recursive lorenzo
                     pred=(cur_array[x][y-1]+cur_array[x][y+1])/2
                 absloss+=abs(orig-pred)
                 q,decomp=quantize(orig,pred,cur_eb)
-                qs.append(q)
+                cur_qs.append(q)
                 
                 if q==0:
-                    us.append(decomp)
+                    cur_us.append(decomp)
                     #absloss+=abs(decomp)
                 cur_array[x][y]=decomp     
         for x in range(1,cur_size_x,2):
@@ -208,9 +209,9 @@ while step>0:#currently no recursive lorenzo
                 absloss+=abs(orig-pred)
                 q,decomp=quantize(orig,pred,cur_eb)
                 
-                qs.append(q)
+                cur_qs.append(q)
                 if q==0:
-                    us.append(decomp)
+                    cur_us.append(decomp)
                     #absloss+=abs(decomp)
                 cur_array[x][y]=decomp
     
@@ -223,9 +224,9 @@ while step>0:#currently no recursive lorenzo
                 absloss+=abs(orig-pred)
                 q,decomp=quantize(orig,pred,cur_eb)
                 
-                qs.append(q)
+                cur_qs.append(q)
                 if q==0:
-                    us.append(decomp)
+                    cur_us.append(decomp)
                     #absloss+=abs(decomp)
                 cur_array[x][y]=decomp
         if absloss<best_absloss:
