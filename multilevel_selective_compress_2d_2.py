@@ -167,7 +167,7 @@ while step>0:#currently no recursive lorenzo
     best_absloss=absloss
     best_qs=cur_qs.copy()
     best_us=cur_us.copy()
-    selected_algo="interp_linear"
+    selected_algo="interp_multidim"
     #cubic interp
     
     #lorenzo
