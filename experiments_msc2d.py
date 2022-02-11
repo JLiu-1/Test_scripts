@@ -17,9 +17,9 @@ parser.add_argument('--size_y','-y',type=float,default=3600)
 
 args = parser.parse_args()
 pid=str(os.getpid()).strip()
-dout="%d_d.dat" %pid 
-qout="%d_q.dat" %pid 
-uout="%d_u.dat" % pid
+dout="%s_d.dat" %pid 
+qout="%s_q.dat" %pid 
+uout="%s_u.dat" % pid
 #ebs=[i*1e-3 for i in range(1,11)]+[1.5e-2,2e-2]
 ebs=[1e-3,1e-2]
 data=np.zeros((len(ebs)+1,2,2),dtype=np.float32)
