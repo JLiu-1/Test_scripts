@@ -103,7 +103,7 @@ if max_step>0:
             array[x][y]=decomp
 else:
     pass#todo,some preparations before level start
-
+print(len(qs))
 
 last_x=((size_x-1)//max_step)*max_step
 last_y=((size_y-1)//max_step)*max_step   
@@ -270,7 +270,7 @@ while step>0:#currently no recursive lorenzo
     array[0:last_x+1:step,0:last_y+1:step]=cur_array
     qs+=cur_qs
     us+=cur_us
-
+    print(len(qs))
     print ("Level %d finished. Selected algorithm: %s. Mean prediction abs loss: %f." % (level,selected_algo,mean_l1_loss))
     step=step//2
     level-=1
