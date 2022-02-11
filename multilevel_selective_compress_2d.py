@@ -202,13 +202,13 @@ while step>0:#currently no recursive lorenzo
                 #absloss+=abs(decomp)
             cur_array[x][y]=decomp
     if level>=min_coeff_level:
-        2d_reg_xs=[]
-        2d_reg_ys=[]
+        md_reg_xs=[]
+        md_reg_ys=[]
         for x in range(1,cur_size_x,2):
             for y in range(1,cur_size_y,2):
-                2d_reg_xs.append(np.array([cur_array[x-1][y],cur_array[x+1][y],cur_array[x][y-1],cur_array[x][y+1]],dtype=np.float64))
-                2d_reg_ys.append(cur_array[x][y])
-                2d_res=LinearRegression(fit_intercept=True).fit(2d_reg_xs, 2d_reg_ys)
+                md_reg_xs.append(np.array([cur_array[x-1][y],cur_array[x+1][y],cur_array[x][y-1],cur_array[x][y+1]],dtype=np.float64))
+                md_reg_ys.append(cur_array[x][y])
+                2d_res=LinearRegression(fit_intercept=True).fit(md_reg_xs, md_reg_ys)
                 2d_coef=2d_res.coef_ 
                 2d_ince=2d_res.intercept_
 
@@ -303,13 +303,13 @@ while step>0:#currently no recursive lorenzo
                     #absloss+=abs(decomp)
                 cur_array[x][y]=decomp
         if level>=min_coeff_level:
-            2d_reg_xs=[]
-            2d_reg_ys=[]
+            md_reg_xs=[]
+            md_reg_ys=[]
             for x in range(1,cur_size_x,2):
                 for y in range(1,cur_size_y,2):
-                    2d_reg_xs.append(np.array([cur_array[x-1][y],cur_array[x+1][y],cur_array[x][y-1],cur_array[x][y+1]],dtype=np.float64))
-                    2d_reg_ys.append(cur_array[x][y])
-                    2d_res=LinearRegression(fit_intercept=True).fit(2d_reg_xs, 2d_reg_ys)
+                    md_reg_xs.append(np.array([cur_array[x-1][y],cur_array[x+1][y],cur_array[x][y-1],cur_array[x][y+1]],dtype=np.float64))
+                    md_reg_ys.append(cur_array[x][y])
+                    2d_res=LinearRegression(fit_intercept=True).fit(md_reg_xs, md_reg_ys)
                     2d_coef=2d_res.coef_ 
                     2d_ince=2d_res.intercept_
 
@@ -342,13 +342,13 @@ while step>0:#currently no recursive lorenzo
         cur_us=[]
         cur_array=np.copy(array[0:last_x+1:step,0:last_y+1:step])#reset cur_array
         if level>=min_coeff_level:
-            2d_reg_xs=[]
-            2d_reg_ys=[]
+            md_reg_xs=[]
+            md_reg_ys=[]
             for x in range(1,cur_size_x,2):
                 for y in range(1,cur_size_y,2):
-                    2d_reg_xs.append(np.array([cur_array[x-1][y-1],cur_array[x-1][y+1],cur_array[x+1][y-1],cur_array[x+1][y+1]],dtype=np.float64))
-                    2d_reg_ys.append(cur_array[x][y])
-                    2d_res=LinearRegression(fit_intercept=True).fit(2d_reg_xs, 2d_reg_ys)
+                    md_reg_xs.append(np.array([cur_array[x-1][y-1],cur_array[x-1][y+1],cur_array[x+1][y-1],cur_array[x+1][y+1]],dtype=np.float64))
+                    md_reg_ys.append(cur_array[x][y])
+                    2d_res=LinearRegression(fit_intercept=True).fit(md_reg_xs, md_reg_ys)
                     2d_coef=2d_res.coef_ 
                     2d_ince=2d_res.intercept_
         for x in range(1,cur_size_x,2):
@@ -369,15 +369,15 @@ while step>0:#currently no recursive lorenzo
                     #absloss+=abs(decomp)
                 cur_array[x][y]=decomp
         if level>=min_coeff_level:
-            2d_reg_xs=[]
-            2d_reg_ys=[]
+            md_reg_xs=[]
+            md_reg_ys=[]
             for x in range(0,cur_size_x):
                 for y in range(1-(x%2),cur_size_y,2):
                     if x==cur_size_x-1 or y==cur_size_y-1:
                         continue
-                    2d_reg_xs.append(np.array([cur_array[x][y-1],cur_array[x][y+1],cur_array[x-1][y],cur_array[x+1][y]],dtype=np.float64))
-                    2d_reg_ys.append(cur_array[x][y])
-                    2d_res=LinearRegression(fit_intercept=True).fit(2d_reg_xs, 2d_reg_ys)
+                    md_reg_xs.append(np.array([cur_array[x][y-1],cur_array[x][y+1],cur_array[x-1][y],cur_array[x+1][y]],dtype=np.float64))
+                    md_reg_ys.append(cur_array[x][y])
+                    2d_res=LinearRegression(fit_intercept=True).fit(md_reg_xs, md_reg_ys)
                     2d_coef=2d_res.coef_ 
                     2d_ince=2d_res.intercept_
 
