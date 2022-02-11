@@ -128,13 +128,14 @@ while step>0:#currently no recursive lorenzo
                 continue
             orig=cur_array[x][y]
             pred=(cur_array[x][y-1]+cur_array[x][y+1])/2
+            absloss+=abs(orig-pred)
             q,decomp=quantize(orig,pred,cur_eb)
             qs.append(q)
-            absloss+=abs(cur_array[x][y]-decomp)
+            
 
             if q==0:
                 us.append(decomp)
-                absloss+=abs(decomp)
+                #absloss+=abs(decomp)
             cur_array[x][y]=decomp     
     for x in range(1,cur_size_x,2):
         for y in range(0,cur_size_y,2):
@@ -142,12 +143,13 @@ while step>0:#currently no recursive lorenzo
                 continue
             orig=cur_array[x][y]
             pred=(cur_array[x-1][y]+cur_array[x+1][y])/2
+            absloss+=abs(orig-pred)
             q,decomp=quantize(orig,pred,cur_eb)
-            absloss+=abs(cur_array[x][y]-decomp)
+           
             qs.append(q)
             if q==0:
                 us.append(decomp)
-                absloss+=abs(decomp)
+                #absloss+=abs(decomp)
             cur_array[x][y]=decomp
     
     for x in range(1,cur_size_x,2):
@@ -156,12 +158,13 @@ while step>0:#currently no recursive lorenzo
                 continue
             orig=cur_array[x][y]
             pred=(cur_array[x-1][y]+cur_array[x+1][y]+cur_array[x][y-1]+cur_array[x][y+1])/4
+            absloss+=abs(orig-pred)
             q,decomp=quantize(orig,pred,cur_eb)
-            absloss+=abs(cur_array[x][y]-decomp)
+            
             qs.append(q)
             if q==0:
                 us.append(decomp)
-                absloss+=abs(decomp)
+                #absloss+=abs(decomp)
             cur_array[x][y]=decomp
     best_preds=np.copy(cur_array)
     best_absloss=absloss
@@ -180,16 +183,16 @@ while step>0:#currently no recursive lorenzo
                     continue
                 orig=cur_array[x][y]
                 if y>=3 or y+3<cur_size_y:
-                   pred=(-cur_array[x][y-3]+9*cur_array[x][y-1]+9*cur_array[x][y+1]-cur_array[x][y+3])/16
+                    pred=(-cur_array[x][y-3]+9*cur_array[x][y-1]+9*cur_array[x][y+1]-cur_array[x][y+3])/16
                 else:
                     pred=(cur_array[x][y-1]+cur_array[x][y+1])/2
+                absloss+=abs(orig-pred)
                 q,decomp=quantize(orig,pred,cur_eb)
                 qs.append(q)
-                absloss+=abs(cur_array[x][y]-decomp)
-
+                
                 if q==0:
                     us.append(decomp)
-                    absloss+=abs(decomp)
+                    #absloss+=abs(decomp)
                 cur_array[x][y]=decomp     
         for x in range(1,cur_size_x,2):
             for y in range(0,cur_size_y,2):
@@ -197,15 +200,16 @@ while step>0:#currently no recursive lorenzo
                     continue
                 orig=cur_array[x][y]
                 if x>=3 or x+3<cur_size_x:
-                   pred=(-cur_array[x-3][y]+9*cur_array[x-1][y]+9*cur_array[x+1][y]-cur_array[x+3][y])/16
+                    pred=(-cur_array[x-3][y]+9*cur_array[x-1][y]+9*cur_array[x+1][y]-cur_array[x+3][y])/16
                 else:
                     pred=(cur_array[x-1][y]+cur_array[x+1][y])/2
+                absloss+=abs(orig-pred)
                 q,decomp=quantize(orig,pred,cur_eb)
-                absloss+=abs(cur_array[x][y]-decomp)
+                
                 qs.append(q)
                 if q==0:
                     us.append(decomp)
-                    absloss+=abs(decomp)
+                    #absloss+=abs(decomp)
                 cur_array[x][y]=decomp
     
         for x in range(1,cur_size_x,2):
@@ -214,12 +218,13 @@ while step>0:#currently no recursive lorenzo
                     continue
                 orig=cur_array[x][y]
                 pred=(cur_array[x-1][y]+cur_array[x+1][y]+cur_array[x][y-1]+cur_array[x][y+1])/4
+                absloss+=abs(orig-pred)
                 q,decomp=quantize(orig,pred,cur_eb)
-                absloss+=abs(cur_array[x][y]-decomp)
+                
                 qs.append(q)
                 if q==0:
                     us.append(decomp)
-                    absloss+=abs(decomp)
+                    #absloss+=abs(decomp)
                 cur_array[x][y]=decomp
         if absloss<best_absloss:
             selected_algo="interp_cubic"
@@ -244,13 +249,13 @@ while step>0:#currently no recursive lorenzo
             pred=f_01+f_10-f_00
                 
         
-                
+            absloss+=abs(orig-pred)
             q,decomp=quantize(orig,pred,cur_eb)
             cur_qs.append(q)
-            absloss+=abs(cur_array[x][y]-decomp)
+            
             if q==0:
                 cur_us.append(decomp)
-                absloss+=abs(decomp)
+                #absloss+=abs(decomp)
             cur_array[x][y]=decomp
 
     if absloss<best_absloss:
