@@ -260,7 +260,7 @@ while step>0:#currently no recursive lorenzo
         best_us=cur_us.copy()
         selected_algo="lorenzo"
     mean_l1_loss=best_absloss/cur_array.size
-    array[0:last_x+1:step,0_last_y+1:step]=cur_array
+    array[0:last_x+1:step,0:last_y+1:step]=cur_array
     qs+=cur_qs
     us+=cur_us
 
