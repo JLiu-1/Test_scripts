@@ -42,11 +42,11 @@ for i,eb in enumerate(ebs):
 		lines=f.read().splitlines()
 		psnr=eval(lines[6].split(',')[0].split('=')[1])
     
-    data[i+1][1][0]=cr
-    data[i+1][1][1]=psnr
-    command4="rm -f %s;rm -f %s;rm -f %s" % (dout,qout,uout)
+	data[i+1][1][0]=cr
+	data[i+1][1][1]=psnr
+	command4="rm -f %s;rm -f %s;rm -f %s" % (dout,qout,uout)
 
-    os.system(command4)
+	os.system(command4)
 
 
 np.savetxt("%s_final_cr.txt" % args.output,data[:,:,0],delimiter='\t')
