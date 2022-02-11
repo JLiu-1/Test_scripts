@@ -28,7 +28,7 @@ for x in range(1,size_x,2):
             continue
         orig=array[x][y]
         orig=array[x][y]
-        reg_xs=append(np.array([array[x-1][y-2],array[x+1][y-2],array[x-1][y],array[x+1][y],array[x-1][y+2],array[x+1][y+2]],dtype=np.float64))
+        reg_xs.append(np.array([array[x-1][y-2],array[x+1][y-2],array[x-1][y],array[x+1][y],array[x-1][y+2],array[x+1][y+2]],dtype=np.float64))
         reg_ys.append(orig)
 
 
