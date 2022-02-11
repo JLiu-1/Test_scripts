@@ -208,9 +208,9 @@ while step>0:#currently no recursive lorenzo
             for y in range(1,cur_size_y,2):
                 md_reg_xs.append(np.array([cur_array[x-1][y],cur_array[x+1][y],cur_array[x][y-1],cur_array[x][y+1]],dtype=np.float64))
                 md_reg_ys.append(cur_array[x][y])
-                2d_res=LinearRegression(fit_intercept=True).fit(md_reg_xs, md_reg_ys)
-                2d_coef=2d_res.coef_ 
-                2d_ince=2d_res.intercept_
+                md_res=LinearRegression(fit_intercept=True).fit(md_reg_xs, md_reg_ys)
+                2d_coef=md_res.coef_ 
+                2d_ince=md_res.intercept_
 
     
     for x in range(1,cur_size_x,2):
@@ -309,9 +309,9 @@ while step>0:#currently no recursive lorenzo
                 for y in range(1,cur_size_y,2):
                     md_reg_xs.append(np.array([cur_array[x-1][y],cur_array[x+1][y],cur_array[x][y-1],cur_array[x][y+1]],dtype=np.float64))
                     md_reg_ys.append(cur_array[x][y])
-                    2d_res=LinearRegression(fit_intercept=True).fit(md_reg_xs, md_reg_ys)
-                    2d_coef=2d_res.coef_ 
-                    2d_ince=2d_res.intercept_
+                    md_res=LinearRegression(fit_intercept=True).fit(md_reg_xs, md_reg_ys)
+                    2d_coef=md_res.coef_ 
+                    2d_ince=md_res.intercept_
 
         for x in range(1,cur_size_x,2):
             for y in range(1,cur_size_y,2):
@@ -348,9 +348,9 @@ while step>0:#currently no recursive lorenzo
                 for y in range(1,cur_size_y,2):
                     md_reg_xs.append(np.array([cur_array[x-1][y-1],cur_array[x-1][y+1],cur_array[x+1][y-1],cur_array[x+1][y+1]],dtype=np.float64))
                     md_reg_ys.append(cur_array[x][y])
-                    2d_res=LinearRegression(fit_intercept=True).fit(md_reg_xs, md_reg_ys)
-                    2d_coef=2d_res.coef_ 
-                    2d_ince=2d_res.intercept_
+                    md_res=LinearRegression(fit_intercept=True).fit(md_reg_xs, md_reg_ys)
+                    2d_coef=md_res.coef_ 
+                    2d_ince=md_res.intercept_
         for x in range(1,cur_size_x,2):
             for y in range(1,cur_size_y,2):
                 if x==cur_size_x-1 or y==cur_size_y-1:
@@ -377,9 +377,9 @@ while step>0:#currently no recursive lorenzo
                         continue
                     md_reg_xs.append(np.array([cur_array[x][y-1],cur_array[x][y+1],cur_array[x-1][y],cur_array[x+1][y]],dtype=np.float64))
                     md_reg_ys.append(cur_array[x][y])
-                    2d_res=LinearRegression(fit_intercept=True).fit(md_reg_xs, md_reg_ys)
-                    2d_coef=2d_res.coef_ 
-                    2d_ince=2d_res.intercept_
+                    md_res=LinearRegression(fit_intercept=True).fit(md_reg_xs, md_reg_ys)
+                    2d_coef=md_res.coef_ 
+                    2d_ince=md_res.intercept_
 
         for x in range(0,cur_size_x):
             for y in range(1-(x%2),cur_size_y,2):
