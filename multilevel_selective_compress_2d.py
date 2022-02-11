@@ -247,6 +247,8 @@ while step>0:#currently no recursive lorenzo
             reg_ys=[]
             for x in range(0,cur_size_x,2):
                 for y in range(3,cur_size_y,2):
+                    if y+3>=cur_size_y:
+                        continue
                     reg_xs.append(np.array([cur_array[x][y-3],cur_array[x][y-1],cur_array[x][y+1],cur_array[x][y+3]],dtype=np.float64))
                     reg_ys.append(cur_array[x][y])
                     res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
@@ -277,6 +279,8 @@ while step>0:#currently no recursive lorenzo
             reg_ys=[]
             for x in range(3,cur_size_x,2):
                 for y in range(0,cur_size_y,2):
+                    if x+3>=cur_size_x:
+                        continue
                     reg_xs.append(np.array([cur_array[x-3][y],cur_array[x-1][y],cur_array[x+1][y],cur_array[x+3][y]],dtype=np.float64))
                     reg_ys.append(cur_array[x][y])
                     res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
