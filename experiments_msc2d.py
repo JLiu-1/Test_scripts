@@ -27,8 +27,7 @@ for i in range(2):
     data[1:,0,i]=ebs
     #data[0,1:,i]=idxrange
 for i,eb in enumerate(ebs):
-	command1="python multilevel_selective_compress_2d.py -i %s -o %s -q %s -u %s -s %d -r %f -m %f -a 0 -x %d -y %d -e %f -cl %d -a %f" 
-			% (args.input, dout,qout,uout,args.max_step,args.rate,args.maximum_rate,args.size_x,args.size_y,eb,args.min_coeff_level,args.anchor_rate)
+	command1="python multilevel_selective_compress_2d.py -i %s -o %s -q %s -u %s -s %d -r %f -m %f -a 0 -x %d -y %d -e %f -cl %d -a %f" % (args.input, dout,qout,uout,args.max_step,args.rate,args.maximum_rate,args.size_x,args.size_y,eb,args.min_coeff_level,args.anchor_rate)
     os.system(command1)
     command2="sz_backend %s %s " % (qout,uout)
     with os.popen(command2) as f:
