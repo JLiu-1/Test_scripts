@@ -104,8 +104,8 @@ else:
     pass#todo,some preparations before level start
 
 
-last_x=((size_x-1)//step)*step
-last_y=((size_y-1)//step)*step   
+last_x=((size_x-1)//maxstep)*maxstep
+last_y=((size_y-1)//maxstep)*maxstep   
 step=max_step//2
 level=max_level-1
 while step>0:#currently no recursive lorenzo
