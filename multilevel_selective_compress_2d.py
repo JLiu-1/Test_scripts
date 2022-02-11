@@ -186,7 +186,7 @@ while step>0:#currently no recursive lorenzo
                 if y==cur_size_y-1:
                     continue
                 orig=cur_array[x][y]
-                if y>=3 or y+3<cur_size_y:
+                if y>=3 and y+3<cur_size_y:
                     pred=(-cur_array[x][y-3]+9*cur_array[x][y-1]+9*cur_array[x][y+1]-cur_array[x][y+3])/16
                 else:
                     pred=(cur_array[x][y-1]+cur_array[x][y+1])/2
@@ -203,7 +203,7 @@ while step>0:#currently no recursive lorenzo
                 if x==cur_size_x-1:
                     continue
                 orig=cur_array[x][y]
-                if x>=3 or x+3<cur_size_x:
+                if x>=3 and x+3<cur_size_x:
                     pred=(-cur_array[x-3][y]+9*cur_array[x-1][y]+9*cur_array[x+1][y]-cur_array[x+3][y])/16
                 else:
                     pred=(cur_array[x-1][y]+cur_array[x+1][y])/2
