@@ -114,6 +114,7 @@ while step>0:#currently no recursive lorenzo
     cur_eb=error_bound/(rate**level)
     cur_array=np.copy(array[0:last_x+1:step,0:last_y+1:step])
     cur_size_x,cur_size_y=cur_array.shape
+    print("Level %d started. Current step: %d. Current error_bound: %s." % (level,step,cur_eb))
     best_preds=None#need to copy
     best_absloss=None
     best_qs=[]#need to copy
