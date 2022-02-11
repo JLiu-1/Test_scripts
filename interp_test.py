@@ -19,7 +19,7 @@ for x in range(2,size_x,2):
         if x+2>=size_x or y==size_y-1:
             continue
         orig=array[x][y]
-        reg_xs=append(np.array([array[x-2][y-1],array[x-2][y+1],array[x][y-1],array[x][y+1],array[x+2][y-1],array[x+2][y+1]],dtype=np.float64))
+        reg_xs.append(np.array([array[x-2][y-1],array[x-2][y+1],array[x][y-1],array[x][y+1],array[x+2][y-1],array[x+2][y+1]],dtype=np.float64))
         reg_ys.append(orig)
 
 for x in range(1,size_x,2):
