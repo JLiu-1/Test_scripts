@@ -296,7 +296,7 @@ def lorenzo_2d(array,x_start,x_end,y_start,y_end):
         
                 
             q,decomp=quantize(orig,pred,error_bound)
-            qs.append(q)
+            lorenzo_qs.append(q)
             if q==0:
                 us.append(decomp)
             array[x][y]=decomp
@@ -313,7 +313,7 @@ lorenzo_2d(array,last_x+1,size_x,0,size_y)
 
 
 
-quants=np.array(qs,dtype=np.int32)
+quants=np.concatenate( (np.array(lorenzo_qs,dtype=np.int32),np.array(qs,dtype=np.int32) ) )
 unpreds=np.array(us,dtype=np.float32)
 array.tofile(args.output)
 quants.tofile("cld_q.dat")
