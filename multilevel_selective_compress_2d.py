@@ -219,7 +219,7 @@ while step>0:#currently no recursive lorenzo
                 continue
             orig=cur_array[x][y]
             if level>=min_coeff_level:
-                pred=np.dot(np.array([cur_array[x-1][y]+cur_array[x+1][y]+cur_array[x][y-1]+cur_array[x][y+1]]),md_coef)+md_ince
+                pred=np.dot(np.array([cur_array[x-1][y],cur_array[x+1][y],cur_array[x][y-1],cur_array[x][y+1]]),md_coef)+md_ince
             else:
                 pred=(cur_array[x-1][y]+cur_array[x+1][y]+cur_array[x][y-1]+cur_array[x][y+1])/4
             absloss+=abs(orig-pred)
@@ -319,7 +319,7 @@ while step>0:#currently no recursive lorenzo
                     continue
                 orig=cur_array[x][y]
                 if level>=min_coeff_level:
-                    pred=np.dot(np.array([cur_array[x-1][y]+cur_array[x+1][y]+cur_array[x][y-1]+cur_array[x][y+1]]),md_coef)+md_ince
+                    pred=np.dot(np.array([cur_array[x-1][y],cur_array[x+1][y],cur_array[x][y-1],cur_array[x][y+1]]),md_coef)+md_ince
                 else:
                     pred=(cur_array[x-1][y]+cur_array[x+1][y]+cur_array[x][y-1]+cur_array[x][y+1])/4
                 absloss+=abs(orig-pred)
