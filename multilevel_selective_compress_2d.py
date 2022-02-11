@@ -112,7 +112,7 @@ level=max_level-1
 while step>0:#currently no recursive lorenzo
     cur_qs=[]
     cur_us=[]
-    cur_eb=error_bound/(rate**level)
+    cur_eb=error_bound/min(args.maximum_rate,(rate**level))
     cur_array=np.copy(array[0:last_x+1:step,0:last_y+1:step])
     cur_size_x,cur_size_y=cur_array.shape
     #print(cur_size_x,cur_size_y)
