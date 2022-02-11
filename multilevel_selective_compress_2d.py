@@ -84,22 +84,22 @@ if max_step>0:
     for x in range(0,size_x,max_step):
         for y in range(0,size_y,max_step):
             
-        orig=array[x][y]
+            orig=array[x][y]
         
-        f_01=array[x-max_step][y] if x else 0
-        f_10=array[x][y-max_step] if y else 0
+            f_01=array[x-max_step][y] if x else 0
+            f_10=array[x][y-max_step] if y else 0
             
-        f_00=array[x-max_step][y-max_step] if x and y else 0
+            f_00=array[x-max_step][y-max_step] if x and y else 0
                 
-        pred=f_01+f_10-f_00
+            pred=f_01+f_10-f_00
                 
         
                 
-        q,decomp=quantize(orig,pred,anchor_eb)
-        qs.append(q)
-        if q==0:
-            us.append(decomp)
-        array[x][y]=decomp
+            q,decomp=quantize(orig,pred,anchor_eb)
+            qs.append(q)
+            if q==0:
+                us.append(decomp)
+            array[x][y]=decomp
 else:
     pass#todo,some preparations before level start
 
