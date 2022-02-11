@@ -162,6 +162,7 @@ def interp(array,level,eb):#only 2^n+1 square array
         cur_eb=error_bound/10
     '''
     interp(sparse_grid,level+1,eb/lr)
+    array[0:side_length_x:2,0:side_length_y:2]=sparse_grid
     #print(array.shape)
       
     
