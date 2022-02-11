@@ -209,8 +209,8 @@ while step>0:#currently no recursive lorenzo
                 md_reg_xs.append(np.array([cur_array[x-1][y],cur_array[x+1][y],cur_array[x][y-1],cur_array[x][y+1]],dtype=np.float64))
                 md_reg_ys.append(cur_array[x][y])
                 md_res=LinearRegression(fit_intercept=True).fit(md_reg_xs, md_reg_ys)
-                2d_coef=md_res.coef_ 
-                2d_ince=md_res.intercept_
+                md_coef=md_res.coef_ 
+                md_ince=md_res.intercept_
 
     
     for x in range(1,cur_size_x,2):
@@ -219,7 +219,7 @@ while step>0:#currently no recursive lorenzo
                 continue
             orig=cur_array[x][y]
             if level>=min_coeff_level:
-                pred=np.dot(np.array([cur_array[x-1][y]+cur_array[x+1][y]+cur_array[x][y-1]+cur_array[x][y+1]]),2d_coef)+2d_ince
+                pred=np.dot(np.array([cur_array[x-1][y]+cur_array[x+1][y]+cur_array[x][y-1]+cur_array[x][y+1]]),md_coef)+md_ince
             else:
                 pred=(cur_array[x-1][y]+cur_array[x+1][y]+cur_array[x][y-1]+cur_array[x][y+1])/4
             absloss+=abs(orig-pred)
@@ -310,8 +310,8 @@ while step>0:#currently no recursive lorenzo
                     md_reg_xs.append(np.array([cur_array[x-1][y],cur_array[x+1][y],cur_array[x][y-1],cur_array[x][y+1]],dtype=np.float64))
                     md_reg_ys.append(cur_array[x][y])
                     md_res=LinearRegression(fit_intercept=True).fit(md_reg_xs, md_reg_ys)
-                    2d_coef=md_res.coef_ 
-                    2d_ince=md_res.intercept_
+                    md_coef=md_res.coef_ 
+                    md_ince=md_res.intercept_
 
         for x in range(1,cur_size_x,2):
             for y in range(1,cur_size_y,2):
@@ -319,7 +319,7 @@ while step>0:#currently no recursive lorenzo
                     continue
                 orig=cur_array[x][y]
                 if level>=min_coeff_level:
-                    pred=np.dot(np.array([cur_array[x-1][y]+cur_array[x+1][y]+cur_array[x][y-1]+cur_array[x][y+1]]),2d_coef)+2d_ince
+                    pred=np.dot(np.array([cur_array[x-1][y]+cur_array[x+1][y]+cur_array[x][y-1]+cur_array[x][y+1]]),md_coef)+md_ince
                 else:
                     pred=(cur_array[x-1][y]+cur_array[x+1][y]+cur_array[x][y-1]+cur_array[x][y+1])/4
                 absloss+=abs(orig-pred)
@@ -349,15 +349,15 @@ while step>0:#currently no recursive lorenzo
                     md_reg_xs.append(np.array([cur_array[x-1][y-1],cur_array[x-1][y+1],cur_array[x+1][y-1],cur_array[x+1][y+1]],dtype=np.float64))
                     md_reg_ys.append(cur_array[x][y])
                     md_res=LinearRegression(fit_intercept=True).fit(md_reg_xs, md_reg_ys)
-                    2d_coef=md_res.coef_ 
-                    2d_ince=md_res.intercept_
+                    md_coef=md_res.coef_ 
+                    md_ince=md_res.intercept_
         for x in range(1,cur_size_x,2):
             for y in range(1,cur_size_y,2):
                 if x==cur_size_x-1 or y==cur_size_y-1:
                     continue
                 orig=cur_array[x][y]
                 if level>=min_coeff_level:
-                    pred=np.dot(np.array([cur_array[x-1][y-1],cur_array[x-1][y+1],cur_array[x+1][y-1],cur_array[x+1][y+1]]),2d_coef)+2d_ince
+                    pred=np.dot(np.array([cur_array[x-1][y-1],cur_array[x-1][y+1],cur_array[x+1][y-1],cur_array[x+1][y+1]]),md_coef)+md_ince
                 else:
                     pred=(cur_array[x-1][y-1]+cur_array[x-1][y+1]+cur_array[x+1][y-1]+cur_array[x+1][y+1])/4
                 absloss+=abs(orig-pred)
@@ -378,8 +378,8 @@ while step>0:#currently no recursive lorenzo
                     md_reg_xs.append(np.array([cur_array[x][y-1],cur_array[x][y+1],cur_array[x-1][y],cur_array[x+1][y]],dtype=np.float64))
                     md_reg_ys.append(cur_array[x][y])
                     md_res=LinearRegression(fit_intercept=True).fit(md_reg_xs, md_reg_ys)
-                    2d_coef=md_res.coef_ 
-                    2d_ince=md_res.intercept_
+                    md_coef=md_res.coef_ 
+                    md_ince=md_res.intercept_
 
         for x in range(0,cur_size_x):
             for y in range(1-(x%2),cur_size_y,2):
@@ -388,7 +388,7 @@ while step>0:#currently no recursive lorenzo
                 orig=cur_array[x][y]
                 if x and y:
                     if level>=min_coeff_level:
-                        pred=np.dot(2d_coef,np.array([cur_array[x][y-1],cur_array[x][y+1],cur_array[x-1][y],cur_array[x+1][y]]))+2d_ince
+                        pred=np.dot(md_coef,np.array([cur_array[x][y-1],cur_array[x][y+1],cur_array[x-1][y],cur_array[x+1][y]]))+md_ince
                     
                     else:
 
