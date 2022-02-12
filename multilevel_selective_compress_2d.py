@@ -574,6 +574,7 @@ while step>0:
     print ("Level %d finished. Selected algorithm: %s. Mean prediction abs loss: %f." % (level,selected_algo,mean_l1_loss))
     step=step//2
     level-=1
+    print(len(qs))
     #print(best_absloss)
     #print(cumulated_loss)
 
