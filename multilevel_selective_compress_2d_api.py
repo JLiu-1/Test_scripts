@@ -195,11 +195,11 @@ sample_rate=0.05,min_sampled_points=10,random_access=False):#lorenzo:only check 
                     absloss+=abs(orig-pred)
                 q,decomp=quantize(orig,pred,cur_eb)
            
-            cur_qs.append(q)
-            if q==0:
-                cur_us.append(decomp)
+                cur_qs.append(q)
+                if q==0:
+                    cur_us.append(decomp)
                 #absloss+=abs(decomp)
-            cur_array[x][y]=decomp
+                cur_array[x][y]=decomp
         if level>=min_coeff_level:
             md_reg_xs=[]
             md_reg_ys=[]
