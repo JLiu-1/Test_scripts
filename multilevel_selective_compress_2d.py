@@ -244,7 +244,7 @@ while step>0:
             cur_array[x][y]=decomp
 
     best_preds=np.copy(cur_array)
-    best_absloss=absloss+1e9
+    best_absloss=absloss
     best_qs=cur_qs.copy()
     best_us=cur_us.copy()
     selected_algo="interp_linear"
