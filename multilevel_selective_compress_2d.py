@@ -528,9 +528,11 @@ while step>0:#currently no recursive lorenzo
             us=us[:u_start]
             for x in range(cur_size_x):
                 for y in range(cur_size_y):
+                    
                     if max_step>0 and (x*step)%max_step==0 and (y*step)%max_step==0:
                         #print(x,y)
                         continue
+                    orig=best_preds[x][y]
                     f_01=best_preds[x-1][y] if x else 0
                 
                     f_10=best_preds[x][y-1] if y else 0
