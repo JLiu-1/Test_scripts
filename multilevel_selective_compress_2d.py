@@ -247,7 +247,7 @@ while step>0:#currently no recursive lorenzo
     best_qs=cur_qs.copy()
     best_us=cur_us.copy()
     selected_algo="interp_linear"
-    print(len(cur_qs))
+    #print(len(cur_qs))
     #cubic interp
     if args.cubic:
         print("cubic")
