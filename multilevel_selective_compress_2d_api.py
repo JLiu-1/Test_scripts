@@ -39,7 +39,7 @@ def quantize(data,pred,error_bound):
         #print("a")
         return 0,data
 
-def msc2d(array,error_bound,rate,maximum_rate,min_coeff_level,max_step,anchor_rate,x_preded=False,y_preded=False,multidim=True,lorenzo=-1,x_edge=True,y_edge=True,\
+def msc2d(array,error_bound,rate,maximum_rate,min_coeff_level,max_step,anchor_rate,x_preded=False,y_preded=False,multidim=True,lorenzo=-1,\
 sample_rate=0.05,min_sampled_points=10,random_access=False):#lorenzo:only check lorenzo fallback with level no larger than lorenzo level
 
     size_x,size_y=array.shape
@@ -408,7 +408,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False):#lorenzo:only check 
                     pred=(cur_array[x][y-1]+cur_array[x][y+1])/2
                 else:
                     pred=(cur_array[x-1][y]+cur_array[x+1][y])/2
-                if (not random_access) or level!=0 or (x!=cur_size_x-1 or last_x!=size_x-1) or (y!=cur_size_y-1 or last_y!=size_y-1)
+                if (not random_access) or level!=0 or (x!=cur_size_x-1 or last_x!=size_x-1) or (y!=cur_size_y-1 or last_y!=size_y-1):
                     absloss+=abs(orig-pred)
                 q,decomp=quantize(orig,pred,cur_eb)
                 cur_qs.append(q)
@@ -477,80 +477,80 @@ sample_rate=0.05,min_sampled_points=10,random_access=False):#lorenzo:only check 
         selected_algo="lorenzo"
     '''
     #Lorenzo fallback
-    if level<=lorenzo:
-        absloss=0
+        if level<=lorenzo:
+            absloss=0
         #cur_qs=[]
         #cur_us=[]
         #cur_array=np.copy(array[0:last_x+1:step,0:last_y+1:step])#reset cur_array
-        cur_orig_array=orig_array[0:last_x+1:step,0:last_y+1:step]
-        x_end_offset=1 if (last_x==size_x-1 and not x_edge and level==0) else 0
-        y_end_offset=1 if (last_y==size_y-1 and not y_edge and level==0) else 0
-        total_points=[(x,y) for x in range(cur_orig_array.shape[0]-1) for y in range(cur_orig_array.shape[1]-1) if (max_step<=0 or ((x*step)%max_step!=0 and (y*step)%max_step!=0))]
-        if len(total_points)<min_sampled_points:
-            num_sumples=total_points
-        else:
-            num_sumples=max(min_sampled_points,int(len(total_points)*sample_rate) )
-        sampled_points=random.sample(total_points,num_sumples)
-        for x,y in sampled_points:
-            orig=cur_orig_array[x][y]
-            f_01=cur_orig_array[x-1][y] if x else 0
-            if x and max_step>0 and ((x-1)*step)%max_step==0 and (y*step)%max_step==0:
-                f_01+=anchor_eb*(2*np.random.rand()-1)
-            elif x:
-                f_01+=cur_eb*(2*np.random.rand()-1)
+            cur_orig_array=orig_array[0:last_x+1:step,0:last_y+1:step]
+            x_end_offset=1 if (random_access and last_x==size_x-1 and not x_edge and level==0) else 0
+            y_end_offset=1 if (random_access and last_y==size_y-1 and not y_edge and level==0) else 0
+            total_points=[(x,y) for x in range(cur_orig_array.shape[0]-1) for y in range(cur_orig_array.shape[1]-1) if (max_step<=0 or ((x*step)%max_step!=0 and (y*step)%max_step!=0))]
+            if len(total_points)<min_sampled_points:
+                num_sumples=total_points
+            else:
+                num_sumples=max(min_sampled_points,int(len(total_points)*sample_rate) )
+            sampled_points=random.sample(total_points,num_sumples)
+            for x,y in sampled_points:
+                orig=cur_orig_array[x][y]
+                f_01=cur_orig_array[x-1][y] if x else 0
+                if x and max_step>0 and ((x-1)*step)%max_step==0 and (y*step)%max_step==0:
+                    f_01+=anchor_eb*(2*np.random.rand()-1)
+                elif x:
+                    f_01+=cur_eb*(2*np.random.rand()-1)
 
-            f_10=cur_orig_array[x][y-1] if y else 0
-            if y and max_step>0 and (x*step)%max_step==0 and ((y-1)*step)%max_step==0:
-                f_10+=anchor_eb*(2*np.random.rand()-1)
-            elif y:
-                f_10+=cur_eb*(2*np.random.rand()-1)
+                f_10=cur_orig_array[x][y-1] if y else 0
+                if y and max_step>0 and (x*step)%max_step==0 and ((y-1)*step)%max_step==0:
+                    f_10+=anchor_eb*(2*np.random.rand()-1)
+                elif y:
+                    f_10+=cur_eb*(2*np.random.rand()-1)
             
-            f_00=cur_orig_array[x-1][y-1] if x and y else 0
-            if x and y and max_step>0 and ((x-1)*step)%max_step==0 and ((y-1)*step)%max_step==0:
-                f_00+=anchor_eb*(2*np.random.rand()-1)
-            elif x and y:
-                f_00+=cur_eb*(2*np.random.rand()-1)
+                f_00=cur_orig_array[x-1][y-1] if x and y else 0
+                if x and y and max_step>0 and ((x-1)*step)%max_step==0 and ((y-1)*step)%max_step==0:
+                    f_00+=anchor_eb*(2*np.random.rand()-1)
+                elif x and y:
+                    f_00+=cur_eb*(2*np.random.rand()-1)
                 
-            pred=f_01+f_10-f_00
+                pred=f_01+f_10-f_00
 
-            absloss+=abs(orig-pred)
-        #print(absloss*len(total_points)/len(sampled_points))
-        #print(best_absloss)
-        #print(cumulated_loss)
-        if absloss*len(total_points)/len(sampled_points)<best_absloss+cumulated_loss:
-            selected_algo="lorenzo_fallback"
-            best_absloss=0
-            best_preds=array[0:last_x+1:step,0:last_y+1:step]
-            best_qs=[]
-            best_us=[]
+                absloss+=abs(orig-pred)
+            #print(absloss*len(total_points)/len(sampled_points))
+            #print(best_absloss)
+            #print(cumulated_loss)
+            if absloss*len(total_points)/len(sampled_points)<best_absloss+cumulated_loss:
+                selected_algo="lorenzo_fallback"
+                best_absloss=0
+                best_preds=array[0:last_x+1:step,0:last_y+1:step]
+                best_qs=[]
+                best_us=[]
            
             #qs[max_level]=qs[:maxlevel_q_start]
-            for i in range(max_level-1,level,-1):
-                qs[i]=[]
-            us=us[:u_start]
-            for x in range(cur_size_x-x_end_offset):
-                for y in range(cur_size_y-x_end_offset):
+                for i in range(max_level-1,level,-1):
+                    qs[i]=[]
+                us=us[:u_start]
+                for x in range(cur_size_x-x_end_offset):
+                    for y in range(cur_size_y-x_end_offset):
                     
-                    if max_step>0 and (x*step)%max_step==0 and (y*step)%max_step==0:
-                        #print(x,y)
-                        continue
-                    orig=best_preds[x][y]
-                    f_01=best_preds[x-1][y] if x else 0
+                        if max_step>0 and (x*step)%max_step==0 and (y*step)%max_step==0:
+                            #print(x,y)
+                            continue
+                        orig=best_preds[x][y]
+                        f_01=best_preds[x-1][y] if x else 0
                 
-                    f_10=best_preds[x][y-1] if y else 0
+                        f_10=best_preds[x][y-1] if y else 0
             
-                    f_00=best_preds[x-1][y-1] if x and y else 0
+                        f_00=best_preds[x-1][y-1] if x and y else 0
                 
-                    pred=f_01+f_10-f_00
+                        pred=f_01+f_10-f_00
                 
         
-                    best_absloss+=abs(orig-pred)
-                    q,decomp=quantize(orig,pred,cur_eb)
-                    best_qs.append(q)
-                    if q==0:
-                        best_us.append(decomp)
+                        best_absloss+=abs(orig-pred)
+                        q,decomp=quantize(orig,pred,cur_eb)
+                        best_qs.append(q)
+                        if q==0:
+                            best_us.append(decomp)
                 #absloss+=abs(decomp)
-                    best_preds[x][y]=decomp
+                        best_preds[x][y]=decomp
             
 
         #print(len(best_qs))
@@ -558,88 +558,94 @@ sample_rate=0.05,min_sampled_points=10,random_access=False):#lorenzo:only check 
 
 
 
-    mean_l1_loss=best_absloss/len(best_qs)
-    array[0:last_x+1:step,0:last_y+1:step]=best_preds
-    if selected_algo!="lorenzo_fallback":
-        cumulated_loss+=best_absloss
+        mean_l1_loss=best_absloss/len(best_qs)
+        array[0:last_x+1:step,0:last_y+1:step]=best_preds
+        if selected_algo!="lorenzo_fallback":
+            cumulated_loss+=best_absloss
         
-    else:
-        cumulated_loss=best_absloss
+        else:
+            cumulated_loss=best_absloss
         
-    #print(np.max(np.abs(array[0:last_x+1:step,0:last_y+1:step]-best_preds)))
+        #print(np.max(np.abs(array[0:last_x+1:step,0:last_y+1:step]-best_preds)))
     
-    #if args.lorenzo_fallback_check:
-    #    print(np.max(np.abs(orig_array-array))/rng)
-    qs[level]+=best_qs
-    us+=best_us
-    #print(len(qs))
-    print ("Level %d finished. Selected algorithm: %s. Mean prediction abs loss: %f." % (level,selected_algo,mean_l1_loss))
-    step=step//2
-    level-=1
-    #print(best_absloss)
-    #print(cumulated_loss)
+        #if args.lorenzo_fallback_check:
+        #    print(np.max(np.abs(orig_array-array))/rng)
+        qs[level]+=best_qs
+        us+=best_us
+        selected_algos.append(selected_algo)
+        #print(len(qs))
+        print ("Level %d finished. Selected algorithm: %s. Mean prediction abs loss: %f." % (level,selected_algo,mean_l1_loss))
+        step=step//2
+        level-=1
+        #print(best_absloss)
+        #print(cumulated_loss)
 
 
 
-def lorenzo_2d(array,x_start,x_end,y_start,y_end):
-    for x in range(x_start,x_end):
-        for y in range(y_start,y_end):
+    def lorenzo_2d(array,x_start,x_end,y_start,y_end):
+        for x in range(x_start,x_end):
+            for y in range(y_start,y_end):
 
-            orig=array[x][y]
+                orig=array[x][y]
         
-            f_01=array[x-1][y] if x else 0
-            f_10=array[x][y-1] if y else 0
+                f_01=array[x-1][y] if x else 0
+                f_10=array[x][y-1] if y else 0
             
-            f_00=array[x-1][y-1] if x and y else 0
+                f_00=array[x-1][y-1] if x and y else 0
                 
-            pred=f_01+f_10-f_00
+                pred=f_01+f_10-f_00
                 
         
                 
-            q,decomp=quantize(orig,pred,error_bound)
-            edge_qs.append(q)
-            if q==0:
-                us.append(decomp)
-            array[x][y]=decomp
+                q,decomp=quantize(orig,pred,error_bound)
+                edge_qs.append(q)
+                if q==0:
+                    us.append(decomp)
+                array[x][y]=decomp
+    offset_x=1 if random_access else 0
+    offset_y=1 if random_access else 0
+    lorenzo_2d(array,0,last_x+1,last_y+1,size_y-offset_y)
+    lorenzo_2d(array,last_x+1,size_x-offset_x,0,size_y-offset_y)
+    return qs,edge_qs,us,selected_algos
 
-lorenzo_2d(array,0,last_x+1,last_y+1,size_y)
-lorenzo_2d(array,last_x+1,size_x,0,size_y)
 
 
-
-
+if __name__=="__main__":
  
 
 
 
-parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser()
 
-parser.add_argument('--error','-e',type=float,default=1e-3)
-parser.add_argument('--input','-i',type=str)
-parser.add_argument('--output','-o',type=str)
-parser.add_argument('--quant','-q',type=str,default="ml2_q.dat")
-parser.add_argument('--unpred','-u',type=str,default="ml2_u.dat")
-parser.add_argument('--max_step','-s',type=int,default=-1)
-parser.add_argument('--min_coeff_level','-cl',type=int,default=99)
-parser.add_argument('--rate','-r',type=float,default=1.0)
-parser.add_argument('--maximum_rate','-m',type=float,default=10.0)
-parser.add_argument('--cubic','-c',type=int,default=1)
-parser.add_argument('--multidim','-d',type=int,default=1)
-parser.add_argument('--lorenzo_fallback_check','-l',type=int,default=0)
-parser.add_argument('--fallback_sample_ratio','-f',type=float,default=0.01)
+    parser.add_argument('--error','-e',type=float,default=1e-3)
+    parser.add_argument('--input','-i',type=str)
+    parser.add_argument('--output','-o',type=str)
+    parser.add_argument('--quant','-q',type=str,default="ml2_q.dat")
+    parser.add_argument('--unpred','-u',type=str,default="ml2_u.dat")
+    parser.add_argument('--max_step','-s',type=int,default=-1)
+    parser.add_argument('--min_coeff_level','-cl',type=int,default=99)
+    parser.add_argument('--rate','-r',type=float,default=1.0)
+    parser.add_argument('--maximum_rate','-m',type=float,default=10.0)
+    parser.add_argument('--cubic','-c',type=int,default=1)
+    parser.add_argument('--multidim','-d',type=int,default=1)
+    parser.add_argument('--lorenzo_fallback_check','-l',type=int,default=-1)
+    parser.add_argument('--fallback_sample_ratio','-f',type=float,default=0.01)
 #parser.add_argument('--level_rate','-lr',type=float,default=1.0)
-parser.add_argument('--anchor_rate','-a',type=float,default=0.0)
+    parser.add_argument('--anchor_rate','-a',type=float,default=0.0)
 
-parser.add_argument('--size_x','-x',type=int,default=1800)
-parser.add_argument('--size_y','-y',type=int,default=3600)
+    parser.add_argument('--size_x','-x',type=int,default=1800)
+    parser.add_argument('--size_y','-y',type=int,default=3600)
 #parser.add_argument('--level','-l',type=int,default=2)
 #parser.add_argument('--noise','-n',type=bool,default=False)
 #parser.add_argument('--intercept','-t',type=bool,default=False)
-args = parser.parse_args()
+    args = parser.parse_args()
+    array=np.fromfile(args.input,dtype=np.float32).reshape((args.size_x,args.size_y))
+    errorbound=args.error*(np.max(array)-np.min(array))
+    qs,edge_qs,us,_=msc2d(array,error_bound,args.rate,args.maximum_rate,args.min_coeff_level,args.max_step,args.anchor_rate,x_preded=False,y_preded=False,multidim=args.multidim,\
+        lorenzo=args.lorenzo_fallback_check,sample_rate=fallback_sample_ratio,min_sampled_points=100,random_access=False)
 
-
-quants=np.concatenate( (np.array(edge_qs,dtype=np.int32),np.array(qs,dtype=np.int32) ) )
-unpreds=np.array(us,dtype=np.float32)
-array.tofile(args.output)
-quants.tofile(args.quant)
-unpreds.tofile(args.unpred)
+    quants=np.concatenate( (np.array(edge_qs,dtype=np.int32),np.array(sum(qs,[]),dtype=np.int32) ) )
+    unpreds=np.array(us,dtype=np.float32)
+    array.tofile(args.output)
+    quants.tofile(args.quant)
+    unpreds.tofile(args.unpred)
