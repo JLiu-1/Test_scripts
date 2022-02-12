@@ -483,7 +483,7 @@ while step>0:#currently no recursive lorenzo
         if len(total_points)<=100:
             num_sumples=total_points
         else:
-        num_sumples=max(100,int(len(total_points)*args.fallback_sample_ratio) )
+            num_sumples=max(100,int(len(total_points)*args.fallback_sample_ratio) )
         sampled_points=random.sample(total_points,num_sumples)
         for x,y in sampled_points:
             orig=cur_orig_array[x][y]
