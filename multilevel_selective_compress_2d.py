@@ -550,7 +550,7 @@ while step>0:#currently no recursive lorenzo
                         best_us.append(decomp)
                 #absloss+=abs(decomp)
                     best_preds[x][y]=decomp
-            cumulated_loss=best_absloss
+            
 
         print(len(best_qs))
 
@@ -560,6 +560,8 @@ while step>0:#currently no recursive lorenzo
     mean_l1_loss=best_absloss/len(best_qs)
     if selected_algo!="lorenzo_fallback":
         cumulated_loss+=best_absloss
+    else:
+        cumulated_loss=best_absloss
     #print(np.max(np.abs(array[0:last_x+1:step,0:last_y+1:step]-best_preds)))
     array[0:last_x+1:step,0:last_y+1:step]=best_preds
     #if args.lorenzo_fallback_check:
@@ -570,6 +572,8 @@ while step>0:#currently no recursive lorenzo
     print ("Level %d finished. Selected algorithm: %s. Mean prediction abs loss: %f." % (level,selected_algo,mean_l1_loss))
     step=step//2
     level-=1
+    print(best_absloss)
+    print(cumulated_loss)
 
 
 
