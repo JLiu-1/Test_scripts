@@ -518,9 +518,9 @@ while step>0:
             pred=f_01+f_10-f_00
 
             absloss+=abs(orig-pred)
-        print(absloss*len(total_points)/len(sampled_points))
-        print(best_absloss)
-        print(cumulated_loss)
+        #print(absloss*len(total_points)/len(sampled_points))
+        #print(best_absloss)
+        #print(cumulated_loss)
         if absloss*len(total_points)/len(sampled_points)<best_absloss+cumulated_loss:
             selected_algo="lorenzo_fallback"
             best_absloss=0
@@ -575,8 +575,8 @@ while step>0:
     print ("Level %d finished. Selected algorithm: %s. Mean prediction abs loss: %f." % (level,selected_algo,mean_l1_loss))
     step=step//2
     level-=1
-    print(best_absloss)
-    print(cumulated_loss)
+    #print(best_absloss)
+    #print(cumulated_loss)
 
 
 
