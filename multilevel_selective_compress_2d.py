@@ -139,7 +139,7 @@ level=max_level-1
 q_start=len(qs)
 u_start=len(us)
 cumulated_loss=0.0
-while step>0:#currently no recursive lorenzo
+while step>0:
     cur_qs=[]
     cur_us=[]
     cur_eb=error_bound/min(args.maximum_rate,(rate**level))
