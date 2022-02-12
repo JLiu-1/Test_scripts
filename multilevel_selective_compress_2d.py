@@ -152,6 +152,7 @@ while step>0:#currently no recursive lorenzo
     #linear interp
     absloss=0
     selected_algo="none"
+    cumulated_loss=0.0
     if level>=min_coeff_level:
         reg_xs=[]
         reg_ys=[]
@@ -244,6 +245,7 @@ while step>0:#currently no recursive lorenzo
     best_qs=cur_qs.copy()
     best_us=cur_us.copy()
     selected_algo="interp_linear"
+
     #cubic interp
     if args.cubic:
         absloss=0
@@ -511,7 +513,7 @@ while step>0:#currently no recursive lorenzo
 
             absloss+=abs(orig-pred)
 
-        if absloss/len(sampled_points)<best_absloss/best_preds.size:
+        if absloss*len(total_points)/len(sampled_points)<best_absloss+cumulated_loss:
             selected_algo="lorenzo_fallback"
             best_absloss=0
             best_preds=array[0:last_x+1:step,0:last_y+1:step]
@@ -543,6 +545,7 @@ while step>0:#currently no recursive lorenzo
 
 
     mean_l1_loss=best_absloss/best_preds.size
+    cumulated_loss+=best_absloss
     #print(np.max(np.abs(array[0:last_x+1:step,0:last_y+1:step]-best_preds)))
     array[0:last_x+1:step,0:last_y+1:step]=best_preds
     qs+=best_qs
