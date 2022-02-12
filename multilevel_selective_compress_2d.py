@@ -554,7 +554,7 @@ while step>0:#currently no recursive lorenzo
                     best_preds[x][y]=decomp
             
 
-        print(len(best_qs))
+        #print(len(best_qs))
 
 
 
