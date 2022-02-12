@@ -6,6 +6,7 @@ import argparse
 #import torch.nn as nn
 from sklearn.linear_model import LinearRegression
 import math
+import random
 def quantize(data,pred,error_bound):
     radius=32768
     
@@ -51,6 +52,8 @@ parser.add_argument('--rate','-r',type=float,default=1.0)
 parser.add_argument('--maximum_rate','-m',type=float,default=10.0)
 parser.add_argument('--cubic','-c',type=bool,default=True)
 parser.add_argument('--multidim','-d',type=bool,default=True)
+parser.add_argument('--lorenzo_fallback_check','-l',type=bool,default=False)
+parser.add_argument('--fallback_sample_ratio','-f',type=float,default=0.01)
 #parser.add_argument('--level_rate','-lr',type=float,default=1.0)
 parser.add_argument('--anchor_rate','-a',type=float,default=0.0)
 
@@ -64,6 +67,8 @@ args = parser.parse_args()
 size_x=args.size_x
 size_y=args.size_y
 array=np.fromfile(args.input,dtype=np.float32).reshape((size_x,size_y))
+if args.lorenzo_fallback_check:
+    orig_array=np.copy(array)
 rng=(np.max(array)-np.min(array))
 error_bound=args.error*rng
 max_step=args.max_step
@@ -444,6 +449,7 @@ while step>0:#currently no recursive lorenzo
             else:
 
                 f_01=cur_array[x-1][y] if x else 0
+                
                 f_10=cur_array[x][y-1] if y else 0
             
                 f_00=cur_array[x-1][y-1] if x and y else 0
@@ -466,6 +472,74 @@ while step>0:#currently no recursive lorenzo
         best_qs=cur_qs.copy()
         best_us=cur_us.copy()
         selected_algo="lorenzo"
+
+    if lorenzo_fallback_check:
+        absloss=0
+        #cur_qs=[]
+        #cur_us=[]
+        #cur_array=np.copy(array[0:last_x+1:step,0:last_y+1:step])#reset cur_array
+        cur_orig_array=orig_array[0:last_x+1:step,0:last_y+1:step]
+        total_points=[(x,y) for x in range(cur_orig_array.shape[0]) for y in range(cur_orig_array.shape[1]) if (max_step<=0 or ((x*step)%max_step!=0 and (y*step)%max_step!=0))]
+        if len(total_points)<=100:
+            num_sumples=total_points
+        else:
+        num_sumples=max(100,int(len(total_points)*args.fallback_sample_ratio) )
+        sampled_points=random.sample(total_points,num_sumples)
+        for x,y in sampled_points:
+            orig=cur_orig_array[x][y]
+            f_01=cur_orig_array[x-1][y] if x else 0
+            if x and args.max_step>0 and ((x-1)*step)%max_step==0 and (y*step)%max_step==0:
+                f_01+=anchor_eb*(2*random.rand()-1)
+            elif x:
+                f_01+=cur_eb*(2*random.rand()-1)
+
+            f_10=cur_orig_array[x][y-1] if y else 0
+            if y and args.max_step>0 and (x*step)%max_step==0 and ((y-1)*step)%max_step==0:
+                f_10+=anchor_eb*(2*random.rand()-1)
+            elif y:
+                f_10+=cur_eb*(2*random.rand()-1)
+            
+            f_00=cur_orug_array[x-1][y-1] if x and y else 0
+            if x and y and args.max_step>0 and ((x-1)*step)%max_step==0 and ((y-1)*step)%max_step==0:
+                f_00+=anchor_eb*(2*random.rand()-1)
+            elif y:
+                f_00+=cur_eb*(2*random.rand()-1)
+                
+            pred=f_01+f_10-f_00
+
+            absloss+=abs(orig-pred)
+
+        if absloss/len(sampled_points)<best_absloss/best_preds.size:
+            selected_algo="lorenzo_fallback"
+            best_absloss=0
+            best_preds=array[0:last_x+1:step,0:last_y+1:step]
+            best_qs=[]
+            best_us=[]
+            for x in range(cur_size_x):
+                for y in range(cur_size_y):
+                    if max_step>0 and (x*step)%max_step==0 and (y*step)%max_step==0:
+                        continue
+                    f_01=best_preds[x-1][y] if x else 0
+                
+                    f_10=cur_array[x][y-1] if y else 0
+            
+                    f_00=cur_array[x-1][y-1] if x and y else 0
+                
+                    pred=f_01+f_10-f_00
+                
+        
+                    best_absloss+=abs(orig-pred)
+                    q,decomp=quantize(orig,pred,cur_eb)
+                    if q==0:
+                        best_us.append(decomp)
+                #absloss+=abs(decomp)
+                    best_preds[x][y]=decomp
+
+
+
+
+
+
     mean_l1_loss=best_absloss/best_preds.size
     #print(np.max(np.abs(array[0:last_x+1:step,0:last_y+1:step]-best_preds)))
     array[0:last_x+1:step,0:last_y+1:step]=best_preds
