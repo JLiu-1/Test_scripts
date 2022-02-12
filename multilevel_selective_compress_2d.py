@@ -245,7 +245,7 @@ while step>0:#currently no recursive lorenzo
     best_qs=cur_qs.copy()
     best_us=cur_us.copy()
     selected_algo="interp_linear"
-
+    print(len(cur_qs))
     #cubic interp
     if args.cubic:
         absloss=0
@@ -541,7 +541,7 @@ while step>0:#currently no recursive lorenzo
                 #absloss+=abs(decomp)
                     best_preds[x][y]=decomp
 
-
+        print(len(best_qs))
 
 
 
