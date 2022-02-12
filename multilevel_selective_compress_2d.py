@@ -522,13 +522,13 @@ while step>0:#currently no recursive lorenzo
             for x in range(cur_size_x):
                 for y in range(cur_size_y):
                     if max_step>0 and (x*step)%max_step==0 and (y*step)%max_step==0:
-                        print(x,y)
+                        #print(x,y)
                         continue
                     f_01=best_preds[x-1][y] if x else 0
                 
-                    f_10=cur_array[x][y-1] if y else 0
+                    f_10=best_preds[x][y-1] if y else 0
             
-                    f_00=cur_array[x-1][y-1] if x and y else 0
+                    f_00=best_preds[x-1][y-1] if x and y else 0
                 
                     pred=f_01+f_10-f_00
                 
