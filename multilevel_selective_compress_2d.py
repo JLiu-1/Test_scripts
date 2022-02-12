@@ -136,6 +136,8 @@ last_x=((size_x-1)//max_step)*max_step
 last_y=((size_y-1)//max_step)*max_step   
 step=max_step//2
 level=max_level-1
+q_start=len(qs)
+u_start=len(us)
 while step>0:#currently no recursive lorenzo
     cur_qs=[]
     cur_us=[]
@@ -521,6 +523,9 @@ while step>0:#currently no recursive lorenzo
             best_preds=array[0:last_x+1:step,0:last_y+1:step]
             best_qs=[]
             best_us=[]
+           
+            qs=qs[:q_start]
+            us=us[:u_start]
             for x in range(cur_size_x):
                 for y in range(cur_size_y):
                     if max_step>0 and (x*step)%max_step==0 and (y*step)%max_step==0:
