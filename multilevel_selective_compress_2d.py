@@ -427,11 +427,12 @@ while step>0:#currently no recursive lorenzo
             best_qs=cur_qs.copy()
             best_us=cur_us.copy()
     #lorenzo
+    '''
     cur_array=np.copy(array[0:last_x+1:step,0:last_y+1:step])#reset cur_array
     absloss=0
     cur_qs=[]
     cur_us=[]
-    '''
+    
     if max_level>=min_coeff_level:
         reg_xs=[]
         reg_ys=[]
@@ -444,7 +445,7 @@ while step>0:#currently no recursive lorenzo
                 res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
                 coef=res.coef_ 
                 ince=res.intercept_
-    '''
+    
     for x in range(cur_size_x):
         for y in range(1-(x%2),cur_size_y,2-(x%2)):
             orig=cur_array[x][y]
@@ -476,7 +477,8 @@ while step>0:#currently no recursive lorenzo
         best_qs=cur_qs.copy()
         best_us=cur_us.copy()
         selected_algo="lorenzo"
-
+    '''
+    #Lorenzo fallback
     if args.lorenzo_fallback_check:
         absloss=0
         #cur_qs=[]
