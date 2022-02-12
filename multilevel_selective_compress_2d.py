@@ -473,7 +473,7 @@ while step>0:#currently no recursive lorenzo
         best_us=cur_us.copy()
         selected_algo="lorenzo"
 
-    if lorenzo_fallback_check:
+    if args.lorenzo_fallback_check:
         absloss=0
         #cur_qs=[]
         #cur_us=[]
