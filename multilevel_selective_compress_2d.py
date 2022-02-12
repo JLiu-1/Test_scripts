@@ -129,7 +129,7 @@ if max_step>0:
     else:
         anchor_eb=0
 else:
-    #todo,some preparations before level start
+    pass#todo,some preparations before level start
 #print(len(qs))
 
 last_x=((size_x-1)//max_step)*max_step
