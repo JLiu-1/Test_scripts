@@ -39,218 +39,206 @@ def quantize(data,pred,error_bound):
         #print("a")
         return 0,data
 
-parser = argparse.ArgumentParser()
+def msc2d(array,error_bound,rate,maximum_rate,min_coeff_level,max_step,anchor_rate,x_preded=False,y_preded=False,multidim=True,lorenzo=-1,x_edge=True,y_edge=True,\
+sample_rate=0.05,min_sampled_points=10,random_access=False):#lorenzo:only check lorenzo fallback with level no larger than lorenzo level
 
-parser.add_argument('--error','-e',type=float,default=1e-3)
-parser.add_argument('--input','-i',type=str)
-parser.add_argument('--output','-o',type=str)
-parser.add_argument('--quant','-q',type=str,default="ml2_q.dat")
-parser.add_argument('--unpred','-u',type=str,default="ml2_u.dat")
-parser.add_argument('--max_step','-s',type=int,default=-1)
-parser.add_argument('--min_coeff_level','-cl',type=int,default=99)
-parser.add_argument('--rate','-r',type=float,default=1.0)
-parser.add_argument('--maximum_rate','-m',type=float,default=10.0)
-parser.add_argument('--cubic','-c',type=int,default=1)
-parser.add_argument('--multidim','-d',type=int,default=1)
-parser.add_argument('--lorenzo_fallback_check','-l',type=int,default=0)
-parser.add_argument('--fallback_sample_ratio','-f',type=float,default=0.01)
-#parser.add_argument('--level_rate','-lr',type=float,default=1.0)
-parser.add_argument('--anchor_rate','-a',type=float,default=0.0)
-
-parser.add_argument('--size_x','-x',type=int,default=1800)
-parser.add_argument('--size_y','-y',type=int,default=3600)
-#parser.add_argument('--level','-l',type=int,default=2)
-#parser.add_argument('--noise','-n',type=bool,default=False)
-#parser.add_argument('--intercept','-t',type=bool,default=False)
-args = parser.parse_args()
-
-size_x=args.size_x
-size_y=args.size_y
-array=np.fromfile(args.input,dtype=np.float32).reshape((size_x,size_y))
-if args.lorenzo_fallback_check:
-    orig_array=np.copy(array)
-rng=(np.max(array)-np.min(array))
-error_bound=args.error*rng
-max_step=args.max_step
-rate=args.rate
-
-
-
-qs=[]
-
-us=[]
-lorenzo_qs=[]
-min_coeff_level=args.min_coeff_level
-#anchor=args.anchor
-if max_step>0:
+    size_x,size_y=array.shape
+    #array=np.fromfile(args.input,dtype=np.float32).reshape((size_x,size_y))
+    if lorenzo>=0:
+        orig_array=np.copy(array)
+    if random_access and lorenzo>=0:
+        lorenzo=0
+    #error_bound=args.error*rng
+    #max_step=args.max_step
+    #rate=args.rate
     max_level=int(math.log(max_step,2))
-    anchor_rate=args.anchor_rate
-    if anchor_rate>0:
-        anchor_eb=error_bound/anchor_rate
-        print("Anchor eb:%f" % anchor_eb)
+    selected_algos=[]
 
-        if max_level>=min_coeff_level:
-            reg_xs=[]
-            reg_ys=[]
-        for x in range(max_step,size_x,max_step):
-            for y in range(max_step,size_y,max_step):
-                reg_xs.append(np.array([array[x-max_step][y-max_step],array[x-max_step][y],array[x][y-max_step]],dtype=np.float64))
-                reg_ys.append(array[x][y])
-                res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
-                coef=res.coef_ 
-                ince=res.intercept_
+
+    qs=[ [] for i in range(max_level+1)]
+
+    us=[]
+    edge_qs=[]
+#min_coeff_level=args.min_coeff_level
+#anchor=args.anchor
+    if max_step>0:
+    
+    #anchor_rate=args.anchor_rate
+        if anchor_rate>0:
+            anchor_eb=error_bound/anchor_rate
+            print("Anchor eb:%f" % anchor_eb)
+
+            if max_level>=min_coeff_level:
+                reg_xs=[]
+                reg_ys=[]
+            for x in range(max_step,size_x,max_step):
+                for y in range(max_step,size_y,max_step):
+                    reg_xs.append(np.array([array[x-max_step][y-max_step],array[x-max_step][y],array[x][y-max_step]],dtype=np.float64))
+                    reg_ys.append(array[x][y])
+                    res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
+                    coef=res.coef_ 
+                    ince=res.intercept_
 
  
-   
-        for x in range(0,size_x,max_step):
-            for y in range(0,size_y,max_step):
-                orig=array[x][y]
-                if x and y and max_level>=min_coeff_level:
-                    reg_block=np.array([array[x-max_step][y-max_step],array[x-max_step][y],array[x][y-max_step]],dtype=np.float64)
-                    pred=np.dot(reg_block,coef)+ince
+            startx=max_step if x_preded else 0
+            starty=max_step if y_preded else 0
+
+            for x in range(startx,size_x,max_step):
+                for y in range(starty,size_y,max_step):
+                    orig=array[x][y]
+                    if x and y and max_level>=min_coeff_level:
+                        reg_block=np.array([array[x-max_step][y-max_step],array[x-max_step][y],array[x][y-max_step]],dtype=np.float64)
+                        pred=np.dot(reg_block,coef)+ince
 
             
                 
-                else:
-                    f_01=array[x-max_step][y] if x else 0
-                    f_10=array[x][y-max_step] if y else 0
+                    else:
+                        f_01=array[x-max_step][y] if x else 0
+                        f_10=array[x][y-max_step] if y else 0
             
-                    f_00=array[x-max_step][y-max_step] if x and y else 0
+                        f_00=array[x-max_step][y-max_step] if x and y else 0
                 
-                    pred=f_01+f_10-f_00
+                        pred=f_01+f_10-f_00
                 
         
                 
-                q,decomp=quantize(orig,pred,anchor_eb)
-                qs.append(q)
-                if q==0:
-                    us.append(decomp)
-                array[x][y]=decomp
+                    q,decomp=quantize(orig,pred,anchor_eb)
+                    qs[max_level].append(q)
+                    if q==0:
+                        us.append(decomp)
+                    array[x][y]=decomp
+        else:
+            anchor_eb=0
     else:
-        anchor_eb=0
-else:
-    pass#todo,some preparations before level start
+        pass#raise error
 #print(len(qs))
 
-last_x=((size_x-1)//max_step)*max_step
-last_y=((size_y-1)//max_step)*max_step   
-step=max_step//2
-level=max_level-1
-q_start=len(qs)
-u_start=len(us)
-cumulated_loss=0.0
-while step>0:
-    cur_qs=[]
-    cur_us=[]
-    cur_eb=error_bound/min(args.maximum_rate,(rate**level))
-    cur_array=np.copy(array[0:last_x+1:step,0:last_y+1:step])
-    cur_size_x,cur_size_y=cur_array.shape
+    last_x=((size_x-1)//max_step)*max_step
+    last_y=((size_y-1)//max_step)*max_step   
+    step=max_step//2
+    level=max_level-1
+    maxlevel_q_start=len(qs[max_level])
+    u_start=len(us)
+    cumulated_loss=0.0
+    while step>0:
+        cur_qs=[]
+        cur_us=[]
+        cur_eb=error_bound/min(maximum_rate,(rate**level))
+        cur_array=np.copy(array[0:last_x+1:step,0:last_y+1:step])
+        cur_size_x,cur_size_y=cur_array.shape
     #print(cur_size_x,cur_size_y)
-    print("Level %d started. Current step: %d. Current error_bound: %s." % (level,step,cur_eb))
-    best_preds=None#need to copy
-    best_absloss=None
-    best_qs=[]#need to copy
-    best_us=[]#need to copy
-
+        print("Level %d started. Current step: %d. Current error_bound: %s." % (level,step,cur_eb))
+        best_preds=None#need to copy
+        best_absloss=None
+        best_qs=[]#need to copy
+        best_us=[]#need to copy
+        xstart=2 if x_preded else 0
+        ystart=2 if y_preded else 0
     #linear interp
-    absloss=0
-    selected_algo="none"
-    
-    if level>=min_coeff_level:
-        reg_xs=[]
-        reg_ys=[]
-        for x in range(0,cur_size_x,2):
-            for y in range(1,cur_size_y,2):
-                reg_xs.append(np.array([cur_array[x][y-1],cur_array[x][y+1]],dtype=np.float64))
-                reg_ys.append(cur_array[x][y])
-                res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
-                coef=res.coef_ 
-                ince=res.intercept_
- 
+        absloss=0
+        selected_algo="none"
+        
+        if level>=min_coeff_level:
+            reg_xs=[]
+            reg_ys=[]
+            for x in range(0,cur_size_x,2):
+                for y in range(1,cur_size_y,2):
+                    reg_xs.append(np.array([cur_array[x][y-1],cur_array[x][y+1]],dtype=np.float64))
+                    reg_ys.append(cur_array[x][y])
+                    res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
+                    coef=res.coef_ 
+                    ince=res.intercept_
+        
 
-    for x in range(0,cur_size_x,2):
-        for y in range(1,cur_size_y,2):
-            if y==cur_size_y-1:
-                continue
-            orig=cur_array[x][y]
-            if level>=min_coeff_level:
-                pred= np.dot( np.array([cur_array[x][y-1],cur_array[x][y+1]]),coef )+ince 
-            else:
-                pred=(cur_array[x][y-1]+cur_array[x][y+1])/2
-            absloss+=abs(orig-pred)
-            q,decomp=quantize(orig,pred,cur_eb)
-            cur_qs.append(q)
+        for x in range(xstart,cur_size_x,2):
+            for y in range(1,cur_size_y,2):
+                if y==cur_size_y-1:
+                    continue
+                orig=cur_array[x][y]
+                if level>=min_coeff_level:
+                    pred= np.dot( np.array([cur_array[x][y-1],cur_array[x][y+1]]),coef )+ince 
+                else:
+                    pred=(cur_array[x][y-1]+cur_array[x][y+1])/2
+                if (not random_access) or level!=0 or x!=cur_size_x-1 or last_x!=size_x-1:
+                    absloss+=abs(orig-pred)
+                q,decomp=quantize(orig,pred,cur_eb)
+                cur_qs.append(q)
             
 
-            if q==0:
-                cur_us.append(decomp)
+                if q==0:
+                    cur_us.append(decomp)
                 #absloss+=abs(decomp)
-            cur_array[x][y]=decomp     
-    if level>=min_coeff_level:
-        reg_xs=[]
-        reg_ys=[]
+                cur_array[x][y]=decomp    
+
+
+
+        if level>=min_coeff_level:
+            reg_xs=[]
+            reg_ys=[]
+            for x in range(1,cur_size_x,2):
+                for y in range(ystart,cur_size_y,2):
+                    reg_xs.append(np.array([cur_array[x-1][y],cur_array[x+1][y]],dtype=np.float64))
+                    reg_ys.append(cur_array[x][y])
+                    res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
+                    coef=res.coef_ 
+                    ince=res.intercept_
         for x in range(1,cur_size_x,2):
-            for y in range(0,cur_size_y,2):
-                reg_xs.append(np.array([cur_array[x-1][y],cur_array[x+1][y]],dtype=np.float64))
-                reg_ys.append(cur_array[x][y])
-                res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
-                coef=res.coef_ 
-                ince=res.intercept_
-    for x in range(1,cur_size_x,2):
-        for y in range(0,cur_size_y,2):
-            if x==cur_size_x-1:
-                continue
-            orig=cur_array[x][y]
-            if level>=min_coeff_level:
-                pred= np.dot( np.array([cur_array[x-1][y],cur_array[x+1][y]]),coef )+ince 
-            else:
-                pred=(cur_array[x-1][y]+cur_array[x+1][y])/2
-            absloss+=abs(orig-pred)
-            q,decomp=quantize(orig,pred,cur_eb)
+            for y in range(ystart,cur_size_y,2):
+                if x==cur_size_x-1:
+                    continue
+                orig=cur_array[x][y]
+                if level>=min_coeff_level:
+                    pred= np.dot( np.array([cur_array[x-1][y],cur_array[x+1][y]]),coef )+ince 
+                else:
+                    pred=(cur_array[x-1][y]+cur_array[x+1][y])/2
+                if (not random_access) or level!=0 or y!=cur_size_y-1 or last_y!=size_y-1:
+                    absloss+=abs(orig-pred)
+                q,decomp=quantize(orig,pred,cur_eb)
            
             cur_qs.append(q)
             if q==0:
                 cur_us.append(decomp)
                 #absloss+=abs(decomp)
             cur_array[x][y]=decomp
-    if level>=min_coeff_level:
-        md_reg_xs=[]
-        md_reg_ys=[]
-        for x in range(1,cur_size_x,2):
-            for y in range(1,cur_size_y,2):
-                md_reg_xs.append(np.array([cur_array[x-1][y],cur_array[x+1][y],cur_array[x][y-1],cur_array[x][y+1]],dtype=np.float64))
-                md_reg_ys.append(cur_array[x][y])
-                md_res=LinearRegression(fit_intercept=True).fit(md_reg_xs, md_reg_ys)
-                md_coef=md_res.coef_ 
-                md_ince=md_res.intercept_
+        if level>=min_coeff_level:
+            md_reg_xs=[]
+            md_reg_ys=[]
+            for x in range(1,cur_size_x,2):
+                for y in range(1,cur_size_y,2):
+                    md_reg_xs.append(np.array([cur_array[x-1][y],cur_array[x+1][y],cur_array[x][y-1],cur_array[x][y+1]],dtype=np.float64))
+                    md_reg_ys.append(cur_array[x][y])
+                    md_res=LinearRegression(fit_intercept=True).fit(md_reg_xs, md_reg_ys)
+                    md_coef=md_res.coef_ 
+                    md_ince=md_res.intercept_
 
     
-    for x in range(1,cur_size_x,2):
-        for y in range(1,cur_size_y,2):
-            if x==cur_size_x-1 or y==cur_size_y-1:
-                continue
-            orig=cur_array[x][y]
-            if level>=min_coeff_level:
-                pred=np.dot(np.array([cur_array[x-1][y],cur_array[x+1][y],cur_array[x][y-1],cur_array[x][y+1]]),md_coef)+md_ince
-            else:
-                pred=(cur_array[x-1][y]+cur_array[x+1][y]+cur_array[x][y-1]+cur_array[x][y+1])/4
-            absloss+=abs(orig-pred)
-            q,decomp=quantize(orig,pred,cur_eb)
+        for x in range(1,cur_size_x,2):
+            for y in range(1,cur_size_y,2):
+                if x==cur_size_x-1 or y==cur_size_y-1:
+                    continue
+                orig=cur_array[x][y]
+                if level>=min_coeff_level:
+                    pred=np.dot(np.array([cur_array[x-1][y],cur_array[x+1][y],cur_array[x][y-1],cur_array[x][y+1]]),md_coef)+md_ince
+                else:
+                    pred=(cur_array[x-1][y]+cur_array[x+1][y]+cur_array[x][y-1]+cur_array[x][y+1])/4
+                absloss+=abs(orig-pred)
+                q,decomp=quantize(orig,pred,cur_eb)
             
-            cur_qs.append(q)
-            if q==0:
-                cur_us.append(decomp)
+                cur_qs.append(q)
+                if q==0:
+                    cur_us.append(decomp)
                 #absloss+=abs(decomp)
-            cur_array[x][y]=decomp
+                cur_array[x][y]=decomp
 
-    best_preds=np.copy(cur_array)
-    best_absloss=absloss
-    best_qs=cur_qs.copy()
-    best_us=cur_us.copy()
-    selected_algo="interp_linear"
+        best_preds=np.copy(cur_array)
+        best_absloss=absloss
+        best_qs=cur_qs.copy()
+        best_us=cur_us.copy()
+        selected_algo="interp_linear"
     #print(len(cur_qs))
     #cubic interp
-    if args.cubic:
+    cubic=True
+    if cubic:
         #print("cubic")
         absloss=0
         cur_qs=[]
@@ -268,7 +256,7 @@ while step>0:
                     res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
                     coef=res.coef_ 
                     ince=res.intercept_
-        for x in range(0,cur_size_x,2):
+        for x in range(xstart,cur_size_x,2):
             for y in range(1,cur_size_y,2):
                 if y==cur_size_y-1:
                     continue
@@ -280,7 +268,8 @@ while step>0:
                         pred=(-cur_array[x][y-3]+9*cur_array[x][y-1]+9*cur_array[x][y+1]-cur_array[x][y+3])/16
                 else:
                     pred=(cur_array[x][y-1]+cur_array[x][y+1])/2
-                absloss+=abs(orig-pred)
+                if (not random_access) or level!=0 or x!=cur_size_x-1 or last_x!=size_x-1:
+                    absloss+=abs(orig-pred)
                 q,decomp=quantize(orig,pred,cur_eb)
                 cur_qs.append(q)
                 
@@ -301,7 +290,7 @@ while step>0:
                     coef=res.coef_ 
                     ince=res.intercept_
         for x in range(1,cur_size_x,2):
-            for y in range(0,cur_size_y,2):
+            for y in range(ystart,cur_size_y,2):
                 if x==cur_size_x-1:
                     continue
                 orig=cur_array[x][y]
@@ -312,7 +301,8 @@ while step>0:
                         pred=(-cur_array[x-3][y]+9*cur_array[x-1][y]+9*cur_array[x+1][y]-cur_array[x+3][y])/16
                 else:
                     pred=(cur_array[x-1][y]+cur_array[x+1][y])/2
-                absloss+=abs(orig-pred)
+                if (not random_access) or level!=0 or y!=cur_size_y-1 or last_y!=size_y-1:
+                    absloss+=abs(orig-pred)
                 q,decomp=quantize(orig,pred,cur_eb)
                 
                 cur_qs.append(q)
@@ -354,7 +344,7 @@ while step>0:
             best_absloss=absloss
             best_qs=cur_qs.copy()
             best_us=cur_us.copy()
-    if args.multidim:
+    if multidim:
         absloss=0
         cur_qs=[]
         cur_us=[]
@@ -400,7 +390,11 @@ while step>0:
                     md_ince=md_res.intercept_
 
         for x in range(0,cur_size_x):
+            if x==0 and xstart!=0:
+                continue
             for y in range(1-(x%2),cur_size_y,2):
+                if y==0 and ystart!=0:
+                    continue
                 
                 orig=cur_array[x][y]
                 if x and y and x!=cur_size_x-1 and y!=cur_size_y-1:
@@ -414,7 +408,8 @@ while step>0:
                     pred=(cur_array[x][y-1]+cur_array[x][y+1])/2
                 else:
                     pred=(cur_array[x-1][y]+cur_array[x+1][y])/2
-                absloss+=abs(orig-pred)
+                if (not random_access) or level!=0 or (x!=cur_size_x-1 or last_x!=size_x-1) or (y!=cur_size_y-1 or last_y!=size_y-1)
+                    absloss+=abs(orig-pred)
                 q,decomp=quantize(orig,pred,cur_eb)
                 cur_qs.append(q)
             
@@ -482,34 +477,36 @@ while step>0:
         selected_algo="lorenzo"
     '''
     #Lorenzo fallback
-    if args.lorenzo_fallback_check:
+    if level<=lorenzo:
         absloss=0
         #cur_qs=[]
         #cur_us=[]
         #cur_array=np.copy(array[0:last_x+1:step,0:last_y+1:step])#reset cur_array
         cur_orig_array=orig_array[0:last_x+1:step,0:last_y+1:step]
-        total_points=[(x,y) for x in range(cur_orig_array.shape[0]) for y in range(cur_orig_array.shape[1]) if (max_step<=0 or ((x*step)%max_step!=0 and (y*step)%max_step!=0))]
-        if len(total_points)<=100:
+        x_end_offset=1 if (last_x==size_x-1 and not x_edge and level==0) else 0
+        y_end_offset=1 if (last_y==size_y-1 and not y_edge and level==0) else 0
+        total_points=[(x,y) for x in range(cur_orig_array.shape[0]-1) for y in range(cur_orig_array.shape[1]-1) if (max_step<=0 or ((x*step)%max_step!=0 and (y*step)%max_step!=0))]
+        if len(total_points)<min_sampled_points:
             num_sumples=total_points
         else:
-            num_sumples=max(100,int(len(total_points)*args.fallback_sample_ratio) )
+            num_sumples=max(min_sampled_points,int(len(total_points)*sample_rate) )
         sampled_points=random.sample(total_points,num_sumples)
         for x,y in sampled_points:
             orig=cur_orig_array[x][y]
             f_01=cur_orig_array[x-1][y] if x else 0
-            if x and args.max_step>0 and ((x-1)*step)%max_step==0 and (y*step)%max_step==0:
+            if x and max_step>0 and ((x-1)*step)%max_step==0 and (y*step)%max_step==0:
                 f_01+=anchor_eb*(2*np.random.rand()-1)
             elif x:
                 f_01+=cur_eb*(2*np.random.rand()-1)
 
             f_10=cur_orig_array[x][y-1] if y else 0
-            if y and args.max_step>0 and (x*step)%max_step==0 and ((y-1)*step)%max_step==0:
+            if y and max_step>0 and (x*step)%max_step==0 and ((y-1)*step)%max_step==0:
                 f_10+=anchor_eb*(2*np.random.rand()-1)
             elif y:
                 f_10+=cur_eb*(2*np.random.rand()-1)
             
             f_00=cur_orig_array[x-1][y-1] if x and y else 0
-            if x and y and args.max_step>0 and ((x-1)*step)%max_step==0 and ((y-1)*step)%max_step==0:
+            if x and y and max_step>0 and ((x-1)*step)%max_step==0 and ((y-1)*step)%max_step==0:
                 f_00+=anchor_eb*(2*np.random.rand()-1)
             elif x and y:
                 f_00+=cur_eb*(2*np.random.rand()-1)
@@ -527,10 +524,12 @@ while step>0:
             best_qs=[]
             best_us=[]
            
-            qs=qs[:q_start]
+            #qs[max_level]=qs[:maxlevel_q_start]
+            for i in range(max_level-1,level,-1):
+                qs[i]=[]
             us=us[:u_start]
-            for x in range(cur_size_x):
-                for y in range(cur_size_y):
+            for x in range(cur_size_x-x_end_offset):
+                for y in range(cur_size_y-x_end_offset):
                     
                     if max_step>0 and (x*step)%max_step==0 and (y*step)%max_step==0:
                         #print(x,y)
@@ -560,15 +559,18 @@ while step>0:
 
 
     mean_l1_loss=best_absloss/len(best_qs)
+    array[0:last_x+1:step,0:last_y+1:step]=best_preds
     if selected_algo!="lorenzo_fallback":
         cumulated_loss+=best_absloss
+        
     else:
         cumulated_loss=best_absloss
+        
     #print(np.max(np.abs(array[0:last_x+1:step,0:last_y+1:step]-best_preds)))
-    array[0:last_x+1:step,0:last_y+1:step]=best_preds
+    
     #if args.lorenzo_fallback_check:
     #    print(np.max(np.abs(orig_array-array))/rng)
-    qs+=best_qs
+    qs[level]+=best_qs
     us+=best_us
     #print(len(qs))
     print ("Level %d finished. Selected algorithm: %s. Mean prediction abs loss: %f." % (level,selected_algo,mean_l1_loss))
@@ -595,10 +597,11 @@ def lorenzo_2d(array,x_start,x_end,y_start,y_end):
         
                 
             q,decomp=quantize(orig,pred,error_bound)
-            lorenzo_qs.append(q)
+            edge_qs.append(q)
             if q==0:
                 us.append(decomp)
             array[x][y]=decomp
+
 lorenzo_2d(array,0,last_x+1,last_y+1,size_y)
 lorenzo_2d(array,last_x+1,size_x,0,size_y)
 
@@ -609,10 +612,33 @@ lorenzo_2d(array,last_x+1,size_x,0,size_y)
 
 
 
+parser = argparse.ArgumentParser()
+
+parser.add_argument('--error','-e',type=float,default=1e-3)
+parser.add_argument('--input','-i',type=str)
+parser.add_argument('--output','-o',type=str)
+parser.add_argument('--quant','-q',type=str,default="ml2_q.dat")
+parser.add_argument('--unpred','-u',type=str,default="ml2_u.dat")
+parser.add_argument('--max_step','-s',type=int,default=-1)
+parser.add_argument('--min_coeff_level','-cl',type=int,default=99)
+parser.add_argument('--rate','-r',type=float,default=1.0)
+parser.add_argument('--maximum_rate','-m',type=float,default=10.0)
+parser.add_argument('--cubic','-c',type=int,default=1)
+parser.add_argument('--multidim','-d',type=int,default=1)
+parser.add_argument('--lorenzo_fallback_check','-l',type=int,default=0)
+parser.add_argument('--fallback_sample_ratio','-f',type=float,default=0.01)
+#parser.add_argument('--level_rate','-lr',type=float,default=1.0)
+parser.add_argument('--anchor_rate','-a',type=float,default=0.0)
+
+parser.add_argument('--size_x','-x',type=int,default=1800)
+parser.add_argument('--size_y','-y',type=int,default=3600)
+#parser.add_argument('--level','-l',type=int,default=2)
+#parser.add_argument('--noise','-n',type=bool,default=False)
+#parser.add_argument('--intercept','-t',type=bool,default=False)
+args = parser.parse_args()
 
 
-
-quants=np.concatenate( (np.array(lorenzo_qs,dtype=np.int32),np.array(qs,dtype=np.int32) ) )
+quants=np.concatenate( (np.array(edge_qs,dtype=np.int32),np.array(qs,dtype=np.int32) ) )
 unpreds=np.array(us,dtype=np.float32)
 array.tofile(args.output)
 quants.tofile(args.quant)

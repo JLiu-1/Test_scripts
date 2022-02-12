@@ -46,14 +46,14 @@ parser.add_argument('--input','-i',type=str)
 parser.add_argument('--output','-o',type=str)
 parser.add_argument('--quant','-q',type=str,default="ml2_q.dat")
 parser.add_argument('--unpred','-u',type=str,default="ml2_u.dat")
-parser.add_argument('--max_step','-s',type=int,default=-1)
-parser.add_argument('--min_coeff_level','-cl',type=int,default=99)
+parser.add_argument('--max_step','-s',type=int,default=64)
+#parser.add_argument('--min_coeff_level','-cl',type=int,default=99)
 parser.add_argument('--rate','-r',type=float,default=1.0)
 parser.add_argument('--maximum_rate','-m',type=float,default=10.0)
-parser.add_argument('--cubic','-c',type=int,default=1)
+#parser.add_argument('--cubic','-c',type=int,default=1)
 parser.add_argument('--multidim','-d',type=int,default=1)
-parser.add_argument('--lorenzo_fallback_check','-l',type=int,default=0)
-parser.add_argument('--fallback_sample_ratio','-f',type=float,default=0.01)
+#parser.add_argument('--lorenzo_fallback_check','-l',type=int,default=0)
+#parser.add_argument('--fallback_sample_ratio','-f',type=float,default=0.01)
 #parser.add_argument('--level_rate','-lr',type=float,default=1.0)
 parser.add_argument('--anchor_rate','-a',type=float,default=0.0)
 
@@ -67,23 +67,26 @@ args = parser.parse_args()
 size_x=args.size_x
 size_y=args.size_y
 array=np.fromfile(args.input,dtype=np.float32).reshape((size_x,size_y))
-if args.lorenzo_fallback_check:
-    orig_array=np.copy(array)
+#if args.lorenzo_fallback_check:
+    #orig_array=np.copy(array)
+predicted=np.zeros((size_x,size_y),dtype=np.int16)
 rng=(np.max(array)-np.min(array))
 error_bound=args.error*rng
 max_step=args.max_step
 rate=args.rate
+maximum_rate=args.maximum_rate
 
 
+max_level=int(math.log(max_step,2))
 
-qs=[]
+qs=[[] for i in range(max_level+1)]
 
 us=[]
 lorenzo_qs=[]
 min_coeff_level=args.min_coeff_level
 #anchor=args.anchor
 if max_step>0:
-    max_level=int(math.log(max_step,2))
+    
     anchor_rate=args.anchor_rate
     if anchor_rate>0:
         anchor_eb=error_bound/anchor_rate
@@ -126,14 +129,152 @@ if max_step>0:
                 if q==0:
                     us.append(decomp)
                 array[x][y]=decomp
+                predicted[x][y]=1
     else:
         anchor_eb=0
 else:
-    pass#todo,some preparations before level start
+    pass#raise some error
 #print(len(qs))
 
 last_x=((size_x-1)//max_step)*max_step
 last_y=((size_y-1)//max_step)*max_step   
+
+il_count=0
+ic_count=0
+im_count=0
+l_count=0
+
+#currently no coeff and levelwise predictor selection.
+for x_start in range(0,last_x,max_step):
+    for y_start in range(0,last_y,max_step):
+        x_end=x_start+max_step
+        y_end=y_start+max_step
+        best_absloss=None
+        selected_algo="none"
+        cur_absloss=0
+        #pred_count=0
+        #interp linear
+        cur_array=np.copy(array[x_start:x_end+1,y_start:y_end+1])
+        step=max_step//2
+        cur_level=max_level-1
+        while step>0:
+
+            cur_rate=min(maximum_rate,rate**cur_level)
+            cur_eb=error_bound/cur_rate
+            doublestep=2*step
+            #triplestep=3*step
+            startx=doublestep if predicted[x_start][y_start+1] else 0
+            starty=doublestep if predicted[x_start+1][y_start] else 0
+            for x in range(startx,x_end+1,doublestep):
+
+
+                for y in range(step,y_end+1,doublestep):
+                    orig=cur_array[x][y]
+          
+                    pred=(cur_array[x][y-1]+cur_array[x][y+1])/2
+                    if x!=x_end and y!=y_end:
+                        cur_absloss+=abs(orig-pred)
+                        #pred_count+=1
+            
+                    q,decomp=quantize(orig,pred,cur_eb)
+                    cur_array[x][y]=decomp 
+            for x in range(step,x_end+1,doublestep):
+
+
+                for y in range(ystart,y_end+1,doublestep):
+                    orig=cur_array[x][y]
+          
+                    pred=(cur_array[x-1][y]+cur_array[x+1][y])/2
+                    if x!=x_end and y!=y_end:
+                        cur_absloss+=abs(orig-pred)
+                        #pred_count+=1
+            
+                    q,decomp=quantize(orig,pred,cur_eb)
+                    cur_array[x][y]=decomp 
+            for x in range(xstart,x_end+1,doublestep):
+
+
+                for y in range(ystart,y_end+1,doublestep):
+                    orig=cur_array[x][y]
+          
+                    pred=(cur_array[x][y-1]+cur_array[x][y+1]+cur_array[x-1][y]+cur_array[x+1][y])/4
+                    if x!=x_end and y!=y_end:
+                        cur_absloss+=abs(orig-pred)
+                        #pred_count+=1
+            
+                    q,decomp=quantize(orig,pred,cur_eb)
+                    cur_array[x][y]=decomp 
+
+            step=step//2
+            level-=1  
+        selected_algo="interp_linear"
+        best_absloss=cur_absloss
+
+        #interp_cubic
+        cur_array=np.copy(array[x_start:x_end+1,y_start:y_end+1])
+        step=max_step//2
+        cur_level=max_level-1
+        while step>0:
+
+            cur_rate=min(maximum_rate,rate**cur_level)
+            cur_eb=error_bound/cur_rate
+            doublestep=2*step
+            triplestep=3*step
+            startx=doublestep if predicted[x_start][y_start+1] else 0
+            starty=doublestep if predicted[x_start+1][y_start] else 0
+            for x in range(startx,x_end+1,doublestep):
+
+
+                for y in range(step,y_end+1,doublestep):
+                    orig=cur_array[x][y]
+          
+                    pred=(cur_array[x][y-1]+cur_array[x][y+1])/2
+                    if x!=x_end and y!=y_end:
+                        cur_absloss+=abs(orig-pred)
+                        #pred_count+=1
+            
+                    q,decomp=quantize(orig,pred,cur_eb)
+                    cur_array[x][y]=decomp 
+            for x in range(step,x_end+1,doublestep):
+
+
+                for y in range(ystart,y_end+1,doublestep):
+                    orig=cur_array[x][y]
+          
+                    pred=(cur_array[x-1][y]+cur_array[x+1][y])/2
+                    if x!=x_end and y!=y_end:
+                        cur_absloss+=abs(orig-pred)
+                        #pred_count+=1
+            
+                    q,decomp=quantize(orig,pred,cur_eb)
+                    cur_array[x][y]=decomp 
+            for x in range(xstart,x_end+1,doublestep):
+
+
+                for y in range(ystart,y_end+1,doublestep):
+                    orig=cur_array[x][y]
+          
+                    pred=(cur_array[x][y-1]+cur_array[x][y+1]+cur_array[x-1][y]+cur_array[x+1][y])/4
+                    if x!=x_end and y!=y_end:
+                        cur_absloss+=abs(orig-pred)
+                        #pred_count+=1
+            
+                    q,decomp=quantize(orig,pred,cur_eb)
+                    cur_array[x][y]=decomp 
+
+            step=step//2
+            level-=1  
+
+
+           
+
+
+
+
+
+
+
+
 step=max_step//2
 level=max_level-1
 q_start=len(qs)
@@ -401,16 +542,17 @@ while step>0:
 
         for x in range(0,cur_size_x):
             for y in range(1-(x%2),cur_size_y,2):
-                
+                if x==cur_size_x-1 or y==cur_size_y-1:
+                    continue
                 orig=cur_array[x][y]
-                if x and y and x!=cur_size_x-1 and y!=cur_size_y-1:
+                if x and y:
                     if level>=min_coeff_level:
                         pred=np.dot(md_coef,np.array([cur_array[x][y-1],cur_array[x][y+1],cur_array[x-1][y],cur_array[x+1][y]]))+md_ince
                     
                     else:
 
                         pred=(cur_array[x][y-1]+cur_array[x][y+1]+cur_array[x-1][y]+cur_array[x+1][y])/4
-                elif x==0 or x==cur_size_x-1:
+                elif x==0:
                     pred=(cur_array[x][y-1]+cur_array[x][y+1])/2
                 else:
                     pred=(cur_array[x-1][y]+cur_array[x+1][y])/2
