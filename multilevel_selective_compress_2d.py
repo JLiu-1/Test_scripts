@@ -517,7 +517,9 @@ while step>0:#currently no recursive lorenzo
             pred=f_01+f_10-f_00
 
             absloss+=abs(orig-pred)
-
+        print(absloss*len(total_points)/len(sampled_points))
+        print(best_absloss)
+        print(cumulated_loss)
         if absloss*len(total_points)/len(sampled_points)<best_absloss+cumulated_loss:
             selected_algo="lorenzo_fallback"
             best_absloss=0
