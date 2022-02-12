@@ -126,8 +126,10 @@ if max_step>0:
                 if q==0:
                     us.append(decomp)
                 array[x][y]=decomp
+    else:
+        anchor_eb=0
 else:
-    pass#todo,some preparations before level start
+    #todo,some preparations before level start
 #print(len(qs))
 
 last_x=((size_x-1)//max_step)*max_step
