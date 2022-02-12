@@ -138,6 +138,7 @@ step=max_step//2
 level=max_level-1
 q_start=len(qs)
 u_start=len(us)
+cumulated_loss=0.0
 while step>0:#currently no recursive lorenzo
     cur_qs=[]
     cur_us=[]
@@ -154,7 +155,7 @@ while step>0:#currently no recursive lorenzo
     #linear interp
     absloss=0
     selected_algo="none"
-    cumulated_loss=0.0
+    
     if level>=min_coeff_level:
         reg_xs=[]
         reg_ys=[]
