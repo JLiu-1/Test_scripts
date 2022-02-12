@@ -250,7 +250,7 @@ while step>0:#currently no recursive lorenzo
     #print(len(cur_qs))
     #cubic interp
     if args.cubic:
-        print("cubic")
+        #print("cubic")
         absloss=0
         cur_qs=[]
         cur_us=[]
