@@ -489,21 +489,21 @@ while step>0:#currently no recursive lorenzo
             orig=cur_orig_array[x][y]
             f_01=cur_orig_array[x-1][y] if x else 0
             if x and args.max_step>0 and ((x-1)*step)%max_step==0 and (y*step)%max_step==0:
-                f_01+=anchor_eb*(2*random.rand()-1)
+                f_01+=anchor_eb*(2*np.random.rand()-1)
             elif x:
-                f_01+=cur_eb*(2*random.rand()-1)
+                f_01+=cur_eb*(2*np.random.rand()-1)
 
             f_10=cur_orig_array[x][y-1] if y else 0
             if y and args.max_step>0 and (x*step)%max_step==0 and ((y-1)*step)%max_step==0:
                 f_10+=anchor_eb*(2*random.rand()-1)
             elif y:
-                f_10+=cur_eb*(2*random.rand()-1)
+                f_10+=cur_eb*(2*np.random.rand()-1)
             
             f_00=cur_orug_array[x-1][y-1] if x and y else 0
             if x and y and args.max_step>0 and ((x-1)*step)%max_step==0 and ((y-1)*step)%max_step==0:
                 f_00+=anchor_eb*(2*random.rand()-1)
             elif y:
-                f_00+=cur_eb*(2*random.rand()-1)
+                f_00+=cur_eb*(2*np.random.rand()-1)
                 
             pred=f_01+f_10-f_00
 
