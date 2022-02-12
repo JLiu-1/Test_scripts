@@ -589,7 +589,7 @@ if __name__=="__main__":
 #parser.add_argument('--intercept','-t',type=bool,default=False)
     args = parser.parse_args()
     array=np.fromfile(args.input,dtype=np.float32).reshape((args.size_x,args.size_y))
-    errorbound=args.error*(np.max(array)-np.min(array))
+    error_bound=args.error*(np.max(array)-np.min(array))
     qs,edge_qs,us,_=msc2d(array,error_bound,args.rate,args.maximum_rate,args.min_coeff_level,args.max_step,args.anchor_rate,x_preded=False,y_preded=False,multidim=args.multidim,\
         lorenzo=args.lorenzo_fallback_check,sample_rate=fallback_sample_ratio,min_sampled_points=100,random_access=False)
 
