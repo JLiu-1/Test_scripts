@@ -534,6 +534,7 @@ while step>0:#currently no recursive lorenzo
         
                     best_absloss+=abs(orig-pred)
                     q,decomp=quantize(orig,pred,cur_eb)
+                    best_qs.append(q)
                     if q==0:
                         best_us.append(decomp)
                 #absloss+=abs(decomp)
