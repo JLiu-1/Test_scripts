@@ -250,6 +250,7 @@ while step>0:#currently no recursive lorenzo
     print(len(cur_qs))
     #cubic interp
     if args.cubic:
+        print("cubic")
         absloss=0
         cur_qs=[]
         cur_us=[]
@@ -559,8 +560,8 @@ while step>0:#currently no recursive lorenzo
     cumulated_loss+=best_absloss
     #print(np.max(np.abs(array[0:last_x+1:step,0:last_y+1:step]-best_preds)))
     array[0:last_x+1:step,0:last_y+1:step]=best_preds
-    if args.lorenzo_fallback_check:
-        print(np.max(np.abs(orig_array-array))/rng)
+    #if args.lorenzo_fallback_check:
+    #    print(np.max(np.abs(orig_array-array))/rng)
     qs+=best_qs
     us+=best_us
     #print(len(qs))
