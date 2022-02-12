@@ -117,8 +117,8 @@ sample_rate=0.05,min_sampled_points=10,random_access=False):#lorenzo:only check 
     last_y=((size_y-1)//max_step)*max_step   
     step=max_step//2
     level=max_level-1
-    maxlevel_q_start=len(qs[max_level])
-    u_start=len(us)
+    #maxlevel_q_start=len(qs[max_level])
+    #u_start=len(us)
     cumulated_loss=0.0
     while step>0:
         cur_qs=[]
@@ -526,6 +526,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False):#lorenzo:only check 
         print ("Level %d finished. Selected algorithm: %s. Mean prediction abs loss: %f." % (level,selected_algo,mean_l1_loss))
         step=step//2
         level-=1
+        print([len(_) for _ in qs] 
         #print(best_absloss)
         #print(cumulated_loss)
 
