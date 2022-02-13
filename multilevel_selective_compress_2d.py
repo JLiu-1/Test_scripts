@@ -491,11 +491,13 @@ while step>0:
         #cur_array=np.copy(array[0:last_x+1:step,0:last_y+1:step])#reset cur_array
         cur_orig_array=orig_array[0:last_x+1:step,0:last_y+1:step]
         total_points=[(x,y) for x in range(cur_orig_array.shape[0]) for y in range(cur_orig_array.shape[1]) if (max_step<=0 or ((x*step)%max_step!=0 and (y*step)%max_step!=0))]
-        if len(total_points)<=100:
-            num_sumples=total_points
+        min_sampled_points=100
+        if len(total_points)<min_sampled_points:
+            num_sumples=len(total_points)
+            sampled_points=total_points
         else:
-            num_sumples=max(100,int(len(total_points)*args.fallback_sample_ratio) )
-        sampled_points=random.sample(total_points,num_sumples)
+            num_sumples=max(min_sampled_points,int(len(total_points)*sample_rate) )
+            sampled_points=random.sample(total_points,num_sumples)
         for x,y in sampled_points:
             orig=cur_orig_array[x][y]
             f_01=cur_orig_array[x-1][y] if x else 0
