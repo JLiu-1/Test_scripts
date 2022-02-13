@@ -573,7 +573,7 @@ while step>0:
     qs+=best_qs
     us+=best_us
     #print(len(qs))
-    print ("Level %d finished. Selected algorithm: %s. Mean prediction abs loss: %f." % (level,selected_algo,mean_l1_loss))
+    #print ("Level %d finished. Selected algorithm: %s. Mean prediction abs loss: %f." % (level,selected_algo,mean_l1_loss))
     step=step//2
     level-=1
     #print(len(qs))
