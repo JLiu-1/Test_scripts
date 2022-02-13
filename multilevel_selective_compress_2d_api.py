@@ -10,7 +10,7 @@ import random
 from utils import *
 
 def msc2d(array,error_bound,rate,maximum_rate,min_coeff_level,max_step,anchor_rate,rate_list=None,x_preded=False,y_preded=False,multidim=True,lorenzo=-1,\
-sample_rate=0.05,min_sampled_points=10,random_access=False):#lorenzo:only check lorenzo fallback with level no larger than lorenzo level
+sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False):#lorenzo:only check lorenzo fallback with level no larger than lorenzo level
 
     size_x,size_y=array.shape
     #array=np.fromfile(args.input,dtype=np.float32).reshape((size_x,size_y))
@@ -100,7 +100,8 @@ sample_rate=0.05,min_sampled_points=10,random_access=False):#lorenzo:only check 
         cur_array=np.copy(array[0:last_x+1:step,0:last_y+1:step])
         cur_size_x,cur_size_y=cur_array.shape
     #print(cur_size_x,cur_size_y)
-        #print("Level %d started. Current step: %d. Current error_bound: %s." % (level,step,cur_eb))
+        if verbose:
+            print("Level %d started. Current step: %d. Current error_bound: %s." % (level,step,cur_eb))
         best_preds=None#need to copy
         best_absloss=None
         best_qs=[]#need to copy
@@ -502,7 +503,8 @@ sample_rate=0.05,min_sampled_points=10,random_access=False):#lorenzo:only check 
         us+=best_us
         selected_algos.append(selected_algo)
         #print(len(qs))
-        #print ("Level %d finished. Selected algorithm: %s. Mean prediction abs loss: %f." % (level,selected_algo,mean_l1_loss))
+        if verbose:
+            print ("Level %d finished. Selected algorithm: %s. Mean prediction abs loss: %f." % (level,selected_algo,mean_l1_loss))
         step=step//2
         level-=1
         #print(sum([len(_) for _ in qs] ))
@@ -551,8 +553,8 @@ if __name__=="__main__":
     parser.add_argument('--error','-e',type=float,default=1e-3)
     parser.add_argument('--input','-i',type=str)
     parser.add_argument('--output','-o',type=str)
-    parser.add_argument('--quant','-q',type=str,default="ml2_q2.dat")
-    parser.add_argument('--unpred','-u',type=str,default="ml2_u2.dat")
+    parser.add_argument('--quant','-q',type=str,default="ml2_q.dat")
+    parser.add_argument('--unpred','-u',type=str,default="ml2_u.dat")
     parser.add_argument('--max_step','-s',type=int,default=-1)
     parser.add_argument('--min_coeff_level','-cl',type=int,default=99)
     parser.add_argument('--rate','-r',type=float,default=1.0)
@@ -585,7 +587,7 @@ if __name__=="__main__":
     else:
         rate_list=None
     array,qs,edge_qs,us,_=msc2d(array,error_bound,args.rate,args.maximum_rate,args.min_coeff_level,args.max_step,args.anchor_rate,rate_list=rate_list,x_preded=False,y_preded=False,multidim=args.multidim,\
-        lorenzo=args.lorenzo_fallback_check,sample_rate=args.fallback_sample_ratio,min_sampled_points=100,random_access=False)
+        lorenzo=args.lorenzo_fallback_check,sample_rate=args.fallback_sample_ratio,min_sampled_points=100,random_access=False,verbose=True)
 
     quants=np.concatenate( (np.array(edge_qs,dtype=np.int32),np.array(sum(qs,[]),dtype=np.int32) ) )
     unpreds=np.array(us,dtype=np.float32)
