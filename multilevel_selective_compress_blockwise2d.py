@@ -160,6 +160,7 @@ for x_start in range(0,size_x,max_step):
             qs[i]+=cur_qs[i]
         us+=cur_us
         lorenzo_qs+=cur_lorenzo_qs
+        print(x_start,y_start)
 
 
 
@@ -175,6 +176,8 @@ unpreds=np.array(us,dtype=np.float32)
 array.tofile(args.output)
 quants.tofile(args.quant)
 unpreds.tofile(args.unpred)
+
+
 orig_array=np.copy(array)
 for x in range(size_x):
     for y in range(size_y):
