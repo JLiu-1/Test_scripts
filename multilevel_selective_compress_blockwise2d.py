@@ -164,7 +164,8 @@ for x_start in range(0,last_x,max_step):
 
         us+=cur_us
         lorenzo_qs+=cur_lorenzo_qs
-        print(x_start,y_start)
+        if "lorenzo" in cur_selected[-1]:
+            print(x_start,y_start)
 
 
 
