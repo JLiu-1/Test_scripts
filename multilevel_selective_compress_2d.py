@@ -7,6 +7,7 @@ import argparse
 from sklearn.linear_model import LinearRegression
 import math
 import random
+from utils import *
 
 '''
 def quantize(data,pred,error_bound):
