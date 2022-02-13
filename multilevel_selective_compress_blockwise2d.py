@@ -68,6 +68,7 @@ args = parser.parse_args()
 size_x=args.size_x
 size_y=args.size_y
 array=np.fromfile(args.input,dtype=np.float32).reshape((size_x,size_y))
+orig_array=np.copy(array)
 #if args.lorenzo_fallback_check:
     #orig_array=np.copy(array)
 predicted=np.zeros((size_x,size_y),dtype=np.int16)
@@ -181,7 +182,7 @@ quants.tofile(args.quant)
 unpreds.tofile(args.unpred)
 
 
-orig_array=np.copy(array)
+
 for x in range(size_x):
     for y in range(size_y):
         if array[x][y]==orig_array[x][y] and x%max_step!=0 and y%max_step!=0:
