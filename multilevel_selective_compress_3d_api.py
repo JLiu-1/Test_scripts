@@ -237,21 +237,21 @@ sample_rate=0.05,min_sampled_points=10,random_access=False):#lorenzo:only check 
             for y in range(1,cur_size_y,2):
                 for z in range(startz,cur_size_z,2):
                 
-                orig=cur_array[x][y][z]
-                if level>=min_coeff_level:
-                    pred=np.dot(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y-1][z],cur_array[x][y+1][z]]),md_coef)+md_ince
-                else:
-                    pred=(cur_array[x-1][y][z]+cur_array[x+1][y][z]+cur_array[x][y-1][z]+cur_array[x][y+1][z])/4
+                    orig=cur_array[x][y][z]
+                    if level>=min_coeff_level:
+                        pred=np.dot(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y-1][z],cur_array[x][y+1][z]]),md_coef)+md_ince
+                    else:
+                        pred=(cur_array[x-1][y][z]+cur_array[x+1][y][z]+cur_array[x][y-1][z]+cur_array[x][y+1][z])/4
 
-                if (not random_access) or level!=0 or z!=cur_size_z-1 or last_z!=size_z-1:
-                    absloss+=abs(orig-pred)
-                q,decomp=quantize(orig,pred,cur_eb)
+                    if (not random_access) or level!=0 or z!=cur_size_z-1 or last_z!=size_z-1:
+                        absloss+=abs(orig-pred)
+                    q,decomp=quantize(orig,pred,cur_eb)
                 
-                cur_qs.append(q)
-                if q==0:
-                    cur_us.append(decomp)
+                    cur_qs.append(q)
+                    if q==0:
+                        cur_us.append(decomp)
                 #absloss+=abs(decomp)
-                cur_array[x][y][z]=decomp
+                    cur_array[x][y][z]=decomp
 
         if level>=min_coeff_level:
             md_reg_xs=[]
@@ -270,20 +270,20 @@ sample_rate=0.05,min_sampled_points=10,random_access=False):#lorenzo:only check 
             for y in range(starty,cur_size_y,2):
                 for z in range(1,cur_size_z,2):
                 
-                orig=cur_array[x][y][z]
-                if level>=min_coeff_level:
-                    pred=np.dot(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y][z-1],cur_array[x][y][z+1]]),md_coef)+md_ince
-                else:
-                    pred=(cur_array[x-1][y][z]+cur_array[x+1][y][z]+cur_array[x][y][z-1]+cur_array[x][y][z+1])/4
-                if (not random_access) or level!=0 or y!=cur_size_y-1 or last_y!=size_y-1:
-                    absloss+=abs(orig-pred)
-                q,decomp=quantize(orig,pred,cur_eb)
+                    orig=cur_array[x][y][z]
+                    if level>=min_coeff_level:
+                        pred=np.dot(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y][z-1],cur_array[x][y][z+1]]),md_coef)+md_ince
+                    else:
+                        pred=(cur_array[x-1][y][z]+cur_array[x+1][y][z]+cur_array[x][y][z-1]+cur_array[x][y][z+1])/4
+                    if (not random_access) or level!=0 or y!=cur_size_y-1 or last_y!=size_y-1:
+                        absloss+=abs(orig-pred)
+                    q,decomp=quantize(orig,pred,cur_eb)
             
-                cur_qs.append(q)
-                if q==0:
-                    cur_us.append(decomp)
-                #absloss+=abs(decomp)
-                cur_array[x][y][z]=decomp
+                    cur_qs.append(q)
+                    if q==0:
+                        cur_us.append(decomp)
+                
+                    cur_array[x][y][z]=decomp
 
         if level>=min_coeff_level:
             md_reg_xs=[]
@@ -301,20 +301,20 @@ sample_rate=0.05,min_sampled_points=10,random_access=False):#lorenzo:only check 
             for y in range(1,cur_size_y,2):
                 for z in range(1,cur_size_z,2):
                 
-                orig=cur_array[x][y][z]
-                if level>=min_coeff_level:
-                    pred=np.dot(np.array([cur_array[x][y-1][z],cur_array[x][y+1][z],cur_array[x][y][z-1],cur_array[x][y][z+1]]),md_coef)+md_ince
-                else:
-                    pred=(cur_array[x][y-1][z]+cur_array[x][y+1][z]+cur_array[x][y][z-1]+cur_array[x][y][z+1])/4
-                if (not random_access) or level!=0 or x!=cur_size_x-1 or last_x!=size_x-1:
-                    absloss+=abs(orig-pred)
-                q,decomp=quantize(orig,pred,cur_eb)
+                    orig=cur_array[x][y][z]
+                    if level>=min_coeff_level:
+                        pred=np.dot(np.array([cur_array[x][y-1][z],cur_array[x][y+1][z],cur_array[x][y][z-1],cur_array[x][y][z+1]]),md_coef)+md_ince
+                    else:
+                        pred=(cur_array[x][y-1][z]+cur_array[x][y+1][z]+cur_array[x][y][z-1]+cur_array[x][y][z+1])/4
+                    if (not random_access) or level!=0 or x!=cur_size_x-1 or last_x!=size_x-1:
+                        absloss+=abs(orig-pred)
+                    q,decomp=quantize(orig,pred,cur_eb)
             
-                cur_qs.append(q)
-                if q==0:
-                    cur_us.append(decomp)
+                    cur_qs.append(q)
+                    if q==0:
+                        cur_us.append(decomp)
                 #absloss+=abs(decomp)
-                cur_array[x][y][z]=decomp
+                    cur_array[x][y][z]=decomp
         
         if level>=min_coeff_level:
             md_reg_xs=[]
@@ -332,19 +332,19 @@ sample_rate=0.05,min_sampled_points=10,random_access=False):#lorenzo:only check 
             for y in range(1,cur_size_y,2):
                 for z in range(1,cur_size_z,2):
                 
-                orig=cur_array[x][y][z]
-                if level>=min_coeff_level:
-                    pred=np.dot(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y-1][z],cur_array[x][y+1][z],cur_array[x][y][z-1],cur_array[x][y][z+1] ]),md_coef)+md_ince
-                else:
-                    pred=(cur_array[x-1][y][z]+cur_array[x+1][y][z]+cur_array[x][y-1][z]+cur_array[x][y+1][z]+cur_array[x][y][z-1]+cur_array[x][y][z+1])/6
-                absloss+=abs(orig-pred)
-                q,decomp=quantize(orig,pred,cur_eb)
+                    orig=cur_array[x][y][z]
+                    if level>=min_coeff_level:
+                        pred=np.dot(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y-1][z],cur_array[x][y+1][z],cur_array[x][y][z-1],cur_array[x][y][z+1] ]),md_coef)+md_ince
+                    else:
+                        pred=(cur_array[x-1][y][z]+cur_array[x+1][y][z]+cur_array[x][y-1][z]+cur_array[x][y+1][z]+cur_array[x][y][z-1]+cur_array[x][y][z+1])/6
+                    absloss+=abs(orig-pred)
+                    q,decomp=quantize(orig,pred,cur_eb)
             
-                cur_qs.append(q)
-                if q==0:
-                    cur_us.append(decomp)
+                    cur_qs.append(q)
+                    if q==0:
+                        cur_us.append(decomp)
                 #absloss+=abs(decomp)
-                cur_array[x][y][z]=decomp
+                    cur_array[x][y][z]=decomp
 
 
         best_preds=np.copy(cur_array)
@@ -489,21 +489,21 @@ sample_rate=0.05,min_sampled_points=10,random_access=False):#lorenzo:only check 
             for y in range(1,cur_size_y,2):
                 for z in range(startz,cur_size_z,2):
                 
-                orig=cur_array[x][y][z]
-                if level>=min_coeff_level:
-                    pred=np.dot(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y-1][z],cur_array[x][y+1][z]]),md_coef)+md_ince
-                else:
-                    pred=(cur_array[x-1][y][z]+cur_array[x+1][y][z]+cur_array[x][y-1][z]+cur_array[x][y+1][z])/4
+                    orig=cur_array[x][y][z]
+                    if level>=min_coeff_level:
+                        pred=np.dot(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y-1][z],cur_array[x][y+1][z]]),md_coef)+md_ince
+                    else:
+                        pred=(cur_array[x-1][y][z]+cur_array[x+1][y][z]+cur_array[x][y-1][z]+cur_array[x][y+1][z])/4
 
-                if (not random_access) or level!=0 or z!=cur_size_z-1 or last_z!=size_z-1:
-                    absloss+=abs(orig-pred)
-                q,decomp=quantize(orig,pred,cur_eb)
+                    if (not random_access) or level!=0 or z!=cur_size_z-1 or last_z!=size_z-1:
+                        absloss+=abs(orig-pred)
+                    q,decomp=quantize(orig,pred,cur_eb)
                 
-                cur_qs.append(q)
-                if q==0:
-                    cur_us.append(decomp)
+                    cur_qs.append(q)
+                    if q==0:
+                        cur_us.append(decomp)
                 #absloss+=abs(decomp)
-                cur_array[x][y][z]=decomp
+                    cur_array[x][y][z]=decomp
 
         if level>=min_coeff_level:
             md_reg_xs=[]
@@ -522,20 +522,20 @@ sample_rate=0.05,min_sampled_points=10,random_access=False):#lorenzo:only check 
             for y in range(starty,cur_size_y,2):
                 for z in range(1,cur_size_z,2):
                 
-                orig=cur_array[x][y][z]
-                if level>=min_coeff_level:
-                    pred=np.dot(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y][z-1],cur_array[x][y][z+1]]),md_coef)+md_ince
-                else:
-                    pred=(cur_array[x-1][y][z]+cur_array[x+1][y][z]+cur_array[x][y][z-1]+cur_array[x][y][z+1])/4
-                if (not random_access) or level!=0 or y!=cur_size_y-1 or last_y!=size_y-1:
-                    absloss+=abs(orig-pred)
-                q,decomp=quantize(orig,pred,cur_eb)
+                    orig=cur_array[x][y][z]
+                    if level>=min_coeff_level:
+                        pred=np.dot(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y][z-1],cur_array[x][y][z+1]]),md_coef)+md_ince
+                    else:
+                        pred=(cur_array[x-1][y][z]+cur_array[x+1][y][z]+cur_array[x][y][z-1]+cur_array[x][y][z+1])/4
+                    if (not random_access) or level!=0 or y!=cur_size_y-1 or last_y!=size_y-1:
+                        absloss+=abs(orig-pred)
+                    q,decomp=quantize(orig,pred,cur_eb)
             
-                cur_qs.append(q)
-                if q==0:
-                    cur_us.append(decomp)
+                    cur_qs.append(q)
+                    if q==0:
+                        cur_us.append(decomp)
                 #absloss+=abs(decomp)
-                cur_array[x][y][z]=decomp
+                    cur_array[x][y][z]=decomp
 
         if level>=min_coeff_level:
             md_reg_xs=[]
@@ -553,20 +553,20 @@ sample_rate=0.05,min_sampled_points=10,random_access=False):#lorenzo:only check 
             for y in range(1,cur_size_y,2):
                 for z in range(1,cur_size_z,2):
                 
-                orig=cur_array[x][y][z]
-                if level>=min_coeff_level:
-                    pred=np.dot(np.array([cur_array[x][y-1][z],cur_array[x][y+1][z],cur_array[x][y][z-1],cur_array[x][y][z+1]]),md_coef)+md_ince
-                else:
-                    pred=(cur_array[x][y-1][z]+cur_array[x][y+1][z]+cur_array[x][y][z-1]+cur_array[x][y][z+1])/4
-                if (not random_access) or level!=0 or x!=cur_size_x-1 or last_x!=size_x-1:
-                    absloss+=abs(orig-pred)
-                q,decomp=quantize(orig,pred,cur_eb)
+                    orig=cur_array[x][y][z]
+                    if level>=min_coeff_level:
+                        pred=np.dot(np.array([cur_array[x][y-1][z],cur_array[x][y+1][z],cur_array[x][y][z-1],cur_array[x][y][z+1]]),md_coef)+md_ince
+                    else:
+                        pred=(cur_array[x][y-1][z]+cur_array[x][y+1][z]+cur_array[x][y][z-1]+cur_array[x][y][z+1])/4
+                    if (not random_access) or level!=0 or x!=cur_size_x-1 or last_x!=size_x-1:
+                        absloss+=abs(orig-pred)
+                    q,decomp=quantize(orig,pred,cur_eb)
             
-                cur_qs.append(q)
-                if q==0:
-                    cur_us.append(decomp)
+                    cur_qs.append(q)
+                    if q==0:
+                        cur_us.append(decomp)
                 #absloss+=abs(decomp)
-                cur_array[x][y][z]=decomp
+                    cur_array[x][y][z]=decomp
         
         if level>=min_coeff_level:
             md_reg_xs=[]
@@ -584,19 +584,19 @@ sample_rate=0.05,min_sampled_points=10,random_access=False):#lorenzo:only check 
             for y in range(1,cur_size_y,2):
                 for z in range(1,cur_size_z,2):
                 
-                orig=cur_array[x][y][z]
-                if level>=min_coeff_level:
-                    pred=np.dot(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y-1][z],cur_array[x][y+1][z],cur_array[x][y][z-1],cur_array[x][y][z+1] ]),md_coef)+md_ince
-                else:
-                    pred=(cur_array[x-1][y][z]+cur_array[x+1][y][z]+cur_array[x][y-1][z]+cur_array[x][y+1][z]+cur_array[x][y][z-1]+cur_array[x][y][z+1])/6
-                absloss+=abs(orig-pred)
-                q,decomp=quantize(orig,pred,cur_eb)
+                    orig=cur_array[x][y][z]
+                    if level>=min_coeff_level:
+                        pred=np.dot(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y-1][z],cur_array[x][y+1][z],cur_array[x][y][z-1],cur_array[x][y][z+1] ]),md_coef)+md_ince
+                    else:
+                        pred=(cur_array[x-1][y][z]+cur_array[x+1][y][z]+cur_array[x][y-1][z]+cur_array[x][y+1][z]+cur_array[x][y][z-1]+cur_array[x][y][z+1])/6
+                    absloss+=abs(orig-pred)
+                    q,decomp=quantize(orig,pred,cur_eb)
             
-                cur_qs.append(q)
-                if q==0:
-                    cur_us.append(decomp)
+                    cur_qs.append(q)
+                    if q==0:
+                        cur_us.append(decomp)
                 #absloss+=abs(decomp)
-                cur_array[x][y][z]=decomp
+                    cur_array[x][y][z]=decomp
 
         if absloss<best_absloss:
             selected_algo="interp_cubic"
