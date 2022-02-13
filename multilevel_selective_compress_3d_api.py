@@ -41,14 +41,14 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False):#loren
             if max_level>=min_coeff_level:
                 reg_xs=[]
                 reg_ys=[]
-            for x in range(max_step,size_x,max_step):
-                for y in range(max_step,size_y,max_step):
-                    for z in range(max_step,size_y,max_step):
-                        reg_xs.append(np.array(array[x-max_step:x+1,y-max_step:y+1,z-max_step:z+1][:7],dtype=np.float64))
-                        reg_ys.append(array[x][y][z])
-                        res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
-                        coef=res.coef_ 
-                        ince=res.intercept_
+                for x in range(max_step,size_x,max_step):
+                    for y in range(max_step,size_y,max_step):
+                        for z in range(max_step,size_y,max_step):
+                            reg_xs.append(np.array(array[x-max_step:x+1,y-max_step:y+1,z-max_step:z+1][:7],dtype=np.float64))
+                            reg_ys.append(array[x][y][z])
+                            res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
+                            coef=res.coef_ 
+                            ince=res.intercept_
 
  
             startx=max_step if x_preded else 0
