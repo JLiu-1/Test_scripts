@@ -104,7 +104,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False):#loren
         else:
             cur_eb=error_bound/min(maximum_rate,(rate**level))
         cur_array=np.copy(array[0:last_x+1:step,0:last_y+1:step,0:last_z+1:step])
-        print(cur_array.shape)
+        #print(cur_array.shape)
         cur_size_x,cur_size_y,cur_size_z=cur_array.shape
     #print(cur_size_x,cur_size_y)
         if verbose:
