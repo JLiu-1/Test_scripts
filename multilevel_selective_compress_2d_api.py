@@ -529,7 +529,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False):#lorenzo:only check 
         print ("Level %d finished. Selected algorithm: %s. Mean prediction abs loss: %f." % (level,selected_algo,mean_l1_loss))
         step=step//2
         level-=1
-        print(sum([len(_) for _ in qs] ))
+        #print(sum([len(_) for _ in qs] ))
         #print(best_absloss)
         #print(cumulated_loss)
 
@@ -559,7 +559,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False):#lorenzo:only check 
     offset_y=1 if random_access else 0
     lorenzo_2d(array,0,last_x+1,last_y+1,size_y-offset_y)
     lorenzo_2d(array,last_x+1,size_x-offset_x,0,size_y-offset_y)
-    return qs,edge_qs,us,selected_algos
+    return array,qs,edge_qs,us,selected_algos
 
 
     
@@ -595,7 +595,7 @@ if __name__=="__main__":
     array=np.fromfile(args.input,dtype=np.float32).reshape((args.size_x,args.size_y))
     orig_array=np.copy(array)
     error_bound=args.error*(np.max(array)-np.min(array))
-    qs,edge_qs,us,_=msc2d(array,error_bound,args.rate,args.maximum_rate,args.min_coeff_level,args.max_step,args.anchor_rate,x_preded=False,y_preded=False,multidim=args.multidim,\
+    array,qs,edge_qs,us,_=msc2d(array,error_bound,args.rate,args.maximum_rate,args.min_coeff_level,args.max_step,args.anchor_rate,x_preded=False,y_preded=False,multidim=args.multidim,\
         lorenzo=args.lorenzo_fallback_check,sample_rate=args.fallback_sample_ratio,min_sampled_points=100,random_access=False)
 
     quants=np.concatenate( (np.array(edge_qs,dtype=np.int32),np.array(sum(qs,[]),dtype=np.int32) ) )
