@@ -182,8 +182,9 @@ quants.tofile(args.quant)
 unpreds.tofile(args.unpred)
 
 
-
+'''
 for x in range(size_x):
     for y in range(size_y):
         if array[x][y]==orig_array[x][y] and x%max_step!=0 and y%max_step!=0:
             print(x,y)
+'''

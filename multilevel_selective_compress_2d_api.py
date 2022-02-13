@@ -558,10 +558,12 @@ sample_rate=0.05,min_sampled_points=10,random_access=False):#lorenzo:only check 
                 if q==0:
                     us.append(decomp)
                 array[x][y]=decomp
-    offset_x=1 if random_access else 0
-    offset_y=1 if random_access else 0
-    lorenzo_2d(array,0,last_x+1,last_y+1,size_y-offset_y)
-    lorenzo_2d(array,last_x+1,size_x-offset_x,0,size_y-offset_y)
+    offset_x1=1 if x_preded else 0
+    offset_y1=1 if y_preded else 0
+    offset_x2=1 if random_access else 0
+    offset_y2=1 if random_access else 0
+    lorenzo_2d(array,offset_x1,last_x+1,last_y+1,size_y-offset_y2)
+    lorenzo_2d(array,last_x+1,size_x-offset_x2,offset_y1,size_y-offset_y2)
     return array,qs,edge_qs,us,selected_algos
 
 
