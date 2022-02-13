@@ -365,7 +365,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False):#loren
         absloss=0
         cur_qs=[]
         cur_us=[]
-        cur_array=np.copy(array[0:last_x+1:step,0:last_y+1:step])#reset cur_array
+        cur_array=np.copy(array[0:last_x+1:step,0:last_y+1:step,0:last_z+1:step])#reset cur_array
         if level>=min_coeff_level:
             reg_xs=[]
             reg_ys=[]
