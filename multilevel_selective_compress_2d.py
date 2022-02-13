@@ -95,13 +95,13 @@ if max_step>0:
         if max_level>=min_coeff_level:
             reg_xs=[]
             reg_ys=[]
-        for x in range(max_step,size_x,max_step):
-            for y in range(max_step,size_y,max_step):
-                reg_xs.append(np.array([array[x-max_step][y-max_step],array[x-max_step][y],array[x][y-max_step]],dtype=np.float64))
-                reg_ys.append(array[x][y])
-                res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
-                coef=res.coef_ 
-                ince=res.intercept_
+            for x in range(max_step,size_x,max_step):
+                for y in range(max_step,size_y,max_step):
+                    reg_xs.append(np.array([array[x-max_step][y-max_step],array[x-max_step][y],array[x][y-max_step]],dtype=np.float64))
+                    reg_ys.append(array[x][y])
+                    res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
+                    coef=res.coef_ 
+                    ince=res.intercept_
 
  
    
