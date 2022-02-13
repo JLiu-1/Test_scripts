@@ -235,7 +235,10 @@ sample_rate=0.05,min_sampled_points=10,random_access=False):#lorenzo:only check 
         best_qs=cur_qs.copy()
         best_us=cur_us.copy()
         selected_algo="interp_linear"
+
         #print(len(cur_qs))
+
+
         #cubic interp
         #cubic=True
         #if cubic:
@@ -559,7 +562,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False):#lorenzo:only check 
     return qs,edge_qs,us,selected_algos
 
 
-
+    
 if __name__=="__main__":
  
 
@@ -590,6 +593,7 @@ if __name__=="__main__":
 #parser.add_argument('--intercept','-t',type=bool,default=False)
     args = parser.parse_args()
     array=np.fromfile(args.input,dtype=np.float32).reshape((args.size_x,args.size_y))
+    orig_array=np.copy(array)
     error_bound=args.error*(np.max(array)-np.min(array))
     qs,edge_qs,us,_=msc2d(array,error_bound,args.rate,args.maximum_rate,args.min_coeff_level,args.max_step,args.anchor_rate,x_preded=False,y_preded=False,multidim=args.multidim,\
         lorenzo=args.lorenzo_fallback_check,sample_rate=args.fallback_sample_ratio,min_sampled_points=100,random_access=False)
@@ -599,3 +603,7 @@ if __name__=="__main__":
     array.tofile(args.output)
     quants.tofile(args.quant)
     unpreds.tofile(args.unpred)
+    for x in range(size_x):
+        for y in range(size_y):
+            if array[x][y]==orig_array[x][y] and x%max_step!=0 and y%max_step!=0:
+                print(x,y)
