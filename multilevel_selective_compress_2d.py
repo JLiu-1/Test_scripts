@@ -67,7 +67,7 @@ args = parser.parse_args()
 size_x=args.size_x
 size_y=args.size_y
 array=np.fromfile(args.input,dtype=np.float32).reshape((size_x,size_y))
-if args.lorenzo_fallback_check:
+if 1:#args.lorenzo_fallback_check:
     orig_array=np.copy(array)
 rng=(np.max(array)-np.min(array))
 error_bound=args.error*rng
@@ -574,7 +574,7 @@ while step>0:
     print ("Level %d finished. Selected algorithm: %s. Mean prediction abs loss: %f." % (level,selected_algo,mean_l1_loss))
     step=step//2
     level-=1
-    print(len(qs))
+    #print(len(qs))
     #print(best_absloss)
     #print(cumulated_loss)
 
@@ -618,3 +618,9 @@ unpreds=np.array(us,dtype=np.float32)
 array.tofile(args.output)
 quants.tofile(args.quant)
 unpreds.tofile(args.unpred)
+'''
+for x in range(size_x):
+    for y in range(size_y):
+        if array[x][y]==orig_array[x][y] and x%max_step!=0 and y%max_step!=0:
+            print(x,y)
+'''
