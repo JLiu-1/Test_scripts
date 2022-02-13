@@ -39,7 +39,7 @@ def quantize(data,pred,error_bound):
         #print("a")
         return 0,data
 
-def msc2d(array,error_bound,rate,maximum_rate,min_coeff_level,max_step,anchor_rate,x_preded=False,y_preded=False,multidim=True,lorenzo=-1,\
+def msc2d(array,error_bound,rate,maximum_rate,min_coeff_level,max_step,anchor_rate,rate_list=None,x_preded=False,y_preded=False,multidim=True,lorenzo=-1,\
 sample_rate=0.05,min_sampled_points=10,random_access=False):#lorenzo:only check lorenzo fallback with level no larger than lorenzo level
 
     size_x,size_y=array.shape
@@ -123,7 +123,10 @@ sample_rate=0.05,min_sampled_points=10,random_access=False):#lorenzo:only check 
     while step>0:
         cur_qs=[]
         cur_us=[]
-        cur_eb=error_bound/min(maximum_rate,(rate**level))
+        if rate_list!=None:
+            cur_eb=rate_list[level]
+        else:
+            cur_eb=error_bound/min(maximum_rate,(rate**level))
         cur_array=np.copy(array[0:last_x+1:step,0:last_y+1:step])
         cur_size_x,cur_size_y=cur_array.shape
     #print(cur_size_x,cur_size_y)

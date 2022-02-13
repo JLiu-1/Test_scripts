@@ -51,6 +51,7 @@ parser.add_argument('--max_step','-s',type=int,default=64)
 parser.add_argument('--min_coeff_level','-cl',type=int,default=99)
 parser.add_argument('--rate','-r',type=float,default=1.0)
 parser.add_argument('--maximum_rate','-m',type=float,default=10.0)
+parser.add_argument('--rlist',type=float,default=0.0,nargs="+")
 #parser.add_argument('--cubic','-c',type=int,default=1)
 parser.add_argument('--multidim','-d',type=int,default=1)
 parser.add_argument('--lorenzo_level','-l',type=int,default=0)
@@ -78,8 +79,17 @@ max_step=args.max_step
 rate=args.rate
 maximum_rate=args.maximum_rate
 anchor_rate=args.anchor_rate
-
 max_level=int(math.log(max_step,2))
+
+if args.rlist!=0:
+    rate_list=args.rlist
+    if isinstance(rate_list,int):
+        rate_list=[rate_list]
+
+    while len(rate_list)<max_level:
+        rate_list.insert(0,rate_list[0])
+else:
+    rate_list=None
 
 qs=[[] for i in range(max_level+1)]
 
@@ -156,7 +166,7 @@ for x_start in range(0,last_x,max_step):
         y_end=size_y-1 if y_start==last_y-max_step else y_start+max_step 
         array[x_start:x_end+1,y_start:y_end+1],cur_qs,cur_lorenzo_qs,cur_us,cur_selected=\
         msc2d(array[x_start:x_end+1,y_start:y_end+1],error_bound,rate,maximum_rate,min_coeff_level,max_step,anchor_rate,\
-            x_preded=(x_start>0),y_preded=(y_start>0),multidim=args.multidim,lorenzo=lorenzo_level,sample_rate=lorenzo_sample_ratio)
+            rate_list=rate_list, x_preded=(x_start>0),y_preded=(y_start>0),multidim=args.multidim,lorenzo=lorenzo_level,sample_rate=lorenzo_sample_ratio)
 
         for i in range(max_level+1):
             #print(len(cur_qs[i]))
