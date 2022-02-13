@@ -257,7 +257,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False):#lorenzo:only check 
             md_reg_xs=[]
             md_reg_ys=[]
             for x in range(1,cur_size_x,2):
-                for y in range(starty,cur_size_y,2):
+                for y in range(ystart,cur_size_y,2):
                     for z in range(1,cur_size_z,2):
                         md_reg_xs.append(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y][z-1],cur_array[x][y][z+1]],dtype=np.float64))
                         md_reg_ys.append(cur_array[x][y][z])
@@ -267,7 +267,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False):#lorenzo:only check 
 
     
         for x in range(1,cur_size_x,2):
-            for y in range(starty,cur_size_y,2):
+            for y in range(ystart,cur_size_y,2):
                 for z in range(1,cur_size_z,2):
                 
                     orig=cur_array[x][y][z]
@@ -288,7 +288,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False):#lorenzo:only check 
         if level>=min_coeff_level:
             md_reg_xs=[]
             md_reg_ys=[]
-            for x in range(startx,cur_size_x,2):
+            for x in range(xstart,cur_size_x,2):
                 for y in range(1,cur_size_y,2):
                     for z in range(1,cur_size_z,2):
                         md_reg_xs.append(np.array([cur_array[x][y-1][z],cur_array[x][y+1][z],cur_array[x][y][z-1],cur_array[x][y][z+1]],dtype=np.float64))
@@ -297,7 +297,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False):#lorenzo:only check 
                         md_coef=md_res.coef_ 
                         md_ince=md_res.intercept_
 
-        for x in range(startx,cur_size_x,2):
+        for x in range(xstart,cur_size_x,2):
             for y in range(1,cur_size_y,2):
                 for z in range(1,cur_size_z,2):
                 
@@ -509,7 +509,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False):#lorenzo:only check 
             md_reg_xs=[]
             md_reg_ys=[]
             for x in range(1,cur_size_x,2):
-                for y in range(starty,cur_size_y,2):
+                for y in range(ystart,cur_size_y,2):
                     for z in range(1,cur_size_z,2):
                         md_reg_xs.append(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y][z-1],cur_array[x][y][z+1]],dtype=np.float64))
                         md_reg_ys.append(cur_array[x][y][z])
@@ -519,7 +519,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False):#lorenzo:only check 
 
     
         for x in range(1,cur_size_x,2):
-            for y in range(starty,cur_size_y,2):
+            for y in range(ystart,cur_size_y,2):
                 for z in range(1,cur_size_z,2):
                 
                     orig=cur_array[x][y][z]
@@ -540,7 +540,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False):#lorenzo:only check 
         if level>=min_coeff_level:
             md_reg_xs=[]
             md_reg_ys=[]
-            for x in range(startx,cur_size_x,2):
+            for x in range(xstart,cur_size_x,2):
                 for y in range(1,cur_size_y,2):
                     for z in range(1,cur_size_z,2):
                         md_reg_xs.append(np.array([cur_array[x][y-1][z],cur_array[x][y+1][z],cur_array[x][y][z-1],cur_array[x][y][z+1]],dtype=np.float64))
@@ -549,7 +549,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False):#lorenzo:only check 
                         md_coef=md_res.coef_ 
                         md_ince=md_res.intercept_
 
-        for x in range(startx,cur_size_x,2):
+        for x in range(xstart,cur_size_x,2):
             for y in range(1,cur_size_y,2):
                 for z in range(1,cur_size_z,2):
                 
