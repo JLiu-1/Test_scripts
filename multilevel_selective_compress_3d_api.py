@@ -776,7 +776,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False):#loren
             if absloss*len(total_points)/len(sampled_points)<best_absloss+cumulated_loss:
                 selected_algo="lorenzo_fallback"
                 best_absloss=0
-                best_preds=array[0:last_x+1:step,0:last_y+1:step]
+                best_preds=array[0:last_x+1:step,0:last_y+1:step,0:last_z+1:step]
                 best_qs=[]
                 best_us=[]
            
@@ -791,7 +791,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False):#loren
                             if max_step>0 and (x*step)%max_step==0 and (y*step)%max_step==0 and (z*step)%max_step==0:
                             #print(x,y)
                                 continue
-                            orig=best_preds[x][y]
+                            orig=best_preds[x][y][z]
                             f_011=best_preds[x-1][y][z] if x else 0
                             f_101=best_preds[x][y-1][z] if y else 0
                             f_110=best_preds[x][y][z-1] if z else 0
@@ -810,7 +810,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False):#loren
                             if q==0:
                                 best_us.append(decomp)
                 #absloss+=abs(decomp)
-                            best_preds[x][y]=decomp
+                            best_preds[x][y][z]=decomp
             
 
         #print(len(best_qs))
