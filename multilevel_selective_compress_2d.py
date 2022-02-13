@@ -148,7 +148,7 @@ while step>0:
     cur_array=np.copy(array[0:last_x+1:step,0:last_y+1:step])
     cur_size_x,cur_size_y=cur_array.shape
     #print(cur_size_x,cur_size_y)
-    #print("Level %d started. Current step: %d. Current error_bound: %s." % (level,step,cur_eb))
+    print("Level %d started. Current step: %d. Current error_bound: %s." % (level,step,cur_eb))
     best_preds=None#need to copy
     best_absloss=None
     best_qs=[]#need to copy
@@ -573,7 +573,7 @@ while step>0:
     qs+=best_qs
     us+=best_us
     #print(len(qs))
-    #print ("Level %d finished. Selected algorithm: %s. Mean prediction abs loss: %f." % (level,selected_algo,mean_l1_loss))
+    print ("Level %d finished. Selected algorithm: %s. Mean prediction abs loss: %f." % (level,selected_algo,mean_l1_loss))
     step=step//2
     level-=1
     #print(len(qs))

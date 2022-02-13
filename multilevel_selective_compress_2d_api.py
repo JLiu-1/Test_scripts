@@ -127,7 +127,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False):#lorenzo:only check 
         cur_array=np.copy(array[0:last_x+1:step,0:last_y+1:step])
         cur_size_x,cur_size_y=cur_array.shape
     #print(cur_size_x,cur_size_y)
-        print("Level %d started. Current step: %d. Current error_bound: %s." % (level,step,cur_eb))
+        #print("Level %d started. Current step: %d. Current error_bound: %s." % (level,step,cur_eb))
         best_preds=None#need to copy
         best_absloss=None
         best_qs=[]#need to copy
