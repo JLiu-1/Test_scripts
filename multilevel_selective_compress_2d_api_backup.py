@@ -7,7 +7,37 @@ import argparse
 from sklearn.linear_model import LinearRegression
 import math
 import random
-from utils import *
+def quantize(data,pred,error_bound):
+    radius=32768
+    
+    diff = data - pred
+    quant_index = (int) (abs(diff)/ error_bound) + 1
+    #print(quant_index)
+    if (quant_index < radius * 2) :
+        quant_index =quant_index>> 1
+        half_index = quant_index
+        quant_index =quant_index<< 1
+        #print(quant_index)
+        quant_index_shifted=0
+        if (diff < 0) :
+            quant_index = -quant_index
+            quant_index_shifted = radius - half_index
+        else :
+            quant_index_shifted = radius + half_index
+        
+        decompressed_data = pred + quant_index * error_bound
+        #print(decompressed_data)
+        if abs(decompressed_data - data) > error_bound :
+            #print("b")
+            return 0,data
+        else:
+            #print("c")
+            data = decompressed_data
+            return quant_index_shifted,data
+        
+    else:
+        #print("a")
+        return 0,data
 
 def msc2d(array,error_bound,rate,maximum_rate,min_coeff_level,max_step,anchor_rate,rate_list=None,x_preded=False,y_preded=False,multidim=True,lorenzo=-1,\
 sample_rate=0.05,min_sampled_points=10,random_access=False):#lorenzo:only check lorenzo fallback with level no larger than lorenzo level
@@ -114,7 +144,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False):#lorenzo:only check 
         if level>=min_coeff_level:
             reg_xs=[]
             reg_ys=[]
-            for x in range(xstart,cur_size_x,2):
+            for x in range(0,cur_size_x,2):
                 for y in range(1,cur_size_y,2):
                     reg_xs.append(np.array([cur_array[x][y-1],cur_array[x][y+1]],dtype=np.float64))
                     reg_ys.append(cur_array[x][y])
@@ -223,7 +253,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False):#lorenzo:only check 
         if level>=min_coeff_level:
             reg_xs=[]
             reg_ys=[]
-            for x in range(xstart,cur_size_x,2):
+            for x in range(0,cur_size_x,2):
                 for y in range(3,cur_size_y,2):
                     if y+3>=cur_size_y:
                         continue
@@ -257,7 +287,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False):#lorenzo:only check 
             reg_xs=[]
             reg_ys=[]
             for x in range(3,cur_size_x,2):
-                for y in range(ystart,cur_size_y,2):
+                for y in range(0,cur_size_y,2):
                     if x+3>=cur_size_x:
                         continue
                     reg_xs.append(np.array([cur_array[x-3][y],cur_array[x-1][y],cur_array[x+1][y],cur_array[x+3][y]],dtype=np.float64))
@@ -357,7 +387,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False):#lorenzo:only check 
                 md_reg_ys=[]
                 for x in range(0,cur_size_x):
                     for y in range(1-(x%2),cur_size_y,2):
-                        if (x==0 and xstart!=0) or (y==0 and ystart!=0) or x==cur_size_x-1 or y==cur_size_y-1:
+                        if x==cur_size_x-1 or y==cur_size_y-1:
                             continue
                         md_reg_xs.append(np.array([cur_array[x][y-1],cur_array[x][y+1],cur_array[x-1][y],cur_array[x+1][y]],dtype=np.float64))
                         md_reg_ys.append(cur_array[x][y])
@@ -410,8 +440,8 @@ sample_rate=0.05,min_sampled_points=10,random_access=False):#lorenzo:only check 
             xstart=1 if x_preded else 0
             ystart=1 if y_preded else 0
             cur_orig_array=orig_array[0:last_x+1:step,0:last_y+1:step]
-            x_end_offset=1 if (random_access and last_x==size_x-1 and level==0) else 0
-            y_end_offset=1 if (random_access and last_y==size_y-1 and level==0) else 0
+            x_end_offset=1 if (random_access and last_x==size_x-1 and not x_edge and level==0) else 0
+            y_end_offset=1 if (random_access and last_y==size_y-1 and not y_edge and level==0) else 0
             total_points=[(x,y) for x in range(cur_orig_array.shape[0]-1) for y in range(cur_orig_array.shape[1]-1) if (max_step<=0 or ((x*step)%max_step!=0 and (y*step)%max_step!=0))]
             if len(total_points)<min_sampled_points:
                 num_sumples=len(total_points)
