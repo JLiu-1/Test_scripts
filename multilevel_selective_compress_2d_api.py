@@ -605,5 +605,5 @@ if __name__=="__main__":
     unpreds.tofile(args.unpred)
     for x in range(args.size_x):
         for y in range(args.size_y):
-            if array[x][y]==orig_array[x][y] and x%max_step!=0 and y%max_step!=0:
+            if array[x][y]==orig_array[x][y] and x%args.max_step!=0 and y%args.max_step!=0:
                 print(x,y)
