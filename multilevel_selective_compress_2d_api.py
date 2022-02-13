@@ -573,8 +573,8 @@ if __name__=="__main__":
     parser.add_argument('--error','-e',type=float,default=1e-3)
     parser.add_argument('--input','-i',type=str)
     parser.add_argument('--output','-o',type=str)
-    parser.add_argument('--quant','-q',type=str,default="ml2_q.dat")
-    parser.add_argument('--unpred','-u',type=str,default="ml2_u.dat")
+    parser.add_argument('--quant','-q',type=str,default="ml2_q2.dat")
+    parser.add_argument('--unpred','-u',type=str,default="ml2_u2.dat")
     parser.add_argument('--max_step','-s',type=int,default=-1)
     parser.add_argument('--min_coeff_level','-cl',type=int,default=99)
     parser.add_argument('--rate','-r',type=float,default=1.0)
@@ -603,7 +603,7 @@ if __name__=="__main__":
     array.tofile(args.output)
     quants.tofile(args.quant)
     unpreds.tofile(args.unpred)
-    for x in range(size_x):
-        for y in range(size_y):
+    for x in range(args.size_x):
+        for y in range(args.size_y):
             if array[x][y]==orig_array[x][y] and x%max_step!=0 and y%max_step!=0:
                 print(x,y)
