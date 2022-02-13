@@ -47,7 +47,7 @@ parser.add_argument('--output','-o',type=str)
 parser.add_argument('--quant','-q',type=str,default="ml2_q.dat")
 parser.add_argument('--unpred','-u',type=str,default="ml2_u.dat")
 parser.add_argument('--max_step','-s',type=int,default=64)
-#parser.add_argument('--min_coeff_level','-cl',type=int,default=99)
+parser.add_argument('--min_coeff_level','-cl',type=int,default=99)
 parser.add_argument('--rate','-r',type=float,default=1.0)
 parser.add_argument('--maximum_rate','-m',type=float,default=10.0)
 #parser.add_argument('--cubic','-c',type=int,default=1)
@@ -83,7 +83,7 @@ qs=[[] for i in range(max_level+1)]
 
 us=[]
 lorenzo_qs=[]
-#min_coeff_level=args.min_coeff_level
+min_coeff_level=args.min_coeff_level
 #anchor=args.anchor
 '''
 if max_step>0:
