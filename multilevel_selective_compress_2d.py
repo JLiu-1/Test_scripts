@@ -7,6 +7,8 @@ import argparse
 from sklearn.linear_model import LinearRegression
 import math
 import random
+from multilevel_selective_compress_2d_api import msc2d
+'''
 def quantize(data,pred,error_bound):
     radius=32768
     
@@ -38,7 +40,7 @@ def quantize(data,pred,error_bound):
     else:
         #print("a")
         return 0,data
-
+'''
 parser = argparse.ArgumentParser()
 
 parser.add_argument('--error','-e',type=float,default=1e-3)
@@ -52,7 +54,7 @@ parser.add_argument('--rate','-r',type=float,default=1.0)
 parser.add_argument('--maximum_rate','-m',type=float,default=10.0)
 parser.add_argument('--cubic','-c',type=int,default=1)
 parser.add_argument('--multidim','-d',type=int,default=1)
-parser.add_argument('--lorenzo_fallback_check','-l',type=int,default=0)
+parser.add_argument('--lorenzo_fallback_check','-l',type=int,default=-1)
 parser.add_argument('--fallback_sample_ratio','-f',type=float,default=0.01)
 #parser.add_argument('--level_rate','-lr',type=float,default=1.0)
 parser.add_argument('--anchor_rate','-a',type=float,default=0.0)
@@ -67,7 +69,7 @@ args = parser.parse_args()
 size_x=args.size_x
 size_y=args.size_y
 array=np.fromfile(args.input,dtype=np.float32).reshape((size_x,size_y))
-if 1:#args.lorenzo_fallback_check:
+if args.lorenzo_fallback_check>=0:
     orig_array=np.copy(array)
 rng=(np.max(array)-np.min(array))
 error_bound=args.error*rng
@@ -482,7 +484,7 @@ while step>0:
         selected_algo="lorenzo"
     '''
     #Lorenzo fallback
-    if args.lorenzo_fallback_check:
+    if level<=args.lorenzo_fallback_check:
         absloss=0
         #cur_qs=[]
         #cur_us=[]
