@@ -900,7 +900,7 @@ if __name__=="__main__":
     #parser.add_argument('--cubic','-c',type=int,default=1)
     parser.add_argument('--multidim','-d',type=int,default=1)
     parser.add_argument('--lorenzo_fallback_check','-l',type=int,default=-1)
-    parser.add_argument('--fallback_sample_ratio','-f',type=float,default=0.01)
+    parser.add_argument('--fallback_sample_ratio','-f',type=float,default=0.05)
 #parser.add_argument('--level_rate','-lr',type=float,default=1.0)
     parser.add_argument('--anchor_rate','-a',type=float,default=0.0)
 
