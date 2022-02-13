@@ -124,7 +124,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False):#lorenzo:only check 
         cur_qs=[]
         cur_us=[]
         if rate_list!=None:
-            cur_eb=rate_list[level]
+            cur_eb=error_bound/rate_list[level]
         else:
             cur_eb=error_bound/min(maximum_rate,(rate**level))
         cur_array=np.copy(array[0:last_x+1:step,0:last_y+1:step])
@@ -586,6 +586,7 @@ if __name__=="__main__":
     parser.add_argument('--max_step','-s',type=int,default=-1)
     parser.add_argument('--min_coeff_level','-cl',type=int,default=99)
     parser.add_argument('--rate','-r',type=float,default=1.0)
+    parser.add_argument('--rlist',type=float,default=0.0,nargs="+")
     parser.add_argument('--maximum_rate','-m',type=float,default=10.0)
     parser.add_argument('--cubic','-c',type=int,default=1)
     parser.add_argument('--multidim','-d',type=int,default=1)
@@ -603,7 +604,17 @@ if __name__=="__main__":
     array=np.fromfile(args.input,dtype=np.float32).reshape((args.size_x,args.size_y))
     orig_array=np.copy(array)
     error_bound=args.error*(np.max(array)-np.min(array))
-    array,qs,edge_qs,us,_=msc2d(array,error_bound,args.rate,args.maximum_rate,args.min_coeff_level,args.max_step,args.anchor_rate,x_preded=False,y_preded=False,multidim=args.multidim,\
+    max_level=int(math.log(args.max_step,2))
+    if args.rlist!=0:
+        rate_list=args.rlist
+        if isinstance(rate_list,int):
+            rate_list=[rate_list]
+
+        while len(rate_list)<max_level:
+            rate_list.insert(0,rate_list[0])
+    else:
+        rate_list=None
+    array,qs,edge_qs,us,_=msc2d(array,error_bound,args.rate,args.maximum_rate,args.min_coeff_level,args.max_step,args.anchor_rate,rate_list=rate_list,x_preded=False,y_preded=False,multidim=args.multidim,\
         lorenzo=args.lorenzo_fallback_check,sample_rate=args.fallback_sample_ratio,min_sampled_points=100,random_access=False)
 
     quants=np.concatenate( (np.array(edge_qs,dtype=np.int32),np.array(sum(qs,[]),dtype=np.int32) ) )
