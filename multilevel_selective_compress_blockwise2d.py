@@ -83,7 +83,7 @@ qs=[[] for i in range(max_level+1)]
 
 us=[]
 lorenzo_qs=[]
-min_coeff_level=args.min_coeff_level
+#min_coeff_level=args.min_coeff_level
 #anchor=args.anchor
 '''
 if max_step>0:
