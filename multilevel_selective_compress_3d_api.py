@@ -10,7 +10,7 @@ import random
 from utils import *
 
 def msc3d(array,error_bound,rate,maximum_rate,min_coeff_level,max_step,anchor_rate,rate_list=None,x_preded=False,y_preded=False,z_preded=False,multidim=True,lorenzo=-1,\
-sample_rate=0.05,min_sampled_points=10,random_access=False):#lorenzo:only check lorenzo fallback with level no larger than lorenzo level
+sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False):#lorenzo:only check lorenzo fallback with level no larger than lorenzo level
 
     size_x,size_y,size_z=array.shape
     #array=np.fromfile(args.input,dtype=np.float32).reshape((size_x,size_y))
@@ -104,9 +104,11 @@ sample_rate=0.05,min_sampled_points=10,random_access=False):#lorenzo:only check 
         else:
             cur_eb=error_bound/min(maximum_rate,(rate**level))
         cur_array=np.copy(array[0:last_x+1:step,0:last_y+1:step,0:last_z+1:step])
+        print(cur_array.shape)
         cur_size_x,cur_size_y,cur_size_z=cur_array.shape
     #print(cur_size_x,cur_size_y)
-        #print("Level %d started. Current step: %d. Current error_bound: %s." % (level,step,cur_eb))
+        if verbose:
+            print("Level %d started. Current step: %d. Current error_bound: %s." % (level,step,cur_eb))
         best_preds=None#need to copy
         best_absloss=None
         best_qs=[]#need to copy
@@ -832,7 +834,8 @@ sample_rate=0.05,min_sampled_points=10,random_access=False):#lorenzo:only check 
         us+=best_us
         selected_algos.append(selected_algo)
         #print(len(qs))
-        #print ("Level %d finished. Selected algorithm: %s. Mean prediction abs loss: %f." % (level,selected_algo,mean_l1_loss))
+        if verbose:
+            print ("Level %d finished. Selected algorithm: %s. Mean prediction abs loss: %f." % (level,selected_algo,mean_l1_loss))
         step=step//2
         level-=1
         #print(sum([len(_) for _ in qs] ))
@@ -925,7 +928,7 @@ if __name__=="__main__":
     else:
         rate_list=None
     array,qs,edge_qs,us,_=msc3d(array,error_bound,args.rate,args.maximum_rate,args.min_coeff_level,args.max_step,args.anchor_rate,rate_list=rate_list,x_preded=False,y_preded=False,z_preded=False,multidim=args.multidim,\
-        lorenzo=args.lorenzo_fallback_check,sample_rate=args.fallback_sample_ratio,min_sampled_points=100,random_access=False)
+        lorenzo=args.lorenzo_fallback_check,sample_rate=args.fallback_sample_ratio,min_sampled_points=100,random_access=False,verbose=True)
 
     quants=np.concatenate( (np.array(edge_qs,dtype=np.int32),np.array(sum(qs,[]),dtype=np.int32) ) )
     unpreds=np.array(us,dtype=np.float32)
