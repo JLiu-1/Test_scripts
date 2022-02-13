@@ -434,6 +434,8 @@ sample_rate=0.05,min_sampled_points=10,random_access=False):#lorenzo:only check 
         #cur_qs=[]
         #cur_us=[]
         #cur_array=np.copy(array[0:last_x+1:step,0:last_y+1:step])#reset cur_array
+            xstart=1 if x_preded else 0
+            ystart=1 if y_preded else 0
             cur_orig_array=orig_array[0:last_x+1:step,0:last_y+1:step]
             x_end_offset=1 if (random_access and last_x==size_x-1 and not x_edge and level==0) else 0
             y_end_offset=1 if (random_access and last_y==size_y-1 and not y_edge and level==0) else 0
@@ -481,8 +483,8 @@ sample_rate=0.05,min_sampled_points=10,random_access=False):#lorenzo:only check 
                 for i in range(max_level-1,level,-1):
                     qs[i]=[]
                 us=us[:u_start]
-                for x in range(cur_size_x-x_end_offset):
-                    for y in range(cur_size_y-x_end_offset):
+                for x in range(xstart,cur_size_x-x_end_offset):
+                    for y in range(ystart,cur_size_y-y_end_offset):
                     
                         if max_step>0 and (x*step)%max_step==0 and (y*step)%max_step==0:
                             #print(x,y)
