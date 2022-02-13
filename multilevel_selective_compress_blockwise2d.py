@@ -7,6 +7,7 @@ import argparse
 from sklearn.linear_model import LinearRegression
 import math
 import random
+from multilevel_selective_compress_2d_api import msc2d
 def quantize(data,pred,error_bound):
     radius=32768
     
