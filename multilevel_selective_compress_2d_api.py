@@ -420,7 +420,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False):#lorenzo:only check 
                     if q==0:
                         cur_us.append(decomp)
                 #absloss+=abs(decomp)
-                cur_array[x][y]=decomp
+                    cur_array[x][y]=decomp
             if absloss<best_absloss:
                 selected_algo="interp_multidim"
                 best_preds=np.copy(cur_array)
@@ -526,7 +526,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False):#lorenzo:only check 
         us+=best_us
         selected_algos.append(selected_algo)
         #print(len(qs))
-        print ("Level %d finished. Selected algorithm: %s. Mean prediction abs loss: %f." % (level,selected_algo,mean_l1_loss))
+        #print ("Level %d finished. Selected algorithm: %s. Mean prediction abs loss: %f." % (level,selected_algo,mean_l1_loss))
         step=step//2
         level-=1
         #print(sum([len(_) for _ in qs] ))
