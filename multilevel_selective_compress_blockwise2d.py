@@ -158,9 +158,9 @@ for x_start in range(0,last_x,max_step):
             x_preded=x_start>0,y_preded=y_start>0,multidim=args.multidim,lorenzo=lorenzo_level,sample_rate=lorenzo_sample_ratio)
 
         for i in range(max_level+1):
-            print(len(qs[i]))
+            print(len(cur_qs[i]))
             qs[i]+=cur_qs[i]
-        
+
         us+=cur_us
         lorenzo_qs+=cur_lorenzo_qs
         print(x_start,y_start)
