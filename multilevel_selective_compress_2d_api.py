@@ -118,7 +118,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False):#lorenzo:only check 
     step=max_step//2
     level=max_level-1
     #maxlevel_q_start=len(qs[max_level])
-    #u_start=len(us)
+    u_start=len(us)
     cumulated_loss=0.0
     while step>0:
         cur_qs=[]
