@@ -936,8 +936,7 @@ if __name__=="__main__":
             rate_list.insert(0,rate_list[0])
     else:
         rate_list=None
-    array,qs,edge_qs,us,_=msc2d(array,error_bound,args.rate,args.maximum_rate,args.min_coeff_level,args.max_step,args.anchor_rate,rate_list=rate_list,x_preded=False,y_preded=False,sz_interp=args.sz3_interp,\
-        multidim=args.multidim-lorenzo=args.lorenzo_fallback_check,sample_rate=args.fallback_sample_ratio,min_sampled_points=100,random_access=False,verbose=True)
+    array,qs,edge_qs,us,_=msc2d(array,error_bound,args.rate,args.maximum_rate,args.min_coeff_level,args.max_step,args.anchor_rate,rate_list=rate_list,x_preded=False,y_preded=False,sz_interp=args.sz3_interp,multidim=args.multidim-lorenzo=args.lorenzo_fallback_check,sample_rate=args.fallback_sample_ratio,min_sampled_points=100,random_access=False,verbose=True)
 
     quants=np.concatenate( (np.array(edge_qs,dtype=np.int32),np.array(sum(qs,[]),dtype=np.int32) ) )
     unpreds=np.array(us,dtype=np.float32)
