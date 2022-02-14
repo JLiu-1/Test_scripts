@@ -918,7 +918,7 @@ if __name__=="__main__":
 
     parser.add_argument('--size_x','-x',type=int,default=1800)
     parser.add_argument('--size_y','-y',type=int,default=3600)
-    parser.add_argument('--sz_interp',type=int,default=0)
+    parser.add_argument('--sz_interp','-n',type=int,default=0)
 #parser.add_argument('--level','-l',type=int,default=2)
 #parser.add_argument('--noise','-n',type=bool,default=False)
 #parser.add_argument('--intercept','-t',type=bool,default=False)
