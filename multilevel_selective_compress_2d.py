@@ -78,6 +78,7 @@ error_bound=args.error*rng
 max_step=args.max_step
 rate=args.rate
 if args.rlist!=0:
+    max_level=int(math.log(max_step,2))
     rate_list=args.rlist
     if isinstance(rate_list,int):
         rate_list=[rate_list]
