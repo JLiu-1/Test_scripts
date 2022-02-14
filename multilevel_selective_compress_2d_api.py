@@ -923,6 +923,7 @@ if __name__=="__main__":
 #parser.add_argument('--noise','-n',type=bool,default=False)
 #parser.add_argument('--intercept','-t',type=bool,default=False)
     args = parser.parse_args()
+    print(args)
     array=np.fromfile(args.input,dtype=np.float32).reshape((args.size_x,args.size_y))
     orig_array=np.copy(array)
     error_bound=args.error*(np.max(array)-np.min(array))
