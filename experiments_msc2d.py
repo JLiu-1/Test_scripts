@@ -15,6 +15,7 @@ parser.add_argument('--size_x','-x',type=int,default=1800)
 parser.add_argument('--size_y','-y',type=int,default=3600)
 
 
+
 args = parser.parse_args()
 pid=str(os.getpid()).strip()
 dout="%s_d.dat" %pid 
