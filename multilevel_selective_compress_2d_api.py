@@ -942,9 +942,9 @@ if __name__=="__main__":
     array.tofile(args.output)
     quants.tofile(args.quant)
     unpreds.tofile(args.unpred)
-    '''
+    
     for x in range(args.size_x):
         for y in range(args.size_y):
             if array[x][y]==orig_array[x][y] and x%args.max_step!=0 and y%args.max_step!=0:
                 print(x,y)
-    '''
+    
