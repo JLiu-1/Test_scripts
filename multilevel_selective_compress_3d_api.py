@@ -9,7 +9,7 @@ import math
 import random
 from utils import *
 
-def msc3d(array,error_bound,rate,maximum_rate,min_coeff_level,max_step,anchor_rate,rate_list=None,x_preded=False,y_preded=False,z_preded=False,multidim=True,lorenzo=-1,\
+def msc3d(array,error_bound,rate,maximum_rate,min_coeff_level,max_step,anchor_rate,rate_list=None,x_preded=False,y_preded=False,z_preded=False,multidim_level=10,sz_interp=False,lorenzo=-1,\
 sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False):#lorenzo:only check lorenzo fallback with level no larger than lorenzo level
 
     size_x,size_y,size_z=array.shape
@@ -39,7 +39,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False):#loren
             if verbose:
                 print("Anchor eb:%f" % anchor_eb)
 
-            if max_level>=min_coeff_level:
+            if max_level>=min_coeff_level :
                 reg_xs=[]
                 reg_ys=[]
                 for x in range(max_step,size_x,max_step):
@@ -120,495 +120,497 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False):#loren
     #linear interp
         absloss=0
         selected_algo="none"
+        if level<=multidim_level or not sz_interp:
+
+
+            if level>=min_coeff_level:
+                reg_xs=[]
+                reg_ys=[]
+                for x in range(xstart,cur_size_x,2):
+                    for y in range(ystart,cur_size_y,2):
+                        for z in range(1,cur_size_z,2):
+                            reg_xs.append(np.array([cur_array[x][y][z-1],cur_array[x][y][z+1]],dtype=np.float64))
+                            reg_ys.append(cur_array[x][y][z])
+                            res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
+                            coef=res.coef_ 
+                            ince=res.intercept_
         
-        if level>=min_coeff_level:
-            reg_xs=[]
-            reg_ys=[]
+
             for x in range(xstart,cur_size_x,2):
                 for y in range(ystart,cur_size_y,2):
                     for z in range(1,cur_size_z,2):
-                        reg_xs.append(np.array([cur_array[x][y][z-1],cur_array[x][y][z+1]],dtype=np.float64))
-                        reg_ys.append(cur_array[x][y][z])
-                        res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
-                        coef=res.coef_ 
-                        ince=res.intercept_
-        
-
-        for x in range(xstart,cur_size_x,2):
-            for y in range(ystart,cur_size_y,2):
-                for z in range(1,cur_size_z,2):
-                    if z==cur_size_z-1:
-                        continue
-                    orig=cur_array[x][y][z]
-                    if level>=min_coeff_level:
-                        pred= np.dot( np.array([cur_array[x][y][z-1],cur_array[x][y][z+1]]),coef )+ince 
-                    else:
-                        pred=(cur_array[x][y][z-1]+cur_array[x][y][z+1])/2
-                    if (not random_access) or level!=0 or ((x!=cur_size_x-1 or last_x!=size_x-1) and (y!=cur_size_y-1 or last_y!=size_y-1)):
-                        absloss+=abs(orig-pred)
-                    q,decomp=quantize(orig,pred,cur_eb)
-                    cur_qs.append(q)
-            
-
-                    if q==0:
-                        cur_us.append(decomp)
-                    #absloss+=abs(decomp)
-                    cur_array[x][y][z]=decomp    
-
-
-
-        if level>=min_coeff_level:
-            reg_xs=[]
-            reg_ys=[]
-            for x in range(xstart,cur_size_x,2):
-                for y in range(1,cur_size_y,2):
-                    for z in range(zstart,cur_size_z,2):
-                        reg_xs.append(np.array([cur_array[x][y-1][z],cur_array[x][y+1][z]],dtype=np.float64))
-                        reg_ys.append(cur_array[x][y][z])
-                        res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
-                        coef=res.coef_ 
-                        ince=res.intercept_
-
-        for x in range(xstart,cur_size_x,2):
-            for y in range(1,cur_size_y,2):
-                for z in range(zstart,cur_size_z,2):
-                    if y==cur_size_y-1:
-                        continue
-                    orig=cur_array[x][y][z]
-                    if level>=min_coeff_level:
-                        pred= np.dot( np.array([cur_array[x][y-1][z],cur_array[x][y+1][z]]),coef )+ince 
-                    else:
-                        pred=(cur_array[x][y-1][z]+cur_array[x][y+1][z])/2
-                    if (not random_access) or level!=0 or ((x!=cur_size_x-1 or last_x!=size_x-1) and (z!=cur_size_z-1 or last_z!=size_z-1)):
-                        absloss+=abs(orig-pred)
-                    q,decomp=quantize(orig,pred,cur_eb)
-                    cur_qs.append(q)
-            
-
-                    if q==0:
-                        cur_us.append(decomp)
-                    #absloss+=abs(decomp)
-                    cur_array[x][y][z]=decomp 
-
-        if level>=min_coeff_level:
-            reg_xs=[]
-            reg_ys=[]
-            for x in range(1,cur_size_x,2):
-                for y in range(ystart,cur_size_y,2):
-                    for z in range(zstart,cur_size_z,2):
-                        reg_xs.append(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z]],dtype=np.float64))
-                        reg_ys.append(cur_array[x][y][z])
-                        res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
-                        coef=res.coef_ 
-                        ince=res.intercept_
-
-        for x in range(1,cur_size_x,2):
-            for y in range(ystart,cur_size_y,2):
-                for z in range(zstart,cur_size_z,2):
-                    if x==cur_size_x-1:
-                        continue
-                    orig=cur_array[x][y][z]
-                    if level>=min_coeff_level:
-                        pred= np.dot( np.array([cur_array[x-1][y][z],cur_array[x+1][y][z]]),coef )+ince 
-                    else:
-                        pred=(cur_array[x-1][y][z]+cur_array[x+1][y][z])/2
-                    if (not random_access) or level!=0 or ((y!=cur_size_y-1 or last_y!=size_y-1) and (z!=cur_size_z-1 or last_z!=size_z-1)):
-                        absloss+=abs(orig-pred)
-                    q,decomp=quantize(orig,pred,cur_eb)
-                    cur_qs.append(q)
-            
-
-                    if q==0:
-                        cur_us.append(decomp)
-                    #absloss+=abs(decomp)
-                    cur_array[x][y][z]=decomp     
-
-        if level>=min_coeff_level:
-            md_reg_xs=[]
-            md_reg_ys=[]
-            for x in range(1,cur_size_x,2):
-                for y in range(1,cur_size_y,2):
-                    for z in range(zstart,cur_size_z,2):
-                        md_reg_xs.append(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y-1][z],cur_array[x][y+1][z]],dtype=np.float64))
-                        md_reg_ys.append(cur_array[x][y][z])
-                        md_res=LinearRegression(fit_intercept=True).fit(md_reg_xs, md_reg_ys)
-                        md_coef=md_res.coef_ 
-                        md_ince=md_res.intercept_
-
-    
-        for x in range(1,cur_size_x,2):
-            for y in range(1,cur_size_y,2):
-                for z in range(zstart,cur_size_z,2):
-                
-                    orig=cur_array[x][y][z]
-                    if level>=min_coeff_level:
-                        pred=np.dot(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y-1][z],cur_array[x][y+1][z]]),md_coef)+md_ince
-                    else:
-                        pred=(cur_array[x-1][y][z]+cur_array[x+1][y][z]+cur_array[x][y-1][z]+cur_array[x][y+1][z])/4
-
-                    if (not random_access) or level!=0 or z!=cur_size_z-1 or last_z!=size_z-1:
-                        absloss+=abs(orig-pred)
-                    q,decomp=quantize(orig,pred,cur_eb)
-                
-                    cur_qs.append(q)
-                    if q==0:
-                        cur_us.append(decomp)
-                #absloss+=abs(decomp)
-                    cur_array[x][y][z]=decomp
-
-        if level>=min_coeff_level:
-            md_reg_xs=[]
-            md_reg_ys=[]
-            for x in range(1,cur_size_x,2):
-                for y in range(ystart,cur_size_y,2):
-                    for z in range(1,cur_size_z,2):
-                        md_reg_xs.append(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y][z-1],cur_array[x][y][z+1]],dtype=np.float64))
-                        md_reg_ys.append(cur_array[x][y][z])
-                        md_res=LinearRegression(fit_intercept=True).fit(md_reg_xs, md_reg_ys)
-                        md_coef=md_res.coef_ 
-                        md_ince=md_res.intercept_
-
-    
-        for x in range(1,cur_size_x,2):
-            for y in range(ystart,cur_size_y,2):
-                for z in range(1,cur_size_z,2):
-                
-                    orig=cur_array[x][y][z]
-                    if level>=min_coeff_level:
-                        pred=np.dot(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y][z-1],cur_array[x][y][z+1]]),md_coef)+md_ince
-                    else:
-                        pred=(cur_array[x-1][y][z]+cur_array[x+1][y][z]+cur_array[x][y][z-1]+cur_array[x][y][z+1])/4
-                    if (not random_access) or level!=0 or y!=cur_size_y-1 or last_y!=size_y-1:
-                        absloss+=abs(orig-pred)
-                    q,decomp=quantize(orig,pred,cur_eb)
-            
-                    cur_qs.append(q)
-                    if q==0:
-                        cur_us.append(decomp)
-                
-                    cur_array[x][y][z]=decomp
-
-        if level>=min_coeff_level:
-            md_reg_xs=[]
-            md_reg_ys=[]
-            for x in range(xstart,cur_size_x,2):
-                for y in range(1,cur_size_y,2):
-                    for z in range(1,cur_size_z,2):
-                        md_reg_xs.append(np.array([cur_array[x][y-1][z],cur_array[x][y+1][z],cur_array[x][y][z-1],cur_array[x][y][z+1]],dtype=np.float64))
-                        md_reg_ys.append(cur_array[x][y][z])
-                        md_res=LinearRegression(fit_intercept=True).fit(md_reg_xs, md_reg_ys)
-                        md_coef=md_res.coef_ 
-                        md_ince=md_res.intercept_
-
-        for x in range(xstart,cur_size_x,2):
-            for y in range(1,cur_size_y,2):
-                for z in range(1,cur_size_z,2):
-                
-                    orig=cur_array[x][y][z]
-                    if level>=min_coeff_level:
-                        pred=np.dot(np.array([cur_array[x][y-1][z],cur_array[x][y+1][z],cur_array[x][y][z-1],cur_array[x][y][z+1]]),md_coef)+md_ince
-                    else:
-                        pred=(cur_array[x][y-1][z]+cur_array[x][y+1][z]+cur_array[x][y][z-1]+cur_array[x][y][z+1])/4
-                    if (not random_access) or level!=0 or x!=cur_size_x-1 or last_x!=size_x-1:
-                        absloss+=abs(orig-pred)
-                    q,decomp=quantize(orig,pred,cur_eb)
-            
-                    cur_qs.append(q)
-                    if q==0:
-                        cur_us.append(decomp)
-                #absloss+=abs(decomp)
-                    cur_array[x][y][z]=decomp
-        
-        if level>=min_coeff_level:
-            md_reg_xs=[]
-            md_reg_ys=[]
-            for x in range(1,cur_size_x,2):
-                for y in range(1,cur_size_y,2):
-                    for z in range(1,cur_size_z,2):
-                        md_reg_xs.append(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y-1][z],cur_array[x][y+1][z],cur_array[x][y][z-1],cur_array[x][y][z+1]],dtype=np.float64))
-                        md_reg_ys.append(cur_array[x][y][z])
-                        md_res=LinearRegression(fit_intercept=True).fit(md_reg_xs, md_reg_ys)
-                        md_coef=md_res.coef_ 
-                        md_ince=md_res.intercept_
-
-        for x in range(1,cur_size_x,2):
-            for y in range(1,cur_size_y,2):
-                for z in range(1,cur_size_z,2):
-                
-                    orig=cur_array[x][y][z]
-                    if level>=min_coeff_level:
-                        pred=np.dot(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y-1][z],cur_array[x][y+1][z],cur_array[x][y][z-1],cur_array[x][y][z+1] ]),md_coef)+md_ince
-                    else:
-                        pred=(cur_array[x-1][y][z]+cur_array[x+1][y][z]+cur_array[x][y-1][z]+cur_array[x][y+1][z]+cur_array[x][y][z-1]+cur_array[x][y][z+1])/6
-                    absloss+=abs(orig-pred)
-                    q,decomp=quantize(orig,pred,cur_eb)
-            
-                    cur_qs.append(q)
-                    if q==0:
-                        cur_us.append(decomp)
-                #absloss+=abs(decomp)
-                    cur_array[x][y][z]=decomp
-
-
-        best_preds=np.copy(cur_array)
-        best_absloss=absloss
-        best_qs=cur_qs.copy()
-        best_us=cur_us.copy()
-        selected_algo="interp_linear"
-
-        #print(len(cur_qs))
-
-
-        #cubic interp
-        #cubic=True
-        #if cubic:
-        #print("cubic")
-        absloss=0
-        cur_qs=[]
-        cur_us=[]
-        cur_array=np.copy(array[0:last_x+1:step,0:last_y+1:step,0:last_z+1:step])#reset cur_array
-        if level>=min_coeff_level:
-            reg_xs=[]
-            reg_ys=[]
-            for x in range(xstart,cur_size_x,2):
-                for y in range(ystart,cur_size_y,2):
-                    for z in range(3,cur_size_z,2):
-                        if z+3>=cur_size_z:
-                            continue
-                        reg_xs.append(np.array([cur_array[x][y][z-3],cur_array[x][y][z-1],cur_array[x][y][z+1],cur_array[x][y][z+3]],dtype=np.float64))
-                        reg_ys.append(cur_array[x][y][z])
-                        res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
-                        coef=res.coef_ 
-                        ince=res.intercept_
-        for x in range(xstart,cur_size_x,2):
-            for y in range(ystart,cur_size_y,2):
-                for z in range(1,cur_size_z,2):
-                
-                    orig=cur_array[x][y][z]
-                    if z>=3 and z+3<cur_size_z:
+                        #if z==cur_size_z-1:
+                            #continue
+                        orig=cur_array[x][y][z]
                         if level>=min_coeff_level:
-                            pred=np.dot(coef,np.array([cur_array[x][y][z-3],cur_array[x][y][z-1],cur_array[x][y][z+1],cur_array[x][y][z+3]]) )+ince
+                            pred= np.dot( np.array([cur_array[x][y][z-1],cur_array[x][y][z+1]]),coef )+ince 
                         else:
-                            pred=(-cur_array[x][y][z-3]+9*cur_array[x][y][z-1]+9*cur_array[x][y][z+1]-cur_array[x][y][z+3])/16
-                    else:
-                        pred=(cur_array[x][y][z-1]+cur_array[x][y][z+1])/2
-                    if (not random_access) or level!=0 or ((x!=cur_size_x-1 or last_x!=size_x-1) and (y!=cur_size_y-1 or last_y!=size_y-1)):
-                        absloss+=abs(orig-pred)
-                    q,decomp=quantize(orig,pred,cur_eb)
-                    cur_qs.append(q)
-                
-                    if q==0:
-                        cur_us.append(decomp)
-                        #absloss+=abs(decomp)
-                    cur_array[x][y][z]=decomp     
+                            pred=(cur_array[x][y][z-1]+cur_array[x][y][z+1])*0.5
+                        if (not random_access) or level!=0 or ((x!=cur_size_x-1 or last_x!=size_x-1) and (y!=cur_size_y-1 or last_y!=size_y-1)):
+                            absloss+=abs(orig-pred)
+                        q,decomp=quantize(orig,pred,cur_eb)
+                        cur_qs.append(q)
+            
+
+                        if q==0:
+                            cur_us.append(decomp)
+                    #absloss+=abs(decomp)
+                        cur_array[x][y][z]=decomp    
 
 
-        if level>=min_coeff_level:
-            reg_xs=[]
-            reg_ys=[]
+
+            if level>=min_coeff_level:
+                reg_xs=[]
+                reg_ys=[]
+                for x in range(xstart,cur_size_x,2):
+                    for y in range(1,cur_size_y,2):
+                        for z in range(zstart,cur_size_z,2):
+                            reg_xs.append(np.array([cur_array[x][y-1][z],cur_array[x][y+1][z]],dtype=np.float64))
+                            reg_ys.append(cur_array[x][y][z])
+                            res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
+                            coef=res.coef_ 
+                            ince=res.intercept_
+
             for x in range(xstart,cur_size_x,2):
-                for y in range(3,cur_size_y,2):
+                for y in range(1,cur_size_y,2):
                     for z in range(zstart,cur_size_z,2):
-                        if y+3>=cur_size_y:
-                            continue
-                        reg_xs.append(np.array([cur_array[x][y-3][z],cur_array[x][y-1][z],cur_array[x][y+1][z],cur_array[x][y+3][z]],dtype=np.float64))
-                        reg_ys.append(cur_array[x][y][z])
-                        res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
-                        coef=res.coef_ 
-                        ince=res.intercept_
-        for x in range(xstart,cur_size_x,2):
-            for y in range(1,cur_size_y,2):
-                for z in range(zstart,cur_size_z,2):
-                
-                    orig=cur_array[x][y][z]
-                    if y>=3 and y+3<cur_size_y:
+                        #if y==cur_size_y-1:
+                            #continue
+                        orig=cur_array[x][y][z]
                         if level>=min_coeff_level:
-                            pred=np.dot(coef,np.array([cur_array[x][y-3][z],cur_array[x][y-1][z],cur_array[x][y+1][z],cur_array[x][y+3][z]]) )+ince
+                            pred= np.dot( np.array([cur_array[x][y-1][z],cur_array[x][y+1][z]]),coef )+ince 
                         else:
-                            pred=(-cur_array[x][y-3][z]+9*cur_array[x][y-1][z]+9*cur_array[x][y+1][z]-cur_array[x][y+3][z])/16
-                    else:
-                        pred=(cur_array[x][y-1][z]+cur_array[x][y+1][z])/2
-                    if (not random_access) or level!=0 or ((x!=cur_size_x-1 or last_x!=size_x-1) and (z!=cur_size_z-1 or last_z!=size_z-1)):
-                        absloss+=abs(orig-pred)
-                    q,decomp=quantize(orig,pred,cur_eb)
-                    cur_qs.append(q)
-                
-                    if q==0:
-                        cur_us.append(decomp)
-                        #absloss+=abs(decomp)
-                    cur_array[x][y][z]=decomp
+                            pred=(cur_array[x][y-1][z]+cur_array[x][y+1][z])*0.5
+                        if (not random_access) or level!=0 or ((x!=cur_size_x-1 or last_x!=size_x-1) and (z!=cur_size_z-1 or last_z!=size_z-1)):
+                            absloss+=abs(orig-pred)
+                        q,decomp=quantize(orig,pred,cur_eb)
+                        cur_qs.append(q)
+            
 
-        if level>=min_coeff_level:
-            reg_xs=[]
-            reg_ys=[]
-            for x in range(3,cur_size_x,2):
+                        if q==0:
+                            cur_us.append(decomp)
+                    #absloss+=abs(decomp)
+                        cur_array[x][y][z]=decomp 
+
+            if level>=min_coeff_level:
+                reg_xs=[]
+                reg_ys=[]
+                for x in range(1,cur_size_x,2):
+                    for y in range(ystart,cur_size_y,2):
+                        for z in range(zstart,cur_size_z,2):
+                            reg_xs.append(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z]],dtype=np.float64))
+                            reg_ys.append(cur_array[x][y][z])
+                            res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
+                            coef=res.coef_ 
+                            ince=res.intercept_
+
+            for x in range(1,cur_size_x,2):
                 for y in range(ystart,cur_size_y,2):
                     for z in range(zstart,cur_size_z,2):
-                        if x+3>=cur_size_x:
-                            continue
-                        reg_xs.append(np.array([cur_array[x-3][y][z],cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x+3][y][z]],dtype=np.float64))
-                        reg_ys.append(cur_array[x][y][z])
-                        res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
-                        coef=res.coef_ 
-                        ince=res.intercept_
-        for x in range(1,cur_size_x,2):
-            for y in range(ystart,cur_size_y,2):
-                for z in range(zstart,cur_size_z,2):
-                
-                    orig=cur_array[x][y][z]
-                    if x>=3 and x+3<cur_size_x:
+                        #if x==cur_size_x-1:
+                            #continue
+                        orig=cur_array[x][y][z]
                         if level>=min_coeff_level:
-                            pred=np.dot(coef,np.array([cur_array[x-3][y][z],cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x+3][y][z]]) )+ince
+                            pred= np.dot( np.array([cur_array[x-1][y][z],cur_array[x+1][y][z]]),coef )+ince 
                         else:
-                            pred=(-cur_array[x-3][y][z]+9*cur_array[x-1][y][z]+9*cur_array[x+1][y][z]-cur_array[x+3][y][z])/16
-                    else:
-                        pred=(cur_array[x-1][y][z]+cur_array[x+1][y][z])/2
-                    if (not random_access) or level!=0 or ( (y!=cur_size_y-1 or last_y!=size_y-1) and (z!=cur_size_z-1 or last_z!=size_z-1)):
-                        absloss+=abs(orig-pred)
-                    q,decomp=quantize(orig,pred,cur_eb)
-                    cur_qs.append(q)
-                
-                    if q==0:
-                        cur_us.append(decomp)
-                        #absloss+=abs(decomp)
-                    cur_array[x][y][z]=decomp  
+                            pred=(cur_array[x-1][y][z]+cur_array[x+1][y][z])*0.5
+                        if (not random_access) or level!=0 or ((y!=cur_size_y-1 or last_y!=size_y-1) and (z!=cur_size_z-1 or last_z!=size_z-1)):
+                            absloss+=abs(orig-pred)
+                        q,decomp=quantize(orig,pred,cur_eb)
+                        cur_qs.append(q)
+            
 
+                        if q==0:
+                            cur_us.append(decomp)
+                    #absloss+=abs(decomp)
+                        cur_array[x][y][z]=decomp     
 
+            if level>=min_coeff_level:
+                md_reg_xs=[]
+                md_reg_ys=[]
+                for x in range(1,cur_size_x,2):
+                    for y in range(1,cur_size_y,2):
+                        for z in range(zstart,cur_size_z,2):
+                            md_reg_xs.append(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y-1][z],cur_array[x][y+1][z]],dtype=np.float64))
+                            md_reg_ys.append(cur_array[x][y][z])
+                            md_res=LinearRegression(fit_intercept=True).fit(md_reg_xs, md_reg_ys)
+                            md_coef=md_res.coef_ 
+                            md_ince=md_res.intercept_
 
-        if level>=min_coeff_level:
-            md_reg_xs=[]
-            md_reg_ys=[]
+    
             for x in range(1,cur_size_x,2):
                 for y in range(1,cur_size_y,2):
                     for z in range(zstart,cur_size_z,2):
-                        md_reg_xs.append(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y-1][z],cur_array[x][y+1][z]],dtype=np.float64))
-                        md_reg_ys.append(cur_array[x][y][z])
-                        md_res=LinearRegression(fit_intercept=True).fit(md_reg_xs, md_reg_ys)
-                        md_coef=md_res.coef_ 
-                        md_ince=md_res.intercept_
+                
+                        orig=cur_array[x][y][z]
+                        if level>=min_coeff_level:
+                            pred=np.dot(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y-1][z],cur_array[x][y+1][z]]),md_coef)+md_ince
+                        else:
+                            pred=(cur_array[x-1][y][z]+cur_array[x+1][y][z]+cur_array[x][y-1][z]+cur_array[x][y+1][z])*0.25
+
+                        if (not random_access) or level!=0 or z!=cur_size_z-1 or last_z!=size_z-1:
+                            absloss+=abs(orig-pred)
+                        q,decomp=quantize(orig,pred,cur_eb)
+                
+                        cur_qs.append(q)
+                        if q==0:
+                            cur_us.append(decomp)
+                #absloss+=abs(decomp)
+                        cur_array[x][y][z]=decomp
+
+            if level>=min_coeff_level:
+                md_reg_xs=[]
+                md_reg_ys=[]
+                for x in range(1,cur_size_x,2):
+                    for y in range(ystart,cur_size_y,2):
+                        for z in range(1,cur_size_z,2):
+                            md_reg_xs.append(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y][z-1],cur_array[x][y][z+1]],dtype=np.float64))
+                            md_reg_ys.append(cur_array[x][y][z])
+                            md_res=LinearRegression(fit_intercept=True).fit(md_reg_xs, md_reg_ys)
+                            md_coef=md_res.coef_ 
+                            md_ince=md_res.intercept_
 
     
-        for x in range(1,cur_size_x,2):
-            for y in range(1,cur_size_y,2):
-                for z in range(zstart,cur_size_z,2):
-                
-                    orig=cur_array[x][y][z]
-                    if level>=min_coeff_level:
-                        pred=np.dot(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y-1][z],cur_array[x][y+1][z]]),md_coef)+md_ince
-                    else:
-                        pred=(cur_array[x-1][y][z]+cur_array[x+1][y][z]+cur_array[x][y-1][z]+cur_array[x][y+1][z])/4
-
-                    if (not random_access) or level!=0 or z!=cur_size_z-1 or last_z!=size_z-1:
-                        absloss+=abs(orig-pred)
-                    q,decomp=quantize(orig,pred,cur_eb)
-                
-                    cur_qs.append(q)
-                    if q==0:
-                        cur_us.append(decomp)
-                #absloss+=abs(decomp)
-                    cur_array[x][y][z]=decomp
-
-        if level>=min_coeff_level:
-            md_reg_xs=[]
-            md_reg_ys=[]
             for x in range(1,cur_size_x,2):
                 for y in range(ystart,cur_size_y,2):
                     for z in range(1,cur_size_z,2):
-                        md_reg_xs.append(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y][z-1],cur_array[x][y][z+1]],dtype=np.float64))
-                        md_reg_ys.append(cur_array[x][y][z])
-                        md_res=LinearRegression(fit_intercept=True).fit(md_reg_xs, md_reg_ys)
-                        md_coef=md_res.coef_ 
-                        md_ince=md_res.intercept_
-
-    
-        for x in range(1,cur_size_x,2):
-            for y in range(ystart,cur_size_y,2):
-                for z in range(1,cur_size_z,2):
                 
-                    orig=cur_array[x][y][z]
-                    if level>=min_coeff_level:
-                        pred=np.dot(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y][z-1],cur_array[x][y][z+1]]),md_coef)+md_ince
-                    else:
-                        pred=(cur_array[x-1][y][z]+cur_array[x+1][y][z]+cur_array[x][y][z-1]+cur_array[x][y][z+1])/4
-                    if (not random_access) or level!=0 or y!=cur_size_y-1 or last_y!=size_y-1:
-                        absloss+=abs(orig-pred)
-                    q,decomp=quantize(orig,pred,cur_eb)
+                        orig=cur_array[x][y][z]
+                        if level>=min_coeff_level:
+                            pred=np.dot(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y][z-1],cur_array[x][y][z+1]]),md_coef)+md_ince
+                        else:
+                            pred=(cur_array[x-1][y][z]+cur_array[x+1][y][z]+cur_array[x][y][z-1]+cur_array[x][y][z+1])*0.25
+                        if (not random_access) or level!=0 or y!=cur_size_y-1 or last_y!=size_y-1:
+                            absloss+=abs(orig-pred)
+                        q,decomp=quantize(orig,pred,cur_eb)
             
-                    cur_qs.append(q)
-                    if q==0:
-                        cur_us.append(decomp)
-                #absloss+=abs(decomp)
-                    cur_array[x][y][z]=decomp
+                        cur_qs.append(q)
+                        if q==0:
+                            cur_us.append(decomp)
+                
+                        cur_array[x][y][z]=decomp
 
-        if level>=min_coeff_level:
-            md_reg_xs=[]
-            md_reg_ys=[]
+            if level>=min_coeff_level:
+                md_reg_xs=[]
+                md_reg_ys=[]
+                for x in range(xstart,cur_size_x,2):
+                    for y in range(1,cur_size_y,2):
+                        for z in range(1,cur_size_z,2):
+                            md_reg_xs.append(np.array([cur_array[x][y-1][z],cur_array[x][y+1][z],cur_array[x][y][z-1],cur_array[x][y][z+1]],dtype=np.float64))
+                            md_reg_ys.append(cur_array[x][y][z])
+                            md_res=LinearRegression(fit_intercept=True).fit(md_reg_xs, md_reg_ys)
+                            md_coef=md_res.coef_ 
+                            md_ince=md_res.intercept_
+
             for x in range(xstart,cur_size_x,2):
                 for y in range(1,cur_size_y,2):
                     for z in range(1,cur_size_z,2):
-                        md_reg_xs.append(np.array([cur_array[x][y-1][z],cur_array[x][y+1][z],cur_array[x][y][z-1],cur_array[x][y][z+1]],dtype=np.float64))
-                        md_reg_ys.append(cur_array[x][y][z])
-                        md_res=LinearRegression(fit_intercept=True).fit(md_reg_xs, md_reg_ys)
-                        md_coef=md_res.coef_ 
-                        md_ince=md_res.intercept_
-
-        for x in range(xstart,cur_size_x,2):
-            for y in range(1,cur_size_y,2):
-                for z in range(1,cur_size_z,2):
                 
-                    orig=cur_array[x][y][z]
-                    if level>=min_coeff_level:
-                        pred=np.dot(np.array([cur_array[x][y-1][z],cur_array[x][y+1][z],cur_array[x][y][z-1],cur_array[x][y][z+1]]),md_coef)+md_ince
-                    else:
-                        pred=(cur_array[x][y-1][z]+cur_array[x][y+1][z]+cur_array[x][y][z-1]+cur_array[x][y][z+1])/4
-                    if (not random_access) or level!=0 or (x!=cur_size_x-1 or last_x!=size_x-1) :
-                        absloss+=abs(orig-pred)
-                    q,decomp=quantize(orig,pred,cur_eb)
+                        orig=cur_array[x][y][z]
+                        if level>=min_coeff_level:
+                            pred=np.dot(np.array([cur_array[x][y-1][z],cur_array[x][y+1][z],cur_array[x][y][z-1],cur_array[x][y][z+1]]),md_coef)+md_ince
+                        else:
+                            pred=(cur_array[x][y-1][z]+cur_array[x][y+1][z]+cur_array[x][y][z-1]+cur_array[x][y][z+1])*0.25
+                        if (not random_access) or level!=0 or x!=cur_size_x-1 or last_x!=size_x-1:
+                            absloss+=abs(orig-pred)
+                        q,decomp=quantize(orig,pred,cur_eb)
             
-                    cur_qs.append(q)
-                    if q==0:
-                        cur_us.append(decomp)
+                        cur_qs.append(q)
+                        if q==0:
+                            cur_us.append(decomp)
                 #absloss+=abs(decomp)
-                    cur_array[x][y][z]=decomp
+                        cur_array[x][y][z]=decomp
         
-        if level>=min_coeff_level:
-            md_reg_xs=[]
-            md_reg_ys=[]
+            if level>=min_coeff_level:
+                md_reg_xs=[]
+                md_reg_ys=[]
+                for x in range(1,cur_size_x,2):
+                    for y in range(1,cur_size_y,2):
+                        for z in range(1,cur_size_z,2):
+                            md_reg_xs.append(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y-1][z],cur_array[x][y+1][z],cur_array[x][y][z-1],cur_array[x][y][z+1]],dtype=np.float64))
+                            md_reg_ys.append(cur_array[x][y][z])
+                            md_res=LinearRegression(fit_intercept=True).fit(md_reg_xs, md_reg_ys)
+                            md_coef=md_res.coef_ 
+                            md_ince=md_res.intercept_
+
             for x in range(1,cur_size_x,2):
                 for y in range(1,cur_size_y,2):
                     for z in range(1,cur_size_z,2):
-                        md_reg_xs.append(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y-1][z],cur_array[x][y+1][z],cur_array[x][y][z-1],cur_array[x][y][z+1]],dtype=np.float64))
-                        md_reg_ys.append(cur_array[x][y][z])
-                        md_res=LinearRegression(fit_intercept=True).fit(md_reg_xs, md_reg_ys)
-                        md_coef=md_res.coef_ 
-                        md_ince=md_res.intercept_
-
-        for x in range(1,cur_size_x,2):
-            for y in range(1,cur_size_y,2):
-                for z in range(1,cur_size_z,2):
                 
-                    orig=cur_array[x][y][z]
-                    if level>=min_coeff_level:
-                        pred=np.dot(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y-1][z],cur_array[x][y+1][z],cur_array[x][y][z-1],cur_array[x][y][z+1] ]),md_coef)+md_ince
-                    else:
-                        pred=(cur_array[x-1][y][z]+cur_array[x+1][y][z]+cur_array[x][y-1][z]+cur_array[x][y+1][z]+cur_array[x][y][z-1]+cur_array[x][y][z+1])/6
-                    absloss+=abs(orig-pred)
-                    q,decomp=quantize(orig,pred,cur_eb)
+                        orig=cur_array[x][y][z]
+                        if level>=min_coeff_level:
+                            pred=np.dot(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y-1][z],cur_array[x][y+1][z],cur_array[x][y][z-1],cur_array[x][y][z+1] ]),md_coef)+md_ince
+                        else:
+                            pred=(cur_array[x-1][y][z]+cur_array[x+1][y][z]+cur_array[x][y-1][z]+cur_array[x][y+1][z]+cur_array[x][y][z-1]+cur_array[x][y][z+1])/6
+                        absloss+=abs(orig-pred)
+                        q,decomp=quantize(orig,pred,cur_eb)
             
-                    cur_qs.append(q)
-                    if q==0:
-                        cur_us.append(decomp)
-                #absloss+=abs(decomp)
-                    cur_array[x][y][z]=decomp
+                        cur_qs.append(q)
+                        if q==0:
+                            cur_us.append(decomp)
+                
+                        cur_array[x][y][z]=decomp
 
-        if absloss<best_absloss:
-            selected_algo="interp_cubic"
+
             best_preds=np.copy(cur_array)
             best_absloss=absloss
             best_qs=cur_qs.copy()
             best_us=cur_us.copy()
+            selected_algo="interp_linear"
+
+            #print(len(cur_qs))
+
+
+            #cubic interp
+            #cubic=True
+            #if cubic:
+            #print("cubic")
+            absloss=0
+            cur_qs=[]
+            cur_us=[]
+            cur_array=np.copy(array[0:last_x+1:step,0:last_y+1:step,0:last_z+1:step])#reset cur_array
+            if level>=min_coeff_level:
+                reg_xs=[]
+                reg_ys=[]
+                for x in range(xstart,cur_size_x,2):
+                    for y in range(ystart,cur_size_y,2):
+                        for z in range(3,cur_size_z,2):
+                            if z+3>=cur_size_z:
+                                continue
+                            reg_xs.append(np.array([cur_array[x][y][z-3],cur_array[x][y][z-1],cur_array[x][y][z+1],cur_array[x][y][z+3]],dtype=np.float64))
+                            reg_ys.append(cur_array[x][y][z])
+                            res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
+                            coef=res.coef_ 
+                            ince=res.intercept_
+            for x in range(xstart,cur_size_x,2):
+                for y in range(ystart,cur_size_y,2):
+                    for z in range(1,cur_size_z,2):
+                
+                        orig=cur_array[x][y][z]
+                        if z>=3 and z+3<cur_size_z:
+                            if level>=min_coeff_level:
+                                pred=np.dot(coef,np.array([cur_array[x][y][z-3],cur_array[x][y][z-1],cur_array[x][y][z+1],cur_array[x][y][z+3]]) )+ince
+                            else:
+                                pred=(-cur_array[x][y][z-3]+9*cur_array[x][y][z-1]+9*cur_array[x][y][z+1]-cur_array[x][y][z+3])*0.0625
+                        else:
+                            pred=(cur_array[x][y][z-1]+cur_array[x][y][z+1])*0.5
+                        if (not random_access) or level!=0 or ((x!=cur_size_x-1 or last_x!=size_x-1) and (y!=cur_size_y-1 or last_y!=size_y-1)):
+                            absloss+=abs(orig-pred)
+                        q,decomp=quantize(orig,pred,cur_eb)
+                        cur_qs.append(q)
+                
+                        if q==0:
+                            cur_us.append(decomp)
+                            #absloss+=abs(decomp)
+                        cur_array[x][y][z]=decomp     
+
+
+            if level>=min_coeff_level:
+                reg_xs=[]
+                reg_ys=[]
+                for x in range(xstart,cur_size_x,2):
+                    for y in range(3,cur_size_y,2):
+                        for z in range(zstart,cur_size_z,2):
+                            if y+3>=cur_size_y:
+                                continue
+                            reg_xs.append(np.array([cur_array[x][y-3][z],cur_array[x][y-1][z],cur_array[x][y+1][z],cur_array[x][y+3][z]],dtype=np.float64))
+                            reg_ys.append(cur_array[x][y][z])
+                            res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
+                            coef=res.coef_ 
+                            ince=res.intercept_
+            for x in range(xstart,cur_size_x,2):
+                for y in range(1,cur_size_y,2):
+                    for z in range(zstart,cur_size_z,2):
+                
+                        orig=cur_array[x][y][z]
+                        if y>=3 and y+3<cur_size_y:
+                            if level>=min_coeff_level:
+                                pred=np.dot(coef,np.array([cur_array[x][y-3][z],cur_array[x][y-1][z],cur_array[x][y+1][z],cur_array[x][y+3][z]]) )+ince
+                            else:
+                                pred=(-cur_array[x][y-3][z]+9*cur_array[x][y-1][z]+9*cur_array[x][y+1][z]-cur_array[x][y+3][z])*0.0625
+                        else:
+                            pred=(cur_array[x][y-1][z]+cur_array[x][y+1][z])*0.5
+                        if (not random_access) or level!=0 or ((x!=cur_size_x-1 or last_x!=size_x-1) and (z!=cur_size_z-1 or last_z!=size_z-1)):
+                            absloss+=abs(orig-pred)
+                        q,decomp=quantize(orig,pred,cur_eb)
+                        cur_qs.append(q)
+                
+                        if q==0:
+                            cur_us.append(decomp)
+                            #absloss+=abs(decomp)
+                        cur_array[x][y][z]=decomp
+
+            if level>=min_coeff_level:
+                reg_xs=[]
+                reg_ys=[]
+                for x in range(3,cur_size_x,2):
+                    for y in range(ystart,cur_size_y,2):
+                        for z in range(zstart,cur_size_z,2):
+                            if x+3>=cur_size_x:
+                                continue
+                            reg_xs.append(np.array([cur_array[x-3][y][z],cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x+3][y][z]],dtype=np.float64))
+                            reg_ys.append(cur_array[x][y][z])
+                            res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
+                            coef=res.coef_ 
+                            ince=res.intercept_
+            for x in range(1,cur_size_x,2):
+                for y in range(ystart,cur_size_y,2):
+                    for z in range(zstart,cur_size_z,2):
+                
+                        orig=cur_array[x][y][z]
+                        if x>=3 and x+3<cur_size_x:
+                            if level>=min_coeff_level:
+                                pred=np.dot(coef,np.array([cur_array[x-3][y][z],cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x+3][y][z]]) )+ince
+                            else:
+                                pred=(-cur_array[x-3][y][z]+9*cur_array[x-1][y][z]+9*cur_array[x+1][y][z]-cur_array[x+3][y][z])*0.0625
+                        else:
+                            pred=(cur_array[x-1][y][z]+cur_array[x+1][y][z])*0.5
+                        if (not random_access) or level!=0 or ( (y!=cur_size_y-1 or last_y!=size_y-1) and (z!=cur_size_z-1 or last_z!=size_z-1)):
+                            absloss+=abs(orig-pred)
+                        q,decomp=quantize(orig,pred,cur_eb)
+                        cur_qs.append(q)
+                
+                        if q==0:
+                            cur_us.append(decomp)
+                            #absloss+=abs(decomp)
+                        cur_array[x][y][z]=decomp  
+
+
+
+            if level>=min_coeff_level:
+                md_reg_xs=[]
+                md_reg_ys=[]
+                for x in range(1,cur_size_x,2):
+                    for y in range(1,cur_size_y,2):
+                        for z in range(zstart,cur_size_z,2):
+                            md_reg_xs.append(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y-1][z],cur_array[x][y+1][z]],dtype=np.float64))
+                            md_reg_ys.append(cur_array[x][y][z])
+                            md_res=LinearRegression(fit_intercept=True).fit(md_reg_xs, md_reg_ys)
+                            md_coef=md_res.coef_ 
+                            md_ince=md_res.intercept_
+
+    
+            for x in range(1,cur_size_x,2):
+                for y in range(1,cur_size_y,2):
+                    for z in range(zstart,cur_size_z,2):
+                
+                        orig=cur_array[x][y][z]
+                        if level>=min_coeff_level:
+                            pred=np.dot(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y-1][z],cur_array[x][y+1][z]]),md_coef)+md_ince
+                        else:
+                            pred=(cur_array[x-1][y][z]+cur_array[x+1][y][z]+cur_array[x][y-1][z]+cur_array[x][y+1][z])*0.25
+    
+                        if (not random_access) or level!=0 or z!=cur_size_z-1 or last_z!=size_z-1:
+                            absloss+=abs(orig-pred)
+                        q,decomp=quantize(orig,pred,cur_eb)
+                
+                        cur_qs.append(q)
+                        if q==0:
+                            cur_us.append(decomp)
+                    #absloss+=abs(decomp)
+                        cur_array[x][y][z]=decomp
+
+            if level>=min_coeff_level:
+                md_reg_xs=[]
+                md_reg_ys=[]
+                for x in range(1,cur_size_x,2):
+                    for y in range(ystart,cur_size_y,2):
+                        for z in range(1,cur_size_z,2):
+                            md_reg_xs.append(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y][z-1],cur_array[x][y][z+1]],dtype=np.float64))
+                            md_reg_ys.append(cur_array[x][y][z])
+                            md_res=LinearRegression(fit_intercept=True).fit(md_reg_xs, md_reg_ys)
+                            md_coef=md_res.coef_ 
+                            md_ince=md_res.intercept_
+
+    
+            for x in range(1,cur_size_x,2):
+                for y in range(ystart,cur_size_y,2):
+                    for z in range(1,cur_size_z,2):
+                    
+                        orig=cur_array[x][y][z]
+                        if level>=min_coeff_level:
+                            pred=np.dot(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y][z-1],cur_array[x][y][z+1]]),md_coef)+md_ince
+                        else:
+                            pred=(cur_array[x-1][y][z]+cur_array[x+1][y][z]+cur_array[x][y][z-1]+cur_array[x][y][z+1])*0.25
+                        if (not random_access) or level!=0 or y!=cur_size_y-1 or last_y!=size_y-1:
+                            absloss+=abs(orig-pred)
+                        q,decomp=quantize(orig,pred,cur_eb)
+                
+                        cur_qs.append(q)
+                        if q==0:
+                            cur_us.append(decomp)
+                    #absloss+=abs(decomp)
+                        cur_array[x][y][z]=decomp
+
+            if level>=min_coeff_level:
+                md_reg_xs=[]
+                md_reg_ys=[]
+                for x in range(xstart,cur_size_x,2):
+                    for y in range(1,cur_size_y,2):
+                        for z in range(1,cur_size_z,2):
+                            md_reg_xs.append(np.array([cur_array[x][y-1][z],cur_array[x][y+1][z],cur_array[x][y][z-1],cur_array[x][y][z+1]],dtype=np.float64))
+                            md_reg_ys.append(cur_array[x][y][z])
+                            md_res=LinearRegression(fit_intercept=True).fit(md_reg_xs, md_reg_ys)
+                            md_coef=md_res.coef_ 
+                            md_ince=md_res.intercept_
+
+            for x in range(xstart,cur_size_x,2):
+                for y in range(1,cur_size_y,2):
+                    for z in range(1,cur_size_z,2):
+                    
+                        orig=cur_array[x][y][z]
+                        if level>=min_coeff_level:
+                            pred=np.dot(np.array([cur_array[x][y-1][z],cur_array[x][y+1][z],cur_array[x][y][z-1],cur_array[x][y][z+1]]),md_coef)+md_ince
+                        else:
+                            pred=(cur_array[x][y-1][z]+cur_array[x][y+1][z]+cur_array[x][y][z-1]+cur_array[x][y][z+1])*0.25
+                        if (not random_access) or level!=0 or (x!=cur_size_x-1 or last_x!=size_x-1) :
+                            absloss+=abs(orig-pred)
+                        q,decomp=quantize(orig,pred,cur_eb)
+                
+                        cur_qs.append(q)
+                        if q==0:
+                            cur_us.append(decomp)
+                    #absloss+=abs(decomp)
+                        cur_array[x][y][z]=decomp
+            
+            if level>=min_coeff_level:
+                md_reg_xs=[]
+                md_reg_ys=[]
+                for x in range(1,cur_size_x,2):
+                    for y in range(1,cur_size_y,2):
+                        for z in range(1,cur_size_z,2):
+                            md_reg_xs.append(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y-1][z],cur_array[x][y+1][z],cur_array[x][y][z-1],cur_array[x][y][z+1]],dtype=np.float64))
+                            md_reg_ys.append(cur_array[x][y][z])
+                            md_res=LinearRegression(fit_intercept=True).fit(md_reg_xs, md_reg_ys)
+                            md_coef=md_res.coef_ 
+                            md_ince=md_res.intercept_
+
+            for x in range(1,cur_size_x,2):
+                for y in range(1,cur_size_y,2):
+                    for z in range(1,cur_size_z,2):
+                    
+                        orig=cur_array[x][y][z]
+                        if level>=min_coeff_level:
+                            pred=np.dot(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y-1][z],cur_array[x][y+1][z],cur_array[x][y][z-1],cur_array[x][y][z+1] ]),md_coef)+md_ince
+                        else:
+                            pred=(cur_array[x-1][y][z]+cur_array[x+1][y][z]+cur_array[x][y-1][z]+cur_array[x][y+1][z]+cur_array[x][y][z-1]+cur_array[x][y][z+1])/6
+                        absloss+=abs(orig-pred)
+                        q,decomp=quantize(orig,pred,cur_eb)
+                
+                        cur_qs.append(q)
+                        if q==0:
+                            cur_us.append(decomp)
+                    #absloss+=abs(decomp)
+                        cur_array[x][y][z]=decomp
+
+            if absloss<best_absloss:
+                selected_algo="interp_cubic"
+                best_preds=np.copy(cur_array)
+                best_absloss=absloss
+                best_qs=cur_qs.copy()
+                best_us=cur_us.copy()
         
-        if multidim:
+            #full multidim
             absloss=0
             cur_qs=[]
             cur_us=[]
@@ -760,11 +762,506 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False):#loren
 
 
             if absloss<best_absloss:
-                selected_algo="interp_multidim"
+                selected_algo="interp_full_multidim"
                 best_preds=np.copy(cur_array)
                 best_absloss=absloss
                 best_qs=cur_qs.copy()
                 best_us=cur_us.copy()
+
+
+        if sz_interp:
+            #1D linear
+            #zyx
+            absloss=0
+            cur_qs=[]
+            cur_us=[]
+            cur_array=np.copy(array[0:last_x+1:step,0:last_y+1:step,0:last_z+1:step])#reset cur_array
+            if level>=min_coeff_level:
+                reg_xs=[]
+                reg_ys=[]
+                for x in range(xstart,cur_size_x,2):
+                    for y in range(ystart,cur_size_y,2):
+                        for z in range(1,cur_size_z,2):
+                            reg_xs.append(np.array([cur_array[x][y][z-1],cur_array[x][y][z+1]],dtype=np.float64))
+                            reg_ys.append(cur_array[x][y][z])
+                            res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
+                            coef=res.coef_ 
+                            ince=res.intercept_
+        
+
+            for x in range(xstart,cur_size_x,2):
+                for y in range(ystart,cur_size_y,2):
+                    for z in range(1,cur_size_z,2):
+                        #if z==cur_size_z-1:
+                            #continue
+                        orig=cur_array[x][y][z]
+                        if level>=min_coeff_level:
+                            pred= np.dot( np.array([cur_array[x][y][z-1],cur_array[x][y][z+1]]),coef )+ince 
+                        else:
+                            pred=(cur_array[x][y][z-1]+cur_array[x][y][z+1])*0.5
+                        if (not random_access) or level!=0 or ((x!=cur_size_x-1 or last_x!=size_x-1) and (y!=cur_size_y-1 or last_y!=size_y-1)):
+                            absloss+=abs(orig-pred)
+                        q,decomp=quantize(orig,pred,cur_eb)
+                        cur_qs.append(q)
+            
+
+                        if q==0:
+                            cur_us.append(decomp)
+                    #absloss+=abs(decomp)
+                        cur_array[x][y][z]=decomp    
+
+
+
+            if level>=min_coeff_level:
+                reg_xs=[]
+                reg_ys=[]
+                for x in range(xstart,cur_size_x,2):
+                    for y in range(1,cur_size_y,2):
+                        for z in range(1 if zstart>0 else 0,cur_size_z,1):
+                            reg_xs.append(np.array([cur_array[x][y-1][z],cur_array[x][y+1][z]],dtype=np.float64))
+                            reg_ys.append(cur_array[x][y][z])
+                            res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
+                            coef=res.coef_ 
+                            ince=res.intercept_
+
+            for x in range(xstart,cur_size_x,2):
+                for y in range(1,cur_size_y,2):
+                    for z in range(1 if zstart>0 else 0,cur_size_z,1):
+                        #if y==cur_size_y-1:
+                            #continue
+                        orig=cur_array[x][y][z]
+                        if level>=min_coeff_level:
+                            pred= np.dot( np.array([cur_array[x][y-1][z],cur_array[x][y+1][z]]),coef )+ince 
+                        else:
+                            pred=(cur_array[x][y-1][z]+cur_array[x][y+1][z])*0.5
+                        if (not random_access) or level!=0 or ((x!=cur_size_x-1 or last_x!=size_x-1) and (z!=cur_size_z-1 or last_z!=size_z-1)):
+                            absloss+=abs(orig-pred)
+                        q,decomp=quantize(orig,pred,cur_eb)
+                        cur_qs.append(q)
+            
+
+                        if q==0:
+                            cur_us.append(decomp)
+                    #absloss+=abs(decomp)
+                        cur_array[x][y][z]=decomp 
+
+            if level>=min_coeff_level:
+                reg_xs=[]
+                reg_ys=[]
+                for x in range(1,cur_size_x,2):
+                    for y in range(1 if ystart>0 else 0,cur_size_y,1):
+                        for z in range(1 if zstart>0 else 0,cur_size_z,1):
+                            reg_xs.append(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z]],dtype=np.float64))
+                            reg_ys.append(cur_array[x][y][z])
+                            res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
+                            coef=res.coef_ 
+                            ince=res.intercept_
+
+            for x in range(1,cur_size_x,2):
+                for y in range(1 if ystart>0 else 0,cur_size_y,1):
+                    for z in range(1 if zstart>0 else 0,cur_size_z,1):
+                        if x==cur_size_x-1:
+                            continue
+                        orig=cur_array[x][y][z]
+                        if level>=min_coeff_level:
+                            pred= np.dot( np.array([cur_array[x-1][y][z],cur_array[x+1][y][z]]),coef )+ince 
+                        else:
+                            pred=(cur_array[x-1][y][z]+cur_array[x+1][y][z])*0.5
+                        if (not random_access) or level!=0 or ((y!=cur_size_y-1 or last_y!=size_y-1) and (z!=cur_size_z-1 or last_z!=size_z-1)):
+                            absloss+=abs(orig-pred)
+                        q,decomp=quantize(orig,pred,cur_eb)
+                        cur_qs.append(q)
+            
+
+                        if q==0:
+                            cur_us.append(decomp)
+                    #absloss+=abs(decomp)
+                        cur_array[x][y][z]=decomp 
+
+            if absloss<best_absloss or selected_algo=="none":
+                selected_algo="sz3_interp_linear_zyx"
+                best_preds=np.copy(cur_array)
+                best_absloss=absloss
+                best_qs=cur_qs.copy()
+                best_us=cur_us.copy()
+
+
+
+            #xyz
+            absloss=0
+            cur_qs=[]
+            cur_us=[]
+            cur_array=np.copy(array[0:last_x+1:step,0:last_y+1:step,0:last_z+1:step])#reset cur_array
+            if level>=min_coeff_level:
+                reg_xs=[]
+                reg_ys=[]
+                for x in range(1,cur_size_x,2):
+                    for y in range(ystart,cur_size_y,2):
+                        for z in range(zstart,cur_size_z,2):
+                            reg_xs.append(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z]],dtype=np.float64))
+                            reg_ys.append(cur_array[x][y][z])
+                            res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
+                            coef=res.coef_ 
+                            ince=res.intercept_
+        
+
+            for x in range(1,cur_size_x,2):
+                for y in range(ystart,cur_size_y,2):
+                    for z in range(zstart,cur_size_z,2):
+                        #if z==cur_size_z-1:
+                            #continue
+                        orig=cur_array[x][y][z]
+                        if level>=min_coeff_level:
+                            pred= np.dot( np.array([cur_array[x-1][y][z],cur_array[x+1][y][z]]),coef )+ince 
+                        else:
+                            pred=(cur_array[x-1][y][z]+cur_array[x+1][y][z])*0.5
+                        if (not random_access) or level!=0 or ((z!=cur_size_z-1 or last_z!=size_z-1) and (y!=cur_size_y-1 or last_y!=size_y-1)):
+                            absloss+=abs(orig-pred)
+                        q,decomp=quantize(orig,pred,cur_eb)
+                        cur_qs.append(q)
+            
+
+                        if q==0:
+                            cur_us.append(decomp)
+                    #absloss+=abs(decomp)
+                        cur_array[x][y][z]=decomp    
+
+
+
+            if level>=min_coeff_level:
+                reg_xs=[]
+                reg_ys=[]
+                for x in range(1 if xstart>0 else 0,cur_size_x,1):
+                    for y in range(1,cur_size_y,2):
+                        for z in range(zstart,cur_size_z,2):
+                            reg_xs.append(np.array([cur_array[x][y-1][z],cur_array[x][y+1][z]],dtype=np.float64))
+                            reg_ys.append(cur_array[x][y][z])
+                            res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
+                            coef=res.coef_ 
+                            ince=res.intercept_
+
+            for x in range(1 if xstart>0 else 0,cur_size_x,1):
+                for y in range(1,cur_size_y,2):
+                    for z in range(zstart,cur_size_z,2):
+                        #if y==cur_size_y-1:
+                            #continue
+                        orig=cur_array[x][y][z]
+                        if level>=min_coeff_level:
+                            pred= np.dot( np.array([cur_array[x][y-1][z],cur_array[x][y+1][z]]),coef )+ince 
+                        else:
+                            pred=(cur_array[x][y-1][z]+cur_array[x][y+1][z])*0.5
+                        if (not random_access) or level!=0 or ((x!=cur_size_x-1 or last_x!=size_x-1) and (z!=cur_size_z-1 or last_z!=size_z-1)):
+                            absloss+=abs(orig-pred)
+                        q,decomp=quantize(orig,pred,cur_eb)
+                        cur_qs.append(q)
+            
+
+                        if q==0:
+                            cur_us.append(decomp)
+                    #absloss+=abs(decomp)
+                        cur_array[x][y][z]=decomp 
+
+            if level>=min_coeff_level:
+                reg_xs=[]
+                reg_ys=[]
+                for x in range(1 if xstart>0 else 0,cur_size_x,1):
+                    for y in range(1 if ystart>0 else 0,cur_size_y,1):
+                        for z in range(1 ,cur_size_z,2):
+                            reg_xs.append(np.array([cur_array[x][y][z-1],cur_array[x][y][z+1]],dtype=np.float64))
+                            reg_ys.append(cur_array[x][y][z])
+                            res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
+                            coef=res.coef_ 
+                            ince=res.intercept_
+
+            for x in range(1 if xstart>0 else 0,cur_size_x,1):
+                for y in range(1 if ystart>0 else 0,cur_size_y,1):
+                    for z in range(1,cur_size_z,2):
+                        #if x==cur_size_x-1:
+                            #continue
+                        orig=cur_array[x][y][z]
+                        if level>=min_coeff_level:
+                            pred= np.dot( np.array([cur_array[x][y][z-1],cur_array[x][y][z+1]]),coef )+ince 
+                        else:
+                            pred=(cur_array[x][y][z-1]+cur_array[x][y][z+1])*0.5
+                        if (not random_access) or level!=0 or ((y!=cur_size_y-1 or last_y!=size_y-1) and (x!=cur_size_x-1 or last_x!=size_x-1)):
+                            absloss+=abs(orig-pred)
+                        q,decomp=quantize(orig,pred,cur_eb)
+                        cur_qs.append(q)
+            
+
+                        if q==0:
+                            cur_us.append(decomp)
+                    #absloss+=abs(decomp)
+                        cur_array[x][y][z]=decomp 
+
+            if absloss<best_absloss or selected_algo=="none":
+                selected_algo="sz3_interp_linear_xyz"
+                best_preds=np.copy(cur_array)
+                best_absloss=absloss
+                best_qs=cur_qs.copy()
+                best_us=cur_us.copy()
+
+            #1D cubic
+            #ZYX
+            absloss=0
+            cur_qs=[]
+            cur_us=[]
+            cur_array=np.copy(array[0:last_x+1:step,0:last_y+1:step,0:last_z+1:step])#reset cur_array
+            if level>=min_coeff_level:
+                reg_xs=[]
+                reg_ys=[]
+                for x in range(xstart,cur_size_x,2):
+                    for y in range(ystart,cur_size_y,2):
+                        for z in range(3,cur_size_z,2):
+                            reg_xs.append(np.array([cur_array[x][y][z-3],cur_array[x][y][z-1],cur_array[x][y][z+1],cur_array[x][y][z+3]],dtype=np.float64))
+                            reg_ys.append(cur_array[x][y][z])
+                            res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
+                            coef=res.coef_ 
+                            ince=res.intercept_
+        
+
+            for x in range(xstart,cur_size_x,2):
+                for y in range(ystart,cur_size_y,2):
+                    for z in range(1,cur_size_z,2):
+                        #if z==cur_size_z-1:
+                            #continue
+                        orig=cur_array[x][y][z]
+                        if z>=3 and z+3<cur_size_z:
+                            if level>=min_coeff_level:
+                                pred= np.dot( np.array([cur_array[x][y][z-3],cur_array[x][y][z-1],cur_array[x][y][z+1],cur_array[x][y][z+3]]),coef )+ince 
+                            else:
+                                pred=(-cur_array[x][y][z-3]+9*cur_array[x][y][z-1]+9*cur_array[x][y][z+1]-cur_array[x][y][z+3])*0.0625
+                        else:
+                            pred=(cur_array[x][y][z-1]+cur_array[x][y][z+1])*0.5
+                        if (not random_access) or level!=0 or ((x!=cur_size_x-1 or last_x!=size_x-1) and (y!=cur_size_y-1 or last_y!=size_y-1)):
+                            absloss+=abs(orig-pred)
+                        q,decomp=quantize(orig,pred,cur_eb)
+                        cur_qs.append(q)
+            
+
+                        if q==0:
+                            cur_us.append(decomp)
+                    #absloss+=abs(decomp)
+                        cur_array[x][y][z]=decomp    
+
+
+
+            if level>=min_coeff_level:
+                reg_xs=[]
+                reg_ys=[]
+                for x in range(xstart,cur_size_x,2):
+                    for y in range(3,cur_size_y,2):
+                        for z in range(1 if zstart>0 else 0,cur_size_z,1):
+                            reg_xs.append(np.array([cur_array[x][y-3][z],cur_array[x][y-1][z],cur_array[x][y+1][z],cur_array[x][y+3][z]],dtype=np.float64))
+                            reg_ys.append(cur_array[x][y][z])
+                            res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
+                            coef=res.coef_ 
+                            ince=res.intercept_
+
+            for x in range(xstart,cur_size_x,2):
+                for y in range(1,cur_size_y,2):
+                    for z in range(1 if zstart>0 else 0,cur_size_z,1):
+                        #if y==cur_size_y-1:
+                            #continue
+                        orig=cur_array[x][y][z]
+                        if y>=3 and y+3<cur_size_y:
+                            if level>=min_coeff_level:
+                                pred= np.dot( np.array([cur_array[x][y-3][z],cur_array[x][y-1][z],cur_array[x][y+1][z],cur_array[x][y+3][z]]),coef )+ince 
+                            else:
+                                pred=(-cur_array[x][y-3][z]+9*cur_array[x][y-1][z]+9*cur_array[x][y+1][z]-cur_array[x][y+3][z])*0.0625
+
+
+                        else:
+                            pred=(cur_array[x][y-1][z]+cur_array[x][y+1][z])*0.5
+                        if (not random_access) or level!=0 or ((x!=cur_size_x-1 or last_x!=size_x-1) and (z!=cur_size_z-1 or last_z!=size_z-1)):
+                            absloss+=abs(orig-pred)
+                        q,decomp=quantize(orig,pred,cur_eb)
+                        cur_qs.append(q)
+            
+
+                        if q==0:
+                            cur_us.append(decomp)
+                    #absloss+=abs(decomp)
+                        cur_array[x][y][z]=decomp 
+
+            if level>=min_coeff_level:
+                reg_xs=[]
+                reg_ys=[]
+                for x in range(3,cur_size_x,2):
+                    for y in range(1 if ystart>0 else 0,cur_size_y,1):
+                        for z in range(1 if zstart>0 else 0,cur_size_z,1):
+                            reg_xs.append(np.array([cur_array[x-3][y][z],cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x+3][y][z]],dtype=np.float64))
+                            reg_ys.append(cur_array[x][y][z])
+                            res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
+                            coef=res.coef_ 
+                            ince=res.intercept_
+
+            for x in range(1,cur_size_x,2):
+                for y in range(1 if ystart>0 else 0,cur_size_y,1):
+                    for z in range(1 if zstart>0 else 0,cur_size_z,1):
+                        if x==cur_size_x-1:
+                            continue
+                        orig=cur_array[x][y][z]
+                        if x>=3 and x+3<cur_size_x:
+                            if level>=min_coeff_level:
+                                pred= np.dot( np.array([cur_array[x-3][y][z],cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x+3][y][z]]),coef )+ince 
+                            else:
+                                pred=(-cur_array[x-3][y][z]+9*cur_array[x-1][y][z]+9*cur_array[x+1][y][z]-cur_array[x+3][y][z])*0.0625
+
+                        else:
+                            pred=(cur_array[x-1][y][z]+cur_array[x+1][y][z])*0.5
+                        if (not random_access) or level!=0 or ((y!=cur_size_y-1 or last_y!=size_y-1) and (z!=cur_size_z-1 or last_z!=size_z-1)):
+                            absloss+=abs(orig-pred)
+                        q,decomp=quantize(orig,pred,cur_eb)
+                        cur_qs.append(q)
+            
+
+                        if q==0:
+                            cur_us.append(decomp)
+                    #absloss+=abs(decomp)
+                        cur_array[x][y][z]=decomp 
+
+            if absloss<best_absloss or selected_algo=="none":
+                selected_algo="sz3_interp_cubic_zyx"
+                best_preds=np.copy(cur_array)
+                best_absloss=absloss
+                best_qs=cur_qs.copy()
+                best_us=cur_us.copy()
+
+
+
+            #xyz
+            absloss=0
+            cur_qs=[]
+            cur_us=[]
+            cur_array=np.copy(array[0:last_x+1:step,0:last_y+1:step,0:last_z+1:step])#reset cur_array
+            if level>=min_coeff_level:
+                reg_xs=[]
+                reg_ys=[]
+                for x in range(3,cur_size_x,2):
+                    for y in range(ystart,cur_size_y,2):
+                        for z in range(zstart,cur_size_z,2):
+                            reg_xs.append(np.array([cur_array[x-3][y][z],cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x+3][y][z]],dtype=np.float64))
+                            reg_ys.append(cur_array[x][y][z])
+                            res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
+                            coef=res.coef_ 
+                            ince=res.intercept_
+        
+
+            for x in range(1,cur_size_x,2):
+                for y in range(ystart,cur_size_y,2):
+                    for z in range(zstart,cur_size_z,2):
+                        #if z==cur_size_z-1:
+                            #continue
+                        orig=cur_array[x][y][z]
+                        if x>=3 and x+3<cur_size_x:
+                            if level>=min_coeff_level:
+                                pred= np.dot( np.array([cur_array[x-3][y][z],cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x+3][y][z]]),coef )+ince 
+                            else:
+                                pred=(-cur_array[x-3][y][z]+9*cur_array[x-1][y][z]+9*cur_array[x+1][y][z]-cur_array[x+3][y][z])*0.0625
+
+                        else:
+                            pred=(cur_array[x-1][y][z]+cur_array[x+1][y][z])*0.5
+                        if (not random_access) or level!=0 or ((z!=cur_size_z-1 or last_z!=size_z-1) and (y!=cur_size_y-1 or last_y!=size_y-1)):
+                            absloss+=abs(orig-pred)
+                        q,decomp=quantize(orig,pred,cur_eb)
+                        cur_qs.append(q)
+            
+
+                        if q==0:
+                            cur_us.append(decomp)
+                    #absloss+=abs(decomp)
+                        cur_array[x][y][z]=decomp    
+
+
+
+            if level>=min_coeff_level:
+                reg_xs=[]
+                reg_ys=[]
+                for x in range(1 if xstart>0 else 0,cur_size_x,1):
+                    for y in range(3,cur_size_y,2):
+                        for z in range(zstart,cur_size_z,2):
+                            reg_xs.append(np.array([cur_array[x][y-3][z],cur_array[x][y-1][z],cur_array[x][y+1][z],cur_array[x][y+3][z]],dtype=np.float64))
+                            reg_ys.append(cur_array[x][y][z])
+                            res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
+                            coef=res.coef_ 
+                            ince=res.intercept_
+
+            for x in range(1 if xstart>0 else 0,cur_size_x,1):
+                for y in range(1,cur_size_y,2):
+                    for z in range(zstart,cur_size_z,2):
+                        #if y==cur_size_y-1:
+                            #continue
+                        orig=cur_array[x][y][z]
+                        if y>=3 and y<cur_size_y:
+                            if level>=min_coeff_level:
+                                pred= np.dot( np.array([cur_array[x][y-3][z],cur_array[x][y-1][z],cur_array[x][y+1][z],cur_array[x][y+3][z]]),coef )+ince 
+                            else:
+                                pred=(-cur_array[x][y-3][z]+9*cur_array[x][y-1][z]+9*cur_array[x][y+1][z]-cur_array[x][y+3][z])*0.0625
+
+                        else:
+                            pred=(cur_array[x][y-1][z]+cur_array[x][y+1][z])*0.5
+                        if (not random_access) or level!=0 or ((x!=cur_size_x-1 or last_x!=size_x-1) and (z!=cur_size_z-1 or last_z!=size_z-1)):
+                            absloss+=abs(orig-pred)
+                        q,decomp=quantize(orig,pred,cur_eb)
+                        cur_qs.append(q)
+            
+
+                        if q==0:
+                            cur_us.append(decomp)
+                    #absloss+=abs(decomp)
+                        cur_array[x][y][z]=decomp 
+
+            if level>=min_coeff_level:
+                reg_xs=[]
+                reg_ys=[]
+                for x in range(1 if xstart>0 else 0,cur_size_x,1):
+                    for y in range(1 if ystart>0 else 0,cur_size_y,1):
+                        for z in range(3 ,cur_size_z,2):
+                            reg_xs.append(np.array([cur_array[x][y][z-3],cur_array[x][y][z-1],cur_array[x][y][z+1],cur_array[x][y][z+3]],dtype=np.float64))
+                            reg_ys.append(cur_array[x][y][z])
+                            res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
+                            coef=res.coef_ 
+                            ince=res.intercept_
+
+            for x in range(1 if xstart>0 else 0,cur_size_x,1):
+                for y in range(1 if ystart>0 else 0,cur_size_y,1):
+                    for z in range(1,cur_size_z,2):
+                        #if x==cur_size_x-1:
+                            #continue
+                        orig=cur_array[x][y][z]
+                        if z>=3 and z+3<cur_size_z:
+                            if level>=min_coeff_level:
+                                pred= np.dot( np.array([cur_array[x][y][z-3],cur_array[x][y][z-1],cur_array[x][y][z+1],cur_array[x][y][z+3]]),coef )+ince 
+                            else:
+                                pred=(-cur_array[x][y][z-3]+9*cur_array[x][y][z-1]+9*cur_array[x][y][z+1]-cur_array[x][y][z+3])*0.0625
+
+                        else:
+                            pred=(cur_array[x][y][z-1]+cur_array[x][y][z+1])*0.5
+                        if (not random_access) or level!=0 or ((y!=cur_size_y-1 or last_y!=size_y-1) and (x!=cur_size_x-1 or last_x!=size_x-1)):
+                            absloss+=abs(orig-pred)
+                        q,decomp=quantize(orig,pred,cur_eb)
+                        cur_qs.append(q)
+            
+
+                        if q==0:
+                            cur_us.append(decomp)
+                    #absloss+=abs(decomp)
+                        cur_array[x][y][z]=decomp 
+
+            if absloss<best_absloss or selected_algo=="none":
+                selected_algo="sz3_interp_cubic_xyz"
+                best_preds=np.copy(cur_array)
+                best_absloss=absloss
+                best_qs=cur_qs.copy()
+                best_us=cur_us.copy()
+
+
+
+
+
+
+
         
         #Lorenzo fallback
         if level<=lorenzo:
@@ -979,11 +1476,12 @@ if __name__=="__main__":
     parser.add_argument('--rlist',type=float,default=0.0,nargs="+")
     parser.add_argument('--maximum_rate','-m',type=float,default=10.0)
     #parser.add_argument('--cubic','-c',type=int,default=1)
-    parser.add_argument('--multidim','-d',type=int,default=1)
+    parser.add_argument('--multidim_level','-d',type=int,default=99)
     parser.add_argument('--lorenzo_fallback_check','-l',type=int,default=-1)
     parser.add_argument('--fallback_sample_ratio','-f',type=float,default=0.05)
 #parser.add_argument('--level_rate','-lr',type=float,default=1.0)
     parser.add_argument('--anchor_rate','-a',type=float,default=0.0)
+    parser.add_argument('--sz_interp','-n',type=int,default=0)
 
     parser.add_argument('--size_x','-x',type=int,default=129)
     parser.add_argument('--size_y','-y',type=int,default=129)
@@ -1005,8 +1503,8 @@ if __name__=="__main__":
             rate_list.insert(0,rate_list[0])
     else:
         rate_list=None
-    array,qs,edge_qs,us,_=msc3d(array,error_bound,args.rate,args.maximum_rate,args.min_coeff_level,args.max_step,args.anchor_rate,rate_list=rate_list,x_preded=False,y_preded=False,z_preded=False,multidim=args.multidim,\
-        lorenzo=args.lorenzo_fallback_check,sample_rate=args.fallback_sample_ratio,min_sampled_points=100,random_access=False,verbose=True)
+    array,qs,edge_qs,us,_=msc3d(array,error_bound,args.rate,args.maximum_rate,args.min_coeff_level,args.max_step,args.anchor_rate,rate_list=rate_list,x_preded=False,y_preded=False,z_preded=False,\
+        sz_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=args.lorenzo_fallback_check,sample_rate=args.fallback_sample_ratio,min_sampled_points=100,random_access=False,verbose=True)
 
     quants=np.concatenate( (np.array(edge_qs,dtype=np.int32),np.array(sum(qs,[]),dtype=np.int32) ) )
     unpreds=np.array(us,dtype=np.float32)
