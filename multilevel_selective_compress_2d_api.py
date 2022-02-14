@@ -36,7 +36,8 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False):#loren
     #anchor_rate=args.anchor_rate
         if anchor_rate>0:
             anchor_eb=error_bound/anchor_rate
-            print("Anchor eb:%f" % anchor_eb)
+            if verbose:
+                print("Anchor eb:%f" % anchor_eb)
 
             if max_level>=min_coeff_level:
                 reg_xs=[]
