@@ -11,6 +11,8 @@ parser.add_argument('--min_coeff_level','-cl',type=int,default=99)
 parser.add_argument('--rate','-r',type=float,default=1.0)
 parser.add_argument('--maximum_rate','-m',type=float,default=10.0)
 parser.add_argument('--anchor_rate','-a',type=float,default=0.0)
+parser.add_argument('--multidim_level','-d',type=int,default=99)
+parser.add_argument('--sz_interp','-n',type=int,default=0)
 parser.add_argument('--size_x','-x',type=int,default=1800)
 parser.add_argument('--size_y','-y',type=int,default=3600)
 
@@ -28,8 +30,8 @@ for i in range(2):
     data[1:,0,i]=ebs
     #data[0,1:,i]=idxrange
 for i,eb in enumerate(ebs):
-	command1="python multilevel_selective_compress_2d.py -i %s -o %s -q %s -u %s -s %d -r %f -m %f -a 0 -x %d -y %d -e %f -cl %d -a %f"\
-	% (args.input, dout,qout,uout,args.max_step,args.rate,args.maximum_rate,args.size_x,args.size_y,eb,args.min_coeff_level,args.anchor_rate)
+	command1="python multilevel_selective_compress_2d_api.py -i %s -o %s -q %s -u %s -s %d -r %f -m %f -a 0 -x %d -y %d -e %f -cl %d -a %f -d %d -n %d"\
+	% (args.input, dout,qout,uout,args.max_step,args.rate,args.maximum_rate,args.size_x,args.size_y,eb,args.min_coeff_level,args.anchor_rate,args.multidim_level,args.sz_interp)
 	os.system(command1)
 	command2="sz_backend %s %s " % (qout,uout)
 	with os.popen(command2) as f:
