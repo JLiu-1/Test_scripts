@@ -651,7 +651,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False):#loren
                 for x in range(0,cur_size_x):
                     for y in range(1-(x%2),cur_size_y,2-(x%2)):
 
-                        for z in range((x+y)%2,cur_size_z,2)
+                        for z in range((x+y)%2,cur_size_z,2):
                             if (x==0 and xstart!=0) or (y==0 and ystart!=0) or (z==0 and zstart!=0) or x==cur_size_x-1 or y==cur_size_y-1 or z==cur_size_z-1:
                                 continue
                             md_reg_xs.append(np.array([cur_array[x][y][z-1],cur_array[x][y][z+1],cur_array[x][y-1][z],cur_array[x][y+1][z],cur_array[x-1][y][z],cur_array[x+1][y][z]],dtype=np.float64))
@@ -663,7 +663,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False):#loren
             for x in range(0,cur_size_x):
                 for y in range(1-(x%2),cur_size_y,2-(x%2)):
 
-                    for z in range((x+y)%2,cur_size_z,2)
+                    for z in range((x+y)%2,cur_size_z,2):
                         if (x==0 and xstart!=0) or (y==0 and ystart!=0) or (z==0 and zstart!=0):
                              continue
                 
@@ -707,7 +707,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False):#loren
                 for x in range(0,cur_size_x):
                     for y in range(0,cur_size_y,1+(x%2)):
 
-                        for z in range(1-((x+y)%2),cur_size_z,2)
+                        for z in range(1-((x+y)%2),cur_size_z,2):
                             if (x==0 and xstart!=0) or (y==0 and ystart!=0) or (z==0 and zstart!=0) or x==cur_size_x-1 or y==cur_size_y-1 or z==cur_size_z-1:
                                 continue
                             md_reg_xs.append(np.array([cur_array[x][y][z-1],cur_array[x][y][z+1],cur_array[x][y-1][z],cur_array[x][y+1][z],cur_array[x-1][y][z],cur_array[x+1][y][z]],dtype=np.float64))
@@ -719,7 +719,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False):#loren
             for x in range(0,cur_size_x):
                 for y in range(0,cur_size_y,1+(x%2)):
 
-                    for z in range(1-((x+y)%2),cur_size_z,2)
+                    for z in range(1-((x+y)%2),cur_size_z,2):
                         if (x==0 and xstart!=0) or (y==0 and ystart!=0) or (z==0 and zstart!=0):
                              continue
                 
