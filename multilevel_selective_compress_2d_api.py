@@ -913,15 +913,12 @@ if __name__=="__main__":
     parser.add_argument('--multidim','-d',type=int,default=1)
     parser.add_argument('--lorenzo_fallback_check','-l',type=int,default=-1)
     parser.add_argument('--fallback_sample_ratio','-f',type=float,default=0.01)
-#parser.add_argument('--level_rate','-lr',type=float,default=1.0)
     parser.add_argument('--anchor_rate','-a',type=float,default=0.0)
 
     parser.add_argument('--size_x','-x',type=int,default=1800)
     parser.add_argument('--size_y','-y',type=int,default=3600)
     parser.add_argument('--sz_interp','-n',type=int,default=0)
-#parser.add_argument('--level','-l',type=int,default=2)
-#parser.add_argument('--noise','-n',type=bool,default=False)
-#parser.add_argument('--intercept','-t',type=bool,default=False)
+
     args = parser.parse_args()
     print(args)
     array=np.fromfile(args.input,dtype=np.float32).reshape((args.size_x,args.size_y))
