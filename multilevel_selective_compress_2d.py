@@ -155,9 +155,9 @@ while step>0:
     cur_qs=[]
     cur_us=[]
     if rate_list!=None:
-            cur_eb=error_bound/rate_list[level]
-        else:
-            cur_eb=error_bound/min(maximum_rate,(rate**level))
+        cur_eb=error_bound/rate_list[level]
+    else:
+        cur_eb=error_bound/min(maximum_rate,(rate**level))
     #cur_eb=error_bound/min(args.maximum_rate,(rate**level))
     cur_array=np.copy(array[0:last_x+1:step,0:last_y+1:step])
     cur_size_x,cur_size_y=cur_array.shape
