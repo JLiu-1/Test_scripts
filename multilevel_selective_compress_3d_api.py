@@ -612,7 +612,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False):#loren
             absloss=0
             cur_qs=[]
             cur_us=[]
-            cur_array=np.copy(array[0:last_x+1:step,0:last_y+1:step,0:last_z:step])#reset cur_array
+            cur_array=np.copy(array[0:last_x+1:step,0:last_y+1:step,0:last_z+1:step])#reset cur_array
             #center
             if level>=min_coeff_level:
                 md_reg_xs=[]
@@ -680,7 +680,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False):#loren
                         elif x and z and x!=cur_size_x-1 and z!=cur_size_z-1:
                             pred=(cur_array[x][y][z-1]+cur_array[x][y][z+1]+cur_array[x-1][y][z]+cur_array[x+1][y][z])/4
                         elif y and z and y!=cur_size_y-1 and z!=cur_size_z-1:
-                            print(x,y,z)
+                          
                             pred=(cur_array[x][y][z-1]+cur_array[x][y][z+1]+cur_array[x][y-1][z]+cur_array[x][y+1][z])/4
 
 
