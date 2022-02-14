@@ -679,7 +679,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False):#loren
                             pred=(cur_array[x][y-1][z]+cur_array[x][y+1][z]+cur_array[x-1][y][z]+cur_array[x+1][y][z])/4
                         elif x and z and x!=cur_size_x-1 and z!=cur_size_z-1:
                             pred=(cur_array[x][y][z-1]+cur_array[x][y][z+1]+cur_array[x-1][y][z]+cur_array[x+1][y][z])/4
-                        elif y and z and y!=cur_size_y-1 and y!=cur_size_z-1:
+                        elif y and z and y!=cur_size_y-1 and z!=cur_size_z-1:
                             pred=(cur_array[x][y][z-1]+cur_array[x][y][z+1]+cur_array[x][y-1][z]+cur_array[x][y+1][z])/4
 
 
