@@ -52,6 +52,7 @@ parser.add_argument('--unpred','-u',type=str,default="ml2_u.dat")
 parser.add_argument('--max_step','-s',type=int,default=-1)
 parser.add_argument('--min_coeff_level','-cl',type=int,default=99)
 parser.add_argument('--rate','-r',type=float,default=1.0)
+parser.add_argument('--rlist',type=float,default=0.0,nargs="+")
 parser.add_argument('--maximum_rate','-m',type=float,default=10.0)
 parser.add_argument('--cubic','-c',type=int,default=1)
 parser.add_argument('--multidim','-d',type=int,default=1)
@@ -76,7 +77,15 @@ rng=(np.max(array)-np.min(array))
 error_bound=args.error*rng
 max_step=args.max_step
 rate=args.rate
+if args.rlist!=0:
+    rate_list=args.rlist
+    if isinstance(rate_list,int):
+        rate_list=[rate_list]
 
+    while len(rate_list)<max_level:
+        rate_list.insert(0,rate_list[0])
+else:
+    rate_list=None
 
 
 qs=[]
@@ -145,7 +154,11 @@ cumulated_loss=0.0
 while step>0:
     cur_qs=[]
     cur_us=[]
-    cur_eb=error_bound/min(args.maximum_rate,(rate**level))
+    if rate_list!=None:
+            cur_eb=error_bound/rate_list[level]
+        else:
+            cur_eb=error_bound/min(maximum_rate,(rate**level))
+    #cur_eb=error_bound/min(args.maximum_rate,(rate**level))
     cur_array=np.copy(array[0:last_x+1:step,0:last_y+1:step])
     cur_size_x,cur_size_y=cur_array.shape
     #print(cur_size_x,cur_size_y)
