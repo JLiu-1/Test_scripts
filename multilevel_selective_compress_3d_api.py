@@ -1193,7 +1193,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False):#loren
                         #if y==cur_size_y-1:
                             #continue
                         orig=cur_array[x][y][z]
-                        if y>=3 and y<cur_size_y:
+                        if y>=3 and y+3<cur_size_y:
                             if level>=min_coeff_level:
                                 pred= np.dot( np.array([cur_array[x][y-3][z],cur_array[x][y-1][z],cur_array[x][y+1][z],cur_array[x][y+3][z]]),coef )+ince 
                             else:
