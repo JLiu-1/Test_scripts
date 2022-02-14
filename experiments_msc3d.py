@@ -13,7 +13,7 @@ parser.add_argument('--maximum_rate','-m',type=float,default=10.0)
 parser.add_argument('--anchor_rate','-a',type=float,default=0.0)
 parser.add_argument('--size_x','-x',type=int,default=129)
 parser.add_argument('--size_y','-y',type=int,default=129)
-parser.add_argument('--size_z','-y',type=int,default=129)
+parser.add_argument('--size_z','-z',type=int,default=129)
 
 args = parser.parse_args()
 pid=str(os.getpid()).strip()
