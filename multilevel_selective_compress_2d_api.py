@@ -411,7 +411,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
             #linear
             #y then x
             #print("testing sz3 interp") 
-            if fix_algo=="none" or fix_algo=="sz3_linear"
+            if fix_algo=="none" or fix_algo=="sz3_linear":
                 absloss=0
                 cur_qs=[]
                 cur_us=[]
