@@ -23,5 +23,6 @@ for x in range(0,lastx+1):
 
 b=ave_error/count
 k=2
-e=1e-2
+rng=np.max(a)-np.min(a)
+e=1e-2*rng
 print(bk/5e)
