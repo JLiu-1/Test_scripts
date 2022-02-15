@@ -476,7 +476,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False):#loren
                     #absloss+=abs(decomp)
                     cur_array[x][y]=decomp
 
-            if absloss<best_absloss or selected_algo=="none":
+            if  selected_algo=="none" or absloss<best_absloss:
 
                 best_preds=np.copy(cur_array)
                 best_absloss=absloss
