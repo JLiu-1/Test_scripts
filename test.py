@@ -12,9 +12,10 @@ ave_error=0
 count=0
 for x in range(3,lastx+1):
 	for y in range(3,lasty+1):
+		orig=array[x][y]
 		if x%2==0 and y%2==0:
 			continue
-		orig=array[x][y]
+		
 		elif x%2==0:
 			ave_error+=abs((-a[x][y-3]+9*a[x][y-1]+9*a[x][y+1]-a[x][y+3])/16-orig)
 		elif y%2==0:
