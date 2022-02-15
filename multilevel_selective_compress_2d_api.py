@@ -933,8 +933,8 @@ if __name__=="__main__":
     max_level=int(math.log(args.max_step,2))
     rate_list=args.rlist
     #print(rate_list)
-    if rate_list[0]>0:
-        if isinstance(rate_list,float):
+    if ((isinstance(rate_list,int) or isinstance(rate_list,float) and  rate_list>0)) or rate_list[0]>0:
+        if isinstance(rate_list,int) or isinstance(rate_list,float):
             rate_list=[rate_list]
 
         while len(rate_list)<max_level:

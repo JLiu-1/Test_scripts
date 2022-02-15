@@ -1495,14 +1495,16 @@ if __name__=="__main__":
 #parser.add_argument('--noise','-n',type=bool,default=False)
 #parser.add_argument('--intercept','-t',type=bool,default=False)
     args = parser.parse_args()
+    print(args)
     array=np.fromfile(args.input,dtype=np.float32).reshape((args.size_x,args.size_y,args.size_z))
     orig_array=np.copy(array)
     error_bound=args.error*(np.max(array)-np.min(array))
     max_level=int(math.log(args.max_step,2))
     rate_list=args.rlist
     #print(rate_list)
-    if rate_list[0]>0:
-        
+    if ((isinstance(rate_list,int) or isinstance(rate_list,float)) and  rate_list>0) or rate_list[0]>0:
+        if isinstance(rate_list,int) or isinstance(rate_list,float):
+            rate_list=[rate_list]
 
         while len(rate_list)<max_level:
             rate_list.insert(0,rate_list[0])
