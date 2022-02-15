@@ -23,14 +23,15 @@ dout="%s_d.dat" %pid
 qout="%s_q.dat" %pid 
 uout="%s_u.dat" % pid
 ebs=[i*1e-3 for i in range(1,11)]+[1.5e-2,2e-2]
+rlist=" ".join([str(x) for x in args.rlist])
 #ebs=[1e-3,1e-2]
 data=np.zeros((len(ebs)+1,2,2),dtype=np.float32)
 for i in range(2):
     data[1:,0,i]=ebs
     #data[0,1:,i]=idxrange
 for i,eb in enumerate(ebs):
-	command1="python multilevel_selective_compress_3d_api.py -i %s -o %s -q %s -u %s -s %d -r %f -m %f -a 0 -x %d -y %d -z %d -e %f -cl %d -a %f -d %d -n %d"\
-	% (args.input, dout,qout,uout,args.max_step,args.rate,args.maximum_rate,args.size_x,args.size_y,args.size_z,eb,args.min_coeff_level,args.anchor_rate,args.multidim_level,args.sz_interp)
+	command1="python multilevel_selective_compress_3d_api.py -i %s -o %s -q %s -u %s -s %d -r %f -m %f -a 0 -x %d -y %d -z %d -e %f -cl %d -a %f -d %d -n %d --rlist %s"\
+	% (args.input, dout,qout,uout,args.max_step,args.rate,args.maximum_rate,args.size_x,args.size_y,args.size_z,eb,args.min_coeff_level,args.anchor_rate,args.multidim_level,args.sz_interp,args.sz_interp,rlist)
 	os.system(command1)
 	command2="sz_backend %s %s " % (qout,uout)
 	with os.popen(command2) as f:
