@@ -9,16 +9,16 @@ lastx=(1799//max_step)*max_step
 lasty=(3599//max_step)*max_step
 ave_error=0
 count=0
-for x in range(0,lastx+1):
-	for y in range(0,lasty+1):
+for x in range(2,lastx+1):
+	for y in range(2,lasty+1):
 		if x%2==0 and y%2==0:
 			continue
 		elif x%2==0:
-			ave_error+=(a[x][y-1]+a[x][y+1])/2
+			ave_error+=(a[x][y-2]+a[x][y+2])/2
 		elif y%2==0:
-			ave_error+=(a[x-1][y]+a[x+1][y])/2
+			ave_error+=(a[x-2][y]+a[x+2][y])/2
 		else:
-			ave_error+=(a[x-1][y]+a[x+1][y]+a[x][y-1]+a[x][y+1])/4
+			ave_error+=(a[x-2][y]+a[x+2][y]+a[x][y-2]+a[x][y+2])/4
 		count+=1
 
 b=ave_error/count
