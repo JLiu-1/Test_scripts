@@ -1495,7 +1495,7 @@ if __name__=="__main__":
     error_bound=args.error*(np.max(array)-np.min(array))
     max_level=int(math.log(args.max_step,2))
     rate_list=args.rlist
-    
+    print(rate_list)
     if rate_list!=-1:
         if isinstance(rate_list,float):
             rate_list=[rate_list]
