@@ -24,5 +24,5 @@ for x in range(0,lastx+1):
 b=ave_error/count
 k=1
 rng=np.max(a)-np.min(a)
-e=1e-2*rng
+e=1e-3*rng
 print(0.2*b*k/e)
