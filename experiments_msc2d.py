@@ -31,6 +31,8 @@ if args.rlist!=-1:
         args.rlist=[args.rlist]
 
     rlist=" ".join([str(x) for x in args.rlist])
+else:
+    rlist="-1"
 data=np.zeros((len(ebs)+1,2,2),dtype=np.float32)
 for i in range(2):
     data[1:,0,i]=ebs
