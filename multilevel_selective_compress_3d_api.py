@@ -1496,11 +1496,13 @@ if __name__=="__main__":
     max_level=int(math.log(args.max_step,2))
     rate_list=args.rlist
     print(rate_list)
-    if rate_list[0]!=-1:
+    if rate_list[0]>0:
         
 
         while len(rate_list)<max_level:
             rate_list.insert(0,rate_list[0])
+    else:
+        rate_list=None
 
     print(rate_list)
     array,qs,edge_qs,us,_=msc3d(array,error_bound,args.rate,args.maximum_rate,args.min_coeff_level,args.max_step,args.anchor_rate,rate_list=rate_list,x_preded=False,y_preded=False,z_preded=False,\
