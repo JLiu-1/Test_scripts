@@ -13,31 +13,41 @@ parser.add_argument('--maximum_rate','-m',type=float,default=10.0)
 parser.add_argument('--anchor_rate','-a',type=float,default=0.0)
 parser.add_argument('--multidim_level','-d',type=int,default=99)
 parser.add_argument('--sz_interp','-n',type=int,default=0)
+parser.add_argument('--rlist',type=float,default=-1,nargs="+")
 parser.add_argument('--size_x','-x',type=int,default=129)
 parser.add_argument('--size_y','-y',type=int,default=129)
 parser.add_argument('--size_z','-z',type=int,default=129)
-
+parser.add_argument('--fix','-f',type=str,default="none")
 args = parser.parse_args()
+print(args)
 pid=str(os.getpid()).strip()
 dout="%s_d.dat" %pid 
 qout="%s_q.dat" %pid 
 uout="%s_u.dat" % pid
 ebs=[i*1e-3 for i in range(1,11)]+[1.5e-2,2e-2]
+if args.rlist!=-1:
+    if isinstance(args.rlist,float):
+        args.rlist=[args.rlist]
+
+    rlist=" ".join([str(x) for x in args.rlist])
+else:
+    rlist="-1"
 #ebs=[1e-3,1e-2]
 data=np.zeros((len(ebs)+1,2,2),dtype=np.float32)
 for i in range(2):
     data[1:,0,i]=ebs
     #data[0,1:,i]=idxrange
 for i,eb in enumerate(ebs):
-	command1="python multilevel_selective_compress_3d_api.py -i %s -o %s -q %s -u %s -s %d -r %f -m %f -a 0 -x %d -y %d -z %d -e %f -cl %d -a %f -d %d -n %d"\
-	% (args.input, dout,qout,uout,args.max_step,args.rate,args.maximum_rate,args.size_x,args.size_y,args.size_z,eb,args.min_coeff_level,args.anchor_rate,args.multidim_level,args.sz_interp)
+	command1="python multilevel_selective_compress_3d_api.py -i %s -o %s -q %s -u %s -s %d -r %f -m %f -x %d -y %d -z %d -e %f -cl %d -a %f -d %d -n %d --rlist %s -f %s"\
+	% (args.input, dout,qout,uout,args.max_step,args.rate,args.maximum_rate,args.size_x,args.size_y,args.size_z,eb,args.min_coeff_level,args.anchor_rate,args.multidim_level,args.sz_interp,rlist,args.fix)
 	os.system(command1)
 	command2="sz_backend %s %s " % (qout,uout)
 	with os.popen(command2) as f:
 		lines=f.read().splitlines()
+		#print(lines)
 		cr=eval(lines[4].split("=")[-1])
 		if args.anchor_rate==0:
-			anchor_ratio=1/(args.max_step**2)
+			anchor_ratio=1/(args.max_step**3)
 			cr=1/((1-anchor_ratio)/cr+anchor_ratio/2)
 	command3="compareData -f %s %s" % (args.input,dout)
 	with os.popen(command3) as f:
