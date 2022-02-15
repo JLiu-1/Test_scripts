@@ -476,7 +476,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False):#loren
                     #absloss+=abs(decomp)
                     cur_array[x][y]=decomp
 
-            if  selected_algo=="none" or absloss<best_absloss:
+            if selected_algo=="none" or absloss<best_absloss:
 
                 best_preds=np.copy(cur_array)
                 best_absloss=absloss
@@ -943,9 +943,9 @@ if __name__=="__main__":
     array.tofile(args.output)
     quants.tofile(args.quant)
     unpreds.tofile(args.unpred)
-    
+    '''
     for x in range(args.size_x):
         for y in range(args.size_y):
             if array[x][y]==orig_array[x][y] and x%args.max_step!=0 and y%args.max_step!=0:
                 print(x,y)
-    
+    '''

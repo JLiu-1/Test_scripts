@@ -878,7 +878,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False):#loren
                     #absloss+=abs(decomp)
                         cur_array[x][y][z]=decomp 
 
-            if absloss<best_absloss or selected_algo=="none":
+            if selected_algo=="none" or absloss<best_absloss or:
                 selected_algo="sz3_interp_linear_zyx"
                 best_preds=np.copy(cur_array)
                 best_absloss=absloss
@@ -1511,10 +1511,10 @@ if __name__=="__main__":
     array.tofile(args.output)
     quants.tofile(args.quant)
     unpreds.tofile(args.unpred)
-    
+    '''
     for x in range(args.size_x):
         for y in range(args.size_y):
             for z in range(args.size_z):
                 if array[x][y][z]==orig_array[x][y][z] and x%args.max_step!=0 and y%args.max_step!=0 and z%args.max_step!=0:
                     print(x,y,z)
-    
+    '''
