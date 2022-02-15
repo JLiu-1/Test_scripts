@@ -1473,7 +1473,7 @@ if __name__=="__main__":
     parser.add_argument('--max_step','-s',type=int,default=16)
     parser.add_argument('--min_coeff_level','-cl',type=int,default=99)
     parser.add_argument('--rate','-r',type=float,default=1.0)
-    parser.add_argument('--rlist',type=float,default=None,nargs="+")
+    parser.add_argument('--rlist',type=float,default=-1,nargs="+")
     parser.add_argument('--maximum_rate','-m',type=float,default=10.0)
     #parser.add_argument('--cubic','-c',type=int,default=1)
     parser.add_argument('--multidim_level','-d',type=int,default=99)
@@ -1496,14 +1496,14 @@ if __name__=="__main__":
     max_level=int(math.log(args.max_step,2))
     rate_list=args.rlist
     
-    if rate_list!=None:
+    if rate_list!=-1:
         if isinstance(rate_list,float):
             rate_list=[rate_list]
 
         while len(rate_list)<max_level:
             rate_list.insert(0,rate_list[0])
 
-    '''
+    
     array,qs,edge_qs,us,_=msc3d(array,error_bound,args.rate,args.maximum_rate,args.min_coeff_level,args.max_step,args.anchor_rate,rate_list=rate_list,x_preded=False,y_preded=False,z_preded=False,\
         sz_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=args.lorenzo_fallback_check,sample_rate=args.fallback_sample_ratio,min_sampled_points=100,random_access=False,verbose=True)
 
@@ -1512,6 +1512,7 @@ if __name__=="__main__":
     array.tofile(args.output)
     quants.tofile(args.quant)
     unpreds.tofile(args.unpred)
+
     '''
     for x in range(args.size_x):
         for y in range(args.size_y):
