@@ -9,7 +9,7 @@ import math
 import random
 from utils import *
 
-def msc2d(array,error_bound,rate,maximum_rate,min_coeff_level,max_step,anchor_rate,rate_list=None,x_preded=False,y_preded=False,sz3_interp=False,multidim_level=10,lorenzo=-1,\
+def msc2d(array,error_bound,rate,maximum_rate,min_coeff_level,max_step,anchor_rate,rate_list=None,x_preded=False,y_preded=False,sz_interp=False,multidim_level=10,lorenzo=-1,\
 sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False):#lorenzo:only check lorenzo fallback with level no larger than lorenzo level
 
     size_x,size_y=array.shape
