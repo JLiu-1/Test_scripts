@@ -878,7 +878,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False):#loren
                     #absloss+=abs(decomp)
                         cur_array[x][y][z]=decomp 
 
-            if selected_algo=="none" or absloss<best_absloss or:
+            if selected_algo=="none" or absloss<best_absloss :
                 selected_algo="sz3_interp_linear_zyx"
                 best_preds=np.copy(cur_array)
                 best_absloss=absloss
