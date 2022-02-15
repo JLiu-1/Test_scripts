@@ -6,7 +6,7 @@ a=np.fromfile(file,dtype=np.float32).reshape((1800,3600))
 
 max_step=64
 lastx=(1799//max_step)*max_step
-lasty=(3599/max_step)*max_step
+lasty=(3599//max_step)*max_step
 ave_error=0
 count=0
 for x in range(0,lastx+1):
