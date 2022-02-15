@@ -124,7 +124,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False):#loren
                         coef=res.coef_ 
                         ince=res.intercept_
         
-            else
+        
             for x in range(xstart,cur_size_x,2):
                 for y in range(1,cur_size_y,2):
                     #if y==cur_size_y-1:
