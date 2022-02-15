@@ -1503,7 +1503,7 @@ if __name__=="__main__":
         while len(rate_list)<max_level:
             rate_list.insert(0,rate_list[0])
 
-    
+    print(rate_list)
     array,qs,edge_qs,us,_=msc3d(array,error_bound,args.rate,args.maximum_rate,args.min_coeff_level,args.max_step,args.anchor_rate,rate_list=rate_list,x_preded=False,y_preded=False,z_preded=False,\
         sz_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=args.lorenzo_fallback_check,sample_rate=args.fallback_sample_ratio,min_sampled_points=100,random_access=False,verbose=True)
 
