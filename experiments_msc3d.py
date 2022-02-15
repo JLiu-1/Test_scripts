@@ -43,6 +43,7 @@ for i,eb in enumerate(ebs):
 	command2="sz_backend %s %s " % (qout,uout)
 	with os.popen(command2) as f:
 		lines=f.read().splitlines()
+		print(lines)
 		cr=eval(lines[4].split("=")[-1])
 		if args.anchor_rate==0:
 			anchor_ratio=1/(args.max_step**3)
