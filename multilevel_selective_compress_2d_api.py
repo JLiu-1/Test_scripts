@@ -926,6 +926,7 @@ if __name__=="__main__":
     orig_array=np.copy(array)
     error_bound=args.error*(np.max(array)-np.min(array))
     max_level=int(math.log(args.max_step,2))
+    rate_list=args.rate_list
     '''
     if args.rlist!=0:
         rate_list=args.rlist
