@@ -10,7 +10,7 @@ lasty=(3599/max_step)*max_step
 ave_error=0
 count=0
 for x in range(0,lastx+1):
-	for y in range(0,last+1):
+	for y in range(0,lasty+1):
 		if x%2==0 and y%2==0:
 			continue
 		elif x%2==0:
