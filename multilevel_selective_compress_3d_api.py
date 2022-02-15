@@ -120,7 +120,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
     #linear interp
         absloss=0
         selected_algo="none"
-        if level<=multidim_level or not sz3_interp or fix_algo in ["linear","cubic","multidim"]
+        if level<=multidim_level or not sz3_interp or fix_algo in ["linear","cubic","multidim"]:
             if fix_algo=="none" or fix_algo=="linear":
 
                 if level>=min_coeff_level:
