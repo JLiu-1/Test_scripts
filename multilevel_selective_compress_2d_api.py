@@ -926,12 +926,13 @@ if __name__=="__main__":
     parser.add_argument('--sz_interp','-n',type=int,default=0)
     parser.add_argument('--fix','-f',type=str,default="none")
     args = parser.parse_args()
-    #print(args)
+    print(args)
     array=np.fromfile(args.input,dtype=np.float32).reshape((args.size_x,args.size_y))
     orig_array=np.copy(array)
     error_bound=args.error*(np.max(array)-np.min(array))
     max_level=int(math.log(args.max_step,2))
     rate_list=args.rlist
+    #print(rate_list)
     if rate_list[0]>0:
         if isinstance(rate_list,float):
             rate_list=[rate_list]
