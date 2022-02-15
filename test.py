@@ -23,7 +23,8 @@ for x in range(3,lastx+1):
 		count+=1
 
 b=ave_error/count
-k=8/9
+print(b)
+k=9/8
 rng=np.max(a)-np.min(a)
 e=rng
-print(0.2*b*k/e)
+print(0.2*b/(k*e))
