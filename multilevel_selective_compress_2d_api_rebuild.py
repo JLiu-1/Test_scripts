@@ -934,7 +934,7 @@ if __name__=="__main__":
     array=np.fromfile(args.input,dtype=np.float32).reshape((args.size_x,args.size_y))
     orig_array=np.copy(array)
     error_bound=args.error*(np.max(array)-np.min(array))
-    max_level=int(math.log(args.max_step,doublestep))
+    max_level=int(math.log(args.max_step,2))
     rate_list=args.rlist
     #print(rate_list)
     if ((isinstance(rate_list,int) or isinstance(rate_list,float)) and  rate_list>0) or (isinstance(rate_list,list ) and rate_list[0]>0):
