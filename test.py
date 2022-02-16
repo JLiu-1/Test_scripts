@@ -29,4 +29,4 @@ print(b)
 k=9/8
 rng=np.max(a)-np.min(a)
 e=rng
-print(0.2*b/(k*e))
+print((15*k*e)/(4*b))
