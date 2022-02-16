@@ -17,7 +17,7 @@ parser.add_argument('--rlist',type=float,default=-1,nargs="+")
 parser.add_argument('--size_x','-x',type=int,default=1800)
 parser.add_argument('--size_y','-y',type=int,default=3600)
 parser.add_argument('--fix','-f',type=str,default="none")
-
+parser.add_argument('--blockwise','-b',type=int,default=0)
 
 args = parser.parse_args()
 pid=str(os.getpid()).strip()
@@ -37,9 +37,13 @@ data=np.zeros((len(ebs)+1,2,2),dtype=np.float32)
 for i in range(2):
     data[1:,0,i]=ebs
     #data[0,1:,i]=idxrange
+if args.blockwise:
+    script_name="multilevel_selective_compress_blocksize2d.py"
+else:
+    script_name="multilevel_selective_compress_2d_api.py"
 for i,eb in enumerate(ebs):
-	command1="python multilevel_selective_compress_2d_api.py -i %s -o %s -q %s -u %s -s %d -r %f -m %f -x %d -y %d -e %f -cl %d -a %f -d %d -n %d --rlist %s -f %s"\
-	% (args.input, dout,qout,uout,args.max_step,args.rate,args.maximum_rate,args.size_x,args.size_y,eb,args.min_coeff_level,args.anchor_rate,args.multidim_level,args.sz_interp,rlist,args.fix)
+	command1="python %s -i %s -o %s -q %s -u %s -s %d -r %f -m %f -x %d -y %d -e %f -cl %d -a %f -d %d -n %d --rlist %s -f %s"\
+	% (script_name,args.input, dout,qout,uout,args.max_step,args.rate,args.maximum_rate,args.size_x,args.size_y,eb,args.min_coeff_level,args.anchor_rate,args.multidim_level,args.sz_interp,rlist,args.fix)
 	os.system(command1)
 	command2="sz_backend %s %s " % (qout,uout)
 	with os.popen(command2) as f:
