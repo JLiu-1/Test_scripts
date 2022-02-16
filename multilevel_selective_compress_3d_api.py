@@ -10,7 +10,7 @@ import random
 from utils import *
 
 def msc3d(array,error_bound,rate,maximum_rate,min_coeff_level,max_step,anchor_rate,rate_list=None,x_preded=False,y_preded=False,z_preded=False,multidim_level=10,sz_interp=False,lorenzo=-1,\
-sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_algo="none"):#lorenzo:only check lorenzo fallback with level no larger than lorenzo level
+sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_algo="none",min_level=0):#lorenzo:only check lorenzo fallback with level no larger than lorenzo level
 
     size_x,size_y,size_z=array.shape
     #array=np.fromfile(args.input,dtype=np.float32).reshape((size_x,size_y))
@@ -97,7 +97,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
     #maxlevel_q_start=len(qs[max_level])
     u_start=len(us)
     cumulated_loss=0.0
-    while step>0:
+    if level>=min_level:#max_step>0:
         cur_qs=[]
         cur_us=[]
         if rate_list!=None:
