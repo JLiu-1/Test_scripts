@@ -804,7 +804,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
             if absloss*len(total_points)/len(sampled_points)<best_absloss+cumulated_loss:
                 selected_algo="lorenzo_fallback"
                 best_absloss=0
-                best_preds=array[0:last_x+1:step,0:last_y+1:step]
+                best_preds=np.copy(cur_orig_array)
                 best_qs=[]
                 best_us=[]
            
