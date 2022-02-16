@@ -375,7 +375,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                             md_coef=md_res.coef_ 
                             md_ince=md_res.intercept_
 
-                 for i,x in enumerate(range(x_start,last_x+1,step)):
+                for i,x in enumerate(range(x_start,last_x+1,step)):
                     if x==x_start and x_start_offset!=0:
                         continue
                     for y in range((1-(i%2))*step+y_start,last_y+1,doublestep):
