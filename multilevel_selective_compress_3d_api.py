@@ -1017,6 +1017,8 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                     for x in range(xstart,cur_size_x,2):
                         for y in range(ystart,cur_size_y,2):
                             for z in range(3,cur_size_z,2):
+                                if z+3>=cur_size_z:
+                                    continue
                                 reg_xs.append(np.array([cur_array[x][y][z-3],cur_array[x][y][z-1],cur_array[x][y][z+1],cur_array[x][y][z+3]],dtype=np.float64))
                                 reg_ys.append(cur_array[x][y][z])
                                 res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
@@ -1056,6 +1058,8 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                     for x in range(xstart,cur_size_x,2):
                         for y in range(3,cur_size_y,2):
                             for z in range(1 if zstart>0 else 0,cur_size_z,1):
+                                if y+3>=cur_size_y:
+                                    continue
                                 reg_xs.append(np.array([cur_array[x][y-3][z],cur_array[x][y-1][z],cur_array[x][y+1][z],cur_array[x][y+3][z]],dtype=np.float64))
                                 reg_ys.append(cur_array[x][y][z])
                                 res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
@@ -1094,6 +1098,8 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                     for x in range(3,cur_size_x,2):
                         for y in range(1 if ystart>0 else 0,cur_size_y,1):
                             for z in range(1 if zstart>0 else 0,cur_size_z,1):
+                                if x+3>=cur_size_x:
+                                    continue
                                 reg_xs.append(np.array([cur_array[x-3][y][z],cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x+3][y][z]],dtype=np.float64))
                                 reg_ys.append(cur_array[x][y][z])
                                 res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
@@ -1145,6 +1151,8 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                     for x in range(3,cur_size_x,2):
                         for y in range(ystart,cur_size_y,2):
                             for z in range(zstart,cur_size_z,2):
+                                if x+3>=cur_size_x:
+                                    continue
                                 reg_xs.append(np.array([cur_array[x-3][y][z],cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x+3][y][z]],dtype=np.float64))
                                 reg_ys.append(cur_array[x][y][z])
                                 res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
@@ -1185,6 +1193,8 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                     for x in range(1 if xstart>0 else 0,cur_size_x,1):
                         for y in range(3,cur_size_y,2):
                             for z in range(zstart,cur_size_z,2):
+                                if y+3>=cur_size_y:
+                                    continue
                                 reg_xs.append(np.array([cur_array[x][y-3][z],cur_array[x][y-1][z],cur_array[x][y+1][z],cur_array[x][y+3][z]],dtype=np.float64))
                                 reg_ys.append(cur_array[x][y][z])
                                 res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
@@ -1222,6 +1232,8 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                     for x in range(1 if xstart>0 else 0,cur_size_x,1):
                         for y in range(1 if ystart>0 else 0,cur_size_y,1):
                             for z in range(3 ,cur_size_z,2):
+                                if z+3>=cur_size_z:
+                                    continue
                                 reg_xs.append(np.array([cur_array[x][y][z-3],cur_array[x][y][z-1],cur_array[x][y][z+1],cur_array[x][y][z+3]],dtype=np.float64))
                                 reg_ys.append(cur_array[x][y][z])
                                 res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
