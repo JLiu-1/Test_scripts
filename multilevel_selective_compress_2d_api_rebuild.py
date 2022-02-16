@@ -21,7 +21,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
     #error_bound=args.error*rng
     #max_step=args.max_step
     #rate=args.rate
-    max_level=int(math.log(max_step,doublestep))
+    max_level=int(math.log(max_step,2))
     selected_algos=[]
 
 
