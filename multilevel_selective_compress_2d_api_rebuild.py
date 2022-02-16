@@ -543,7 +543,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                             res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
                             coef=res.coef_ 
                             ince=res.intercept_
-                 for x in range(x_start+(step if x_start_offset>0 else 0),last_x+1,step):
+                for x in range(x_start+(step if x_start_offset>0 else 0),last_x+1,step):
                     for y in range(y_start+step ,last_y+1,doublestep):
                         #if y==cur_size_y-1:
                             #continue
@@ -593,7 +593,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
 
 
                 for x in range(x_start+x_start_offset,last_x+1,doublestep):
-                        for y in range(y_start+step,last_y+1,doublestep):
+                    for y in range(y_start+step,last_y+1,doublestep):
                         #if y==cur_size_y-1:
                             #continue
                         orig=cur_array[x][y]
@@ -683,7 +683,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
 
 
                 for x in range(x_start+step,last_x+1,doublestep):
-                        for y in range(y_start+y_start_offset,last_y+1,doublestep):
+                    for y in range(y_start+y_start_offset,last_y+1,doublestep):
                         #if x==cur_size_x-1:
                             #continue
                         orig=cur_array[x][y]
