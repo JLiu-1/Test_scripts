@@ -433,7 +433,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                             ince=res.intercept_
             
 
-               for x in range(x_start+x_start_offset,last_x+1,doublestep):
+                for x in range(x_start+x_start_offset,last_x+1,doublestep):
                     for y in range(y_start+step,last_y+1,doublestep):
                         #if y==cur_size_y-1:
                             #continue
