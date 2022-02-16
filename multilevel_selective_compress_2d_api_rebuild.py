@@ -10,7 +10,7 @@ import random
 from utils import *
 
 def msc2d(array,x_start,x_end,y_start,y_end,error_bound,rate,maximum_rate,min_coeff_level,max_step,anchor_rate,rate_list=None,x_preded=False,y_preded=False,sz3_interp=False,multidim_level=10,lorenzo=-1,\
-sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_algo="none",min_level=0):#lorenzo:only check lorenzo fallback with level no larger than lorenzo level
+sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_algo="none",first_level=None,last_level=0,first_order="block"):#lorenzo:only check lorenzo fallback with level no larger than lorenzo level
     #x_y_start should be on the anchor grid
     size_x,size_y=array.shape
     #array=np.fromfile(args.input,dtype=np.float32).reshape((size_x,size_y))
@@ -31,7 +31,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
     edge_qs=[]
 #min_coeff_level=args.min_coeff_level
 #anchor=args.anchor
-    if max_step>0:
+    if max_step>0 and max_level==first_level+1:
     
     #anchor_rate=args.anchor_rate
         if anchor_rate>0:
@@ -86,13 +86,17 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
 
     last_x=((x_end-1)//max_step)*max_step#remember that x_start is divisible by max_step
     last_y=((y_end-1)//max_step)*max_step   
-
+    global_last_x=((size_x-1)//max_step)*max_step
+    global_last_y=((size_y-1)//max_step)*max_step
     step=max_step//2
-    level=max_level-1
+    if first_levet==None:
+        level=max_level-1
+    else:
+        level=first_level
     #maxlevel_q_start=len(qs[max_level])
     u_start=len(us)
     cumulated_loss=0.0
-    while level>=min_level:#step>0:
+    while level>=last_level:#step>0:
         cur_qs=[]
         cur_us=[]
         if rate_list!=None:
@@ -139,7 +143,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                             pred= np.dot( np.array([cur_array[x][y-step],cur_array[x][y+step]]),coef )+ince 
                         else:
                             pred=(cur_array[x][y-step]+cur_array[x][y+step])*0.5
-                        if (not random_access) or level!=0 or x!=x_end-1:#or last_x!=size_x-1:
+                        if (not random_access) or level>lorenzo or x!=x_end-1:#or last_x!=size_x-1:
                             absloss+=abs(orig-pred)
                         q,decomp=quantize(orig,pred,cur_eb)
                         cur_qs.append(q)
@@ -171,7 +175,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                             pred= np.dot( np.array([cur_array[x-step][y],cur_array[x+step][y]]),coef )+ince 
                         else:
                             pred=(cur_array[x-step][y]+cur_array[x+step][y])*0.5
-                        if (not random_access) or level!=0 or y!=y_end-1:# or last_y!=size_y-1:
+                        if (not random_access) or level>lorenzo or y!=y_end-1:# or last_y!=size_y-1:
                             absloss+=abs(orig-pred)
                         q,decomp=quantize(orig,pred,cur_eb)
                
@@ -233,7 +237,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                     reg_ys=[]
                     for x in range(x_start+x_start_offest,last_x+1,doublestep):
                         for y in range(y_start+triplestep,last_y+1,doublestep):
-                            if y-triplestep<0 or y+triplestep>=size_y:
+                            if y-triplestep<0 or (random_access and y-triplestep<y_start) or y+triplestep>global_last_y or (  (random_access or (first_order=="block" and level!=max_level-1)) and y+triplestep>last_y) :
                                 continue
                             reg_xs.append(np.array([cur_array[x][y-triplestep],cur_array[x][y-step],cur_array[x][y+step],cur_array[x][y+triplestep]],dtype=np.float64))
                             reg_ys.append(cur_array[x][y])
@@ -245,7 +249,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                         #if y==cur_size_y-1:
                             #continue
                         orig=cur_array[x][y]
-                        if y>=triplestep and y+triplestep<size_y:
+                        if not (y-triplestep<0 or (random_access and y-triplestep<y_start) or y+triplestep>global_last_y or (  (random_access or (first_order=="block" and level!=max_level-1)) and y+triplestep>last_y)):
                             if level>=min_coeff_level:
                                 pred=np.dot(coef,np.array([cur_array[x][y-triplestep],cur_array[x][y-step],cur_array[x][y+step],cur_array[x][y+triplestep]]) )+ince
                             else:
@@ -266,7 +270,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                     reg_ys=[]
                     for x in range(x_start+step,last_x+1,doublestep):
                         for y in range(y_start+y_start_offset,last_y+1,doublestep):
-                            if x-triplestep<0 or x+triplestep>=size_x:
+                            if x-triplestep<0 or (random_access and x-triplestep<x_start) or x+triplestep>global_last_x or (  (random_access or (first_order=="block" and level!=max_level-1)) and x+triplestep>last_x):
                                 continue
                             reg_xs.append(np.array([cur_array[x-triplestep][y],cur_array[x-step][y],cur_array[x+step][y],cur_array[x+triplestep][y]],dtype=np.float64))
                             reg_ys.append(cur_array[x][y])
@@ -278,14 +282,14 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                         #if x==cur_size_x-1:
                             #continue
                         orig=cur_array[x][y]
-                        if x>=triplestep and x+triplestep<size_x:
+                        if not (x-triplestep<0 or (random_access and x-triplestep<x_start) or x+triplestep>global_last_x or (  (random_access or (first_order=="block" and level!=max_level-1)) and x+triplestep>last_x)):
                             if level>=min_coeff_level:
                                 pred=np.dot(coef,np.array([cur_array[x-triplestep][y],cur_array[x-step][y],cur_array[x+step][y],cur_array[x+triplestep][y]]) )+ince
                             else:
                                 pred=(-cur_array[x-triplestep][y]+9*cur_array[x-step][y]+9*cur_array[x+step][y]-cur_array[x+triplestep][y])*0.0625
                         else:
                             pred=(cur_array[x-step][y]+cur_array[x+step][y])*0.5
-                        if (not random_access) or level!=0 or y!=y_end-1:# or last_y!=size_y-1:
+                        if (not random_access) or level>lorenzo or y!=y_end-1:# or last_y!=size_y-1:
                             absloss+=abs(orig-pred)
                         q,decomp=quantize(orig,pred,cur_eb)
                     
@@ -367,7 +371,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                     md_reg_ys=[]
                     for i,x in enumerate(range(x_start,last_x+1,step)):
                         for y in range((1-(i%2))*step+y_start,last_y+1,doublestep):
-                            if (x==x_start and x_start_offset!=0) or (y==y_start and y_start_offset!=0) or x+step>=size_x or y+step>=size_y:
+                            if (x==x_start and x_start_offset!=0) or (y==y_start and y_start_offset!=0) or x+step>last_x or y+step>last_y:
                                 continue
                             md_reg_xs.append(np.array([cur_array[x][y-step],cur_array[x][y+step],cur_array[x-step][y],cur_array[x+step][y]],dtype=np.float64))
                             md_reg_ys.append(cur_array[x][y])
@@ -383,18 +387,18 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                             continue
                     
                         orig=cur_array[x][y]
-                        if x and y and x+step<size_x and y+step<size_y:
+                        if x and y and x+step<=last_x and y+step<=last_y:
                             if level>=min_coeff_level:
                                 pred=np.dot(md_coef,np.array([cur_array[x][y-step],cur_array[x][y+step],cur_array[x-step][y],cur_array[x+step][y]]))+md_ince
                         
                             else:
 
                                 pred=(cur_array[x][y-step]+cur_array[x][y+step]+cur_array[x-step][y]+cur_array[x+step][y])*0.25
-                        elif x==0 or x+step>=size_x:
+                        elif x==0 or x+step>=last_x:
                             pred=(cur_array[x][y-step]+cur_array[x][y+step])*0.5
                         else:
                             pred=(cur_array[x-step][y]+cur_array[x+step][y])*0.5
-                        if (not random_access) or level!=0 or (x!=x_end-1 ) or (y!=y_end-1):
+                        if (not random_access) or level>lorenzo or (x!=x_end-1 ) or (y!=y_end-1):
                             absloss+=abs(orig-pred)
                         q,decomp=quantize(orig,pred,cur_eb)
                         cur_qs.append(q)
@@ -442,7 +446,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                             pred= np.dot( np.array([cur_array[x][y-step],cur_array[x][y+step]]),coef )+ince 
                         else:
                             pred=(cur_array[x][y-step]+cur_array[x][y-step])*0.5
-                        if (not random_access) or level!=0 or x!=x_end-1:
+                        if (not random_access) or level>lorenzo or x!=x_end-1:
                             absloss+=abs(orig-pred)
                         q,decomp=quantize(orig,pred,cur_eb)
                         cur_qs.append(q)
@@ -474,7 +478,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                             pred= np.dot( np.array([cur_array[x-step][y],cur_array[x+step][y]]),coef )+ince 
                         else:
                             pred=(cur_array[x-step][y]+cur_array[x+step][y])*0.5
-                        if (not random_access) or level!=0 or y!=y_end-1:
+                        if (not random_access) or level>lorenzo or y!=y_end-1:
                             absloss+=abs(orig-pred)
                         q,decomp=quantize(orig,pred,cur_eb)
                
@@ -520,7 +524,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                             pred= np.dot( np.array([cur_array[x-step][y],cur_array[x+step][y]]),coef )+ince 
                         else:
                             pred=(cur_array[x-step][y]+cur_array[x+step][y])*0.5
-                        if (not random_access) or level!=0 or y!=y_end-1:
+                        if (not random_access) or level>lorenzo or y!=y_end-1:
                             absloss+=abs(orig-pred)
                         q,decomp=quantize(orig,pred,cur_eb)
                         cur_qs.append(q)
@@ -552,7 +556,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                             pred= np.dot( np.array([cur_array[x][y-step],cur_array[x][y+step]]),coef )+ince 
                         else:
                             pred=(cur_array[x][y-step]+cur_array[x][y+step])*0.5
-                        if (not random_access) or level!=0 or x!=x_end-1:
+                        if (not random_access) or level>lorenzo or x!=x_end-1:
                             absloss+=abs(orig-pred)
                         q,decomp=quantize(orig,pred,cur_eb)
                
@@ -580,9 +584,12 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                 if level>=min_coeff_level:
                     reg_xs=[]
                     reg_ys=[]
+
+                    
+
                     for x in range(x_start+x_start_offset,last_x+1,doublestep):
                         for y in range(y_start+step,last_y+1,doublestep):
-                            if y-triplestep<0 or y+triplestep>=size_y:
+                            if y-triplestep<0 or (random_access and y-triplestep<y_start) or y+triplestep>global_last_y or (  (random_access or (first_order=="block" and level!=max_level-1)) and y+triplestep>last_y):
                                 continue
                             reg_xs.append(np.array([cur_array[x][y-triplestep],cur_array[x][y-step],cur_array[x][y+step],cur_array[x][y+triplestep]],dtype=np.float64))
                             reg_ys.append(cur_array[x][y])
@@ -597,14 +604,14 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                         #if y==cur_size_y-1:
                             #continue
                         orig=cur_array[x][y]
-                        if y-triplestep>=0 and y+triplestep<size_y:
+                        if not (y-triplestep<0 or (random_access and y-triplestep<y_start) or y+triplestep>global_last_y or (  (random_access or (first_order=="block" and level!=max_level-1)) and y+triplestep>last_y) ):
                             if level>=min_coeff_level:
                                 pred=np.dot(coef,np.array([cur_array[x][y-triplestep],cur_array[x][y-step],cur_array[x][y+step],cur_array[x][y+triplestep]]) )+ince
                             else:
                                 pred=(-cur_array[x][y-triplestep]+9*cur_array[x][y-step]+9*cur_array[x][y+step]-cur_array[x][y+triplestep])*0.0625
                         else:
                             pred=(cur_array[x][y-step]+cur_array[x][y+step])*0.5
-                        if (not random_access) or level!=0 or x!=x_end-1:
+                        if (not random_access) or level>lorenzo or x!=x_end-1:
                             absloss+=abs(orig-pred)
                         q,decomp=quantize(orig,pred,cur_eb)
                         cur_qs.append(q)
@@ -620,8 +627,9 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                     reg_xs=[]
                     reg_ys=[]
                     for x in range(x_start+step,last_x+1,doublestep):
-                        for y in range(y_start+(step if y_start_offset>0 else 0),last_y+1,step):
-                            if x<triplestep or x+triplestep>=cur_size_x:
+                        for j,y in enumerate(range(y_start+(step if y_start_offset>0 else 0),last_y+1,step)):
+
+                            if x-triplestep<0 or (random_access and x-triplestep<x_start) or x+triplestep>global_last_x or (  (random_access or (first_order=="block" and level!=max_level-1)) and x+triplestep>last_x and (y-y_start)%doublestep):
                                 continue
                             reg_xs.append(np.array([cur_array[x-triplestep][y],cur_array[x-step][y],cur_array[x+step][y],cur_array[x+triplestep][y]],dtype=np.float64))
                             reg_ys.append(cur_array[x][y])
@@ -635,14 +643,14 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                         #if y==cur_size_y-1:
                             #continue
                         orig=cur_array[x][y]
-                        if x>=triplestep and x+triplestep<size_x:
+                        if not (x-triplestep<0 or (random_access and x-triplestep<x_start) or x+triplestep>global_last_x or (  (random_access or (first_order=="block" and level!=max_level-1)) and x+triplestep>last_x and (y-y_start)%doublestep)):
                             if level>=min_coeff_level:
                                 pred=np.dot(coef,np.array([cur_array[x-triplestep][y],cur_array[x-step][y],cur_array[x+step][y],cur_array[x+triplestep][y]]) )+ince
                             else:
                                 pred=(-cur_array[x-triplestep][y]+9*cur_array[x-step][y]+9*cur_array[x+step][y]-cur_array[x+triplestep][y])*0.0625
                         else:
                             pred=(cur_array[x-step][y]+cur_array[x+step][y])*0.5
-                        if (not random_access) or level!=0 or y!=y_end-1:
+                        if (not random_access) or level>lorenzo or y!=y_end-1:
                             absloss+=abs(orig-pred)
                         q,decomp=quantize(orig,pred,cur_eb)
                     
@@ -672,7 +680,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                     reg_ys=[]
                     for x in range(x_start+step,last_x+1,doublestep):
                         for y in range(y_start+y_start_offset,last_y+1,doublestep):
-                            if x<triplestep or x+triplestep>=cur_size_x:
+                            if x-triplestep<0 or (random_access and x-triplestep<x_start) or x+triplestep>global_last_x or (  (random_access or (first_order=="block" and level!=max_level-1)) and x+triplestep>last_x):
                                 continue
                             reg_xs.append(np.array([cur_array[x-triplestep][y],cur_array[x-step][y],cur_array[x+step][y],cur_array[x+triplestep][y]],dtype=np.float64))
                             reg_ys.append(cur_array[x][y])
@@ -687,14 +695,14 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                         #if x==cur_size_x-1:
                             #continue
                         orig=cur_array[x][y]
-                        if x>=triplestep and x+triplestep<size_x:
+                        if not (x-triplestep<0 or (random_access and x-triplestep<x_start) or x+triplestep>global_last_x or (  (random_access or (first_order=="block" and level!=max_level-1)) and x+triplestep>last_x )):
                             if level>=min_coeff_level:
                                 pred=np.dot(coef,np.array([cur_array[x-triplestep][y],cur_array[x-step][y],cur_array[x+step][y],cur_array[x+triplestep][y]]) )+ince
                             else:
                                 pred=(-cur_array[x-triplestep][y]+9*cur_array[x-step][y]+9*cur_array[x+step][y]-cur_array[x+triplestep][y])*0.0625
                         else:
                             pred=(cur_array[x-step][y]+cur_array[x+step][y])*0.5
-                        if (not random_access) or level!=0 or y!=y_end-1:
+                        if (not random_access) or level>lorenzo or y!=y_end-1:
                             absloss+=abs(orig-pred)
                         q,decomp=quantize(orig,pred,cur_eb)
                         cur_qs.append(q)
@@ -711,7 +719,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                     reg_ys=[]
                     for x in range(x_start+(step if x_start_offset>0 else 0),last_x+1,step):
                         for y in range(y_start+step,last_y+1,doublestep):
-                            if y<triplestep or y+triplestep>=size_y:
+                            if y-triplestep<0 or (random_access and y-triplestep<y_start) or y+triplestep>global_last_y or (  (random_access or (first_order=="block" and level!=max_level-1)) and y+triplestep>last_y and (x-x_start)%doublestep):
                                 continue
                             reg_xs.append(np.array([cur_array[x][y-triplestep],cur_array[x][y-step],cur_array[x][y+step],cur_array[x][y+triplestep]],dtype=np.float64))
                             reg_ys.append(cur_array[x][y])
@@ -725,14 +733,14 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                         #if y==cur_size_y-1:
                             #continue
                         orig=cur_array[x][y]
-                        if y>=triplestep and y+triplestep<size_y:
+                        if not (y-triplestep<0 or (random_access and y-triplestep<y_start) or y+triplestep>global_last_y or (  (random_access or (first_order=="block" and level!=max_level-1)) and y+triplestep>last_y and (x-x_start)%doublestep)):
                             if level>=min_coeff_level:
                                 pred=np.dot(coef,np.array([cur_array[x][y-triplestep],cur_array[x][y-step],cur_array[x][y+step],cur_array[x][y+triplestep]]) )+ince
                             else:
                                 pred=(-cur_array[x][y-triplestep]+9*cur_array[x][y-step]+9*cur_array[x][y+step]-cur_array[x][y+triplestep])*0.0625
                         else:
                             pred=(cur_array[x][y-step]+cur_array[x][y+step])*0.5
-                        if (not random_access) or level!=0 or x!=x_end-1:
+                        if (not random_access) or level>lorenzo or x!=x_end-1:
                             absloss+=abs(orig-pred)
                         q,decomp=quantize(orig,pred,cur_eb)
                     
