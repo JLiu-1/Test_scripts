@@ -687,7 +687,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                         #if x==cur_size_x-1:
                             #continue
                         orig=cur_array[x][y]
-                        if x>=triplestep and x+triplestep<cur_size_x:
+                        if x>=triplestep and x+triplestep<size_x:
                             if level>=min_coeff_level:
                                 pred=np.dot(coef,np.array([cur_array[x-triplestep][y],cur_array[x-step][y],cur_array[x+step][y],cur_array[x+triplestep][y]]) )+ince
                             else:
@@ -711,7 +711,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                     reg_ys=[]
                     for x in range(x_start+(step if x_start_offset>0 else 0),last_x+1,step):
                         for y in range(y_start+step,last_y+1,doublestep):
-                            if y<triplestep or y+triplestep>=cur_size_y:
+                            if y<triplestep or y+triplestep>=size_y:
                                 continue
                             reg_xs.append(np.array([cur_array[x][y-triplestep],cur_array[x][y-step],cur_array[x][y+step],cur_array[x][y+triplestep]],dtype=np.float64))
                             reg_ys.append(cur_array[x][y])
@@ -725,7 +725,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                         #if y==cur_size_y-1:
                             #continue
                         orig=cur_array[x][y]
-                        if y>=triplestep and y+triplestep<cur_size_y:
+                        if y>=triplestep and y+triplestep<size_y:
                             if level>=min_coeff_level:
                                 pred=np.dot(coef,np.array([cur_array[x][y-triplestep],cur_array[x][y-step],cur_array[x][y+step],cur_array[x][y+triplestep]]) )+ince
                             else:
