@@ -38,7 +38,7 @@ for i in range(2):
     data[1:,0,i]=ebs
     #data[0,1:,i]=idxrange
 if args.blockwise:
-    script_name="multilevel_selective_compress_blocksize2d.py"
+    script_name="multilevel_selective_compress_blockwise2d.py"
 else:
     script_name="multilevel_selective_compress_2d_api.py"
 for i,eb in enumerate(ebs):
