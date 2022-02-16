@@ -31,7 +31,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
     edge_qs=[]
 #min_coeff_level=args.min_coeff_level
 #anchor=args.anchor
-    if max_step>0 and max_level==first_level+1:
+    if max_step>0 and (first_level==None or max_level==first_level+1):
     
     #anchor_rate=args.anchor_rate
         if anchor_rate>0:
@@ -89,7 +89,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
     global_last_x=((size_x-1)//max_step)*max_step
     global_last_y=((size_y-1)//max_step)*max_step
     step=max_step//2
-    if first_levet==None:
+    if first_level==None:
         level=max_level-1
     else:
         level=first_level
