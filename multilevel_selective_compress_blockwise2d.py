@@ -78,10 +78,10 @@ rate=args.rate
 maximum_rate=args.maximum_rate
 anchor_rate=args.anchor_rate
 max_level=int(math.log(max_step,2))
+rate_list=args.rlist
+if ((isinstance(rate_list,int) or isinstance(rate_list,float)) and  rate_list>0) or (isinstance(rate_list,list ) and rate_list[0]>0):
 
-if args.rlist!=0:
-    rate_list=args.rlist
-    if isinstance(rate_list,int):
+    if isinstance(rate_list,int) or isinstance(rate_list,float):
         rate_list=[rate_list]
 
     while len(rate_list)<max_level:
@@ -155,8 +155,8 @@ last_y=((size_y-1)//max_step)*max_step
 #ic_count=0
 #im_count=0
 #l_count=0
-lorenzo_level=args.lorenzo_level
-lorenzo_sample_ratio=args.lorenzo_sample_ratio
+lorenzo_level=args.lorenzo_fallback_check
+lorenzo_sample_ratio=args.fallback_sample_ratio
 #currently no coeff and levelwise predictor selection.
 for x_start in range(0,last_x,max_step):
     for y_start in range(0,last_y,max_step):
