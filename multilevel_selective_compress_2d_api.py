@@ -31,7 +31,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
     edge_qs=[]
 #min_coeff_level=args.min_coeff_level
 #anchor=args.anchor
-    if level>=min_level:#max_step>0:
+    if max_step>0:
     
     #anchor_rate=args.anchor_rate
         if anchor_rate>0:
@@ -91,7 +91,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
     #maxlevel_q_start=len(qs[max_level])
     u_start=len(us)
     cumulated_loss=0.0
-    while step>0:
+    while level>=min_level:#step>0:
         cur_qs=[]
         cur_us=[]
         if rate_list!=None:
