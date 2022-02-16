@@ -235,7 +235,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                 if level>=min_coeff_level:
                     reg_xs=[]
                     reg_ys=[]
-                    for x in range(x_start+x_start_offest,last_x+1,doublestep):
+                    for x in range(x_start+x_start_offset,last_x+1,doublestep):
                         for y in range(y_start+triplestep,last_y+1,doublestep):
                             if y-triplestep<0 or (random_access and y-triplestep<y_start) or y+triplestep>global_last_y or (  (random_access or (first_order=="block" and level!=max_level-1)) and y+triplestep>last_y) :
                                 continue
@@ -244,7 +244,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                             res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
                             coef=res.coef_ 
                             ince=res.intercept_
-                for x in range(x_start+x_start_offest,last_x+1,doublestep):
+                for x in range(x_start+x_start_offset,last_x+1,doublestep):
                     for y in range(y_start+step,last_y+1,doublestep):
                         #if y==cur_size_y-1:
                             #continue
