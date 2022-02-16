@@ -162,11 +162,12 @@ for x_start in range(0,last_x,max_step):
     for y_start in range(0,last_y,max_step):
         x_end=size_x-1 if x_start==last_x-max_step else x_start+max_step 
         y_end=size_y-1 if y_start==last_y-max_step else y_start+max_step 
+        print(x_start,y_start)
         array,cur_qs,cur_lorenzo_qs,cur_us,cur_selected=\
         msc2d(array,x_start,x_end+1,y_start,y_end+1,error_bound,rate,maximum_rate,min_coeff_level,max_step,anchor_rate,\
             rate_list=rate_list,sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=args.lorenzo_fallback_check,\
             sample_rate=args.fallback_sample_ratio,min_sampled_points=10,x_preded=(x_start>0),y_preded=(y_start>0),random_access=False,fix_algo=args.fix)
-
+        
         for i in range(max_level+1):
             #print(len(cur_qs[i]))
             qs[i]+=cur_qs[i]
