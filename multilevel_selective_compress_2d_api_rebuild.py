@@ -394,7 +394,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                             else:
 
                                 pred=(array[x][y-step]+array[x][y+step]+array[x-step][y]+array[x+step][y])*0.25
-                        elif x==0 or x+step>=last_x:
+                        elif x==0 or x+step<=last_x:
                             pred=(array[x][y-step]+array[x][y+step])*0.5
                         else:
                             pred=(array[x-step][y]+array[x+step][y])*0.5
