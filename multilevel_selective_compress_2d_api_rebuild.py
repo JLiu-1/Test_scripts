@@ -909,7 +909,7 @@ if __name__=="__main__":
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--error','-e',type=float,default=1e-triplestep)
+    parser.add_argument('--error','-e',type=float,default=1e-3)
     parser.add_argument('--input','-i',type=str)
     parser.add_argument('--output','-o',type=str)
     parser.add_argument('--quant','-q',type=str,default="ml2_q.dat")
