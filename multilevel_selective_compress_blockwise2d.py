@@ -47,23 +47,21 @@ parser.add_argument('--input','-i',type=str)
 parser.add_argument('--output','-o',type=str)
 parser.add_argument('--quant','-q',type=str,default="ml2_q.dat")
 parser.add_argument('--unpred','-u',type=str,default="ml2_u.dat")
-parser.add_argument('--max_step','-s',type=int,default=64)
+parser.add_argument('--max_step','-s',type=int,default=-1)
 parser.add_argument('--min_coeff_level','-cl',type=int,default=99)
 parser.add_argument('--rate','-r',type=float,default=1.0)
+parser.add_argument('--rlist',type=float,default=-1,nargs="+")
 parser.add_argument('--maximum_rate','-m',type=float,default=10.0)
-parser.add_argument('--rlist',type=float,default=0.0,nargs="+")
 #parser.add_argument('--cubic','-c',type=int,default=1)
-parser.add_argument('--multidim','-d',type=int,default=1)
-parser.add_argument('--lorenzo_level','-l',type=int,default=0)
-parser.add_argument('--lorenzo_sample_ratio','-p',type=float,default=0.05)
-#parser.add_argument('--level_rate','-lr',type=float,default=1.0)
+parser.add_argument('--multidim_level','-d',type=int,default=99)
+parser.add_argument('--lorenzo_fallback_check','-l',type=int,default=-1)
+parser.add_argument('--fallback_sample_ratio','-p',type=float,default=0.05)
 parser.add_argument('--anchor_rate','-a',type=float,default=0.0)
 
 parser.add_argument('--size_x','-x',type=int,default=1800)
 parser.add_argument('--size_y','-y',type=int,default=3600)
-#parser.add_argument('--level','-l',type=int,default=2)
-#parser.add_argument('--noise','-n',type=bool,default=False)
-#parser.add_argument('--intercept','-t',type=bool,default=False)
+parser.add_argument('--sz_interp','-n',type=int,default=0)
+parser.add_argument('--fix','-f',type=str,default="none")
 args = parser.parse_args()
 
 size_x=args.size_x
@@ -166,7 +164,8 @@ for x_start in range(0,last_x,max_step):
         y_end=size_y-1 if y_start==last_y-max_step else y_start+max_step 
         array[x_start:x_end+1,y_start:y_end+1],cur_qs,cur_lorenzo_qs,cur_us,cur_selected=\
         msc2d(array[x_start:x_end+1,y_start:y_end+1],error_bound,rate,maximum_rate,min_coeff_level,max_step,anchor_rate,\
-            rate_list=rate_list, x_preded=(x_start>0),y_preded=(y_start>0),multidim=args.multidim,lorenzo=lorenzo_level,sample_rate=lorenzo_sample_ratio)
+            rate_list=rate_list,sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=args.lorenzo_fallback_check,\
+            sample_rate=args.fallback_sample_ratio,min_sampled_points=10,x_preded=(x_start>0),y_preded=(y_start>0),random_acess=False,fix_algo=args.fix)
 
         for i in range(max_level+1):
             #print(len(cur_qs[i]))
@@ -174,8 +173,8 @@ for x_start in range(0,last_x,max_step):
 
         us+=cur_us
         lorenzo_qs+=cur_lorenzo_qs
-        if "lorenzo" in cur_selected[-1]:
-            print(x_start,y_start)
+        #if "lorenzo" in cur_selected[-1]:
+            #print(x_start,y_start)
 
 
 
