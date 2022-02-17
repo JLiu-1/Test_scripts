@@ -173,7 +173,10 @@ for x_start in range(0,last_x,max_step):
             qs[i]+=cur_qs[i]
 
         us+=cur_us
+        print("lor")
+        print(len(cur_lorenzo_qs))
         lorenzo_qs+=cur_lorenzo_qs
+
         #if "lorenzo" in cur_selected[-1]:
             #print(x_start,y_start)
 
