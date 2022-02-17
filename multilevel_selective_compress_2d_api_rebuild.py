@@ -213,7 +213,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                             cur_us.append(decomp)
                     #absloss+=abs(decomp)
                         array[x][y]=decomp
-                print(np.max(np.abs(orig_array-array)))
+                #print(np.max(np.abs(orig_array-array)))
                 best_preds=np.copy(array[x_start:last_x+1:step,y_start:last_y+1:step])
                 best_absloss=absloss
                 best_qs=cur_qs.copy()
