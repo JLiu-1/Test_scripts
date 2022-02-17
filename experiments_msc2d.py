@@ -19,7 +19,7 @@ parser.add_argument('--size_x','-x',type=int,default=1800)
 parser.add_argument('--size_y','-y',type=int,default=3600)
 parser.add_argument('--fix','-f',type=str,default="none")
 parser.add_argument('--blockwise','-b',type=int,default=0)
-parser.add_argument('--fullbound','-f',type=int,default=0)
+parser.add_argument('--fullbound','-u',type=int,default=0)
 args = parser.parse_args()
 pid=str(os.getpid()).strip()
 dout="%s_d.dat" %pid 
