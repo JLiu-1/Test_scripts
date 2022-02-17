@@ -930,8 +930,8 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
     offset_y1=1 if y_preded else 0
     offset_x2=1 if random_access else 0
     offset_y2=1 if random_access else 0
-    lorenzo_2d(array,offset_x1,last_x+1,last_y+1,y_end-offset_y2)
-    lorenzo_2d(array,last_x+1,x_end-offset_x2,offset_y1,y_end-offset_y2)
+    lorenzo_2d(array,x_start+offset_x1,last_x+1,last_y+1,y_end-offset_y2)
+    lorenzo_2d(array,last_x+1,x_end-offset_x2,y_start+offset_y1,y_end-offset_y2)
     return qs,edge_qs,us,selected_algos
 
 
