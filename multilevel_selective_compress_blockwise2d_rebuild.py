@@ -169,7 +169,7 @@ for x_start in range(0,last_x,max_step):
             sample_rate=args.fallback_sample_ratio,min_sampled_points=10,x_preded=(x_start>0),y_preded=(y_start>0),random_access=False,fix_algo=args.fix)
         
         for i in range(max_level+1):
-            #print(len(cur_qs[i]))
+            print(len(cur_qs[i]))
             qs[i]+=cur_qs[i]
 
         us+=cur_us
