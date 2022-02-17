@@ -682,7 +682,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                 absloss=0
                 cur_qs=[]
                 cur_us=[]
-                array=np.copy(array)#reset array
+                array[x_start:last_x+1:step,y_start:last_y+1:step]=array_slice#reset array
                 if level>=min_coeff_level:
                     reg_xs=[]
                     reg_ys=[]
