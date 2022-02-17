@@ -35,54 +35,53 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
         anchor_eb=error_bound/anchor_rate
     else:
         anchor_eb=0
-    if max_step>0 and (first_level==None or max_level==first_level+1):
+    if max_step>0 and (first_level==None or max_level==first_level+1) and anchor_rate>0:
     
-    #anchor_rate=args.anchor_rate
+   
         
-            if verbose:
-                print("Anchor eb:%f" % anchor_eb)
+        if verbose:
+            print("Anchor eb:%f" % anchor_eb)
 
-            if max_level>=min_coeff_level:
-                reg_xs=[]
-                reg_ys=[]
-                for x in range(x_start+max_step,x_end,max_step):
-                    for y in range(y_start,max_step,y_end,max_step):
-                        reg_xs.append(np.array([array[x-max_step][y-max_step],array[x-max_step][y],array[x][y-max_step]],dtype=np.float64))
-                        reg_ys.append(array[x][y])
-                        res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
-                        coef=res.coef_ 
-                        ince=res.intercept_
+        if max_level>=min_coeff_level:
+            reg_xs=[]
+            reg_ys=[]
+            for x in range(x_start+max_step,x_end,max_step):
+                for y in range(y_start,max_step,y_end,max_step):
+                    reg_xs.append(np.array([array[x-max_step][y-max_step],array[x-max_step][y],array[x][y-max_step]],dtype=np.float64))
+                    reg_ys.append(array[x][y])
+                    res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
+                    coef=res.coef_ 
+                    ince=res.intercept_
 
         
-            startx=max_step if x_preded else 0
-            starty=max_step if y_preded else 0
-
-            for x in range(x_start+startx,x_end,max_step):
-                for y in range(y_start+starty,y_end,max_step):
-                    orig=array[x][y]
-                    if x and y and max_level>=min_coeff_level:
-                        reg_block=np.array([array[x-max_step][y-max_step],array[x-max_step][y],array[x][y-max_step]],dtype=np.float64)
-                        pred=np.dot(reg_block,coef)+ince
+        startx=max_step if x_preded else 0
+        starty=max_step if y_preded else 0
+        
+        for x in range(x_start+startx,x_end,max_step):
+            for y in range(y_start+starty,y_end,max_step):
+                orig=array[x][y]
+                if x and y and max_level>=min_coeff_level:
+                    reg_block=np.array([array[x-max_step][y-max_step],array[x-max_step][y],array[x][y-max_step]],dtype=np.float64)
+                    pred=np.dot(reg_block,coef)+ince
 
             
                 
-                    else:
-                        f_01=array[x-max_step][y] if x else 0
-                        f_10=array[x][y-max_step] if y else 0
+                else:
+                    f_01=array[x-max_step][y] if x else 0
+                    f_10=array[x][y-max_step] if y else 0
             
-                        f_00=array[x-max_step][y-max_step] if x and y else 0
+                    f_00=array[x-max_step][y-max_step] if x and y else 0
                 
-                        pred=f_01+f_10-f_00
+                    pred=f_01+f_10-f_00
                 
         
                 
-                    q,decomp=quantize(orig,pred,anchor_eb)
-                    qs[max_level].append(q)
-                    if q==0:
-                        us.append(decomp)
-                    array[x][y]=decomp
-        else:
-            anchor_eb=0
+                q,decomp=quantize(orig,pred,anchor_eb)
+                qs[max_level].append(q)
+                if q==0:
+                    us.append(decomp)
+                array[x][y]=decomp
+        
     else:
         pass#raise error
 #print(len(qs))
