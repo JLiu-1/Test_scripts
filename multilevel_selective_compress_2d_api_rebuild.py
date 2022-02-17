@@ -122,7 +122,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
         selected_algo="none"
         if level<=multidim_level or not sz3_interp or fix_algo in ["linear","cubic","multidim"]:
             if fix_algo=="none" or fix_algo=="linear":
-                tt=time.time()
+                #tt=time.time()
                 if level>=min_coeff_level:
                     reg_xs=[]
                     reg_ys=[]
@@ -220,7 +220,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                 best_qs=cur_qs.copy()
                 best_us=cur_us.copy()
                 selected_algo="interp_linear"
-                print(time.time()-tt)
+                #print(time.time()-tt)
 
 
         #print(len(cur_qs))
@@ -231,7 +231,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
             #if cubic:
             #print("cubic")
             if fix_algo=="none" or fix_algo=="cubic":
-                tt=time.time()
+                #tt=time.time()
                 absloss=0
                 cur_qs=[]
                 cur_us=[]
@@ -338,11 +338,11 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                     best_absloss=absloss
                     best_qs=cur_qs.copy()
                     best_us=cur_us.copy()
-                print(time.time()-tt)
+                #print(time.time()-tt)
 
         #multidim
             if fix_algo=="none" or fix_algo=="multidim":
-                tt=time.time()
+                #tt=time.time()
                 absloss=0
                 cur_qs=[]
                 cur_us=[]
@@ -424,14 +424,14 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                     best_absloss=absloss
                     best_qs=cur_qs.copy()
                     best_us=cur_us.copy()
-                print(time.time()-tt)
+                #print(time.time()-tt)
         #sz3 pure 1D interp,linear and cubic, 2 directions.
         if sz3_interp or fix_algo in ["sz3_linear","sz3_cubic"]:
             #linear
             #y then x
             #print("testing sz3 interp") 
             if fix_algo=="none" or fix_algo=="sz3_linear":
-                tt=time.time()
+                #tt=time.time()
                 absloss=0
                 cur_qs=[]
                 cur_us=[]
@@ -508,11 +508,11 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                     best_qs=cur_qs.copy()
                     best_us=cur_us.copy()
                     selected_algo="interp_sz3linear_yx"
-                print(time.time()-tt)
+                #print(time.time()-tt)
 
         
             #x then y 
-                tt=time.time()
+                #tt=time.time()
                 absloss=0
                 cur_qs=[]
                 cur_us=[]
@@ -589,12 +589,12 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                     best_qs=cur_qs.copy()
                     best_us=cur_us.copy()
                     selected_algo="interp_sz3linear_xy"
-                print(time.time()-tt)
+                #print(time.time()-tt)
 
             #cubic interp
             #yx
             if fix_algo=="none" or fix_algo=="sz3_cubic":
-                tt=time.time()
+                #tt=time.time()
                 absloss=0
                 cur_qs=[]
                 cur_us=[]
@@ -687,11 +687,11 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                     best_absloss=absloss
                     best_qs=cur_qs.copy()
                     best_us=cur_us.copy()
-                print(time.time()-tt)
+                #print(time.time()-tt)
 
 
                 #xy 
-                tt=time.time()
+                #tt=time.time()
                 absloss=0
                 cur_qs=[]
                 cur_us=[]
@@ -779,7 +779,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                     best_absloss=absloss
                     best_qs=cur_qs.copy()
                     best_us=cur_us.copy()
-                print(time.time()-tt)
+                #print(time.time()-tt)
 
 
 

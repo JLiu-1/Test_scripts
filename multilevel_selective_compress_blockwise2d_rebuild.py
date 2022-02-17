@@ -166,7 +166,7 @@ for x_start in range(0,last_x,max_step):
         cur_qs,cur_lorenzo_qs,cur_us,cur_selected=\
         msc2d(array,x_start,x_end+1,y_start,y_end+1,error_bound,rate,maximum_rate,min_coeff_level,max_step,anchor_rate,\
             rate_list=rate_list,sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=args.lorenzo_fallback_check,\
-            sample_rate=args.fallback_sample_ratio,min_sampled_points=10,x_preded=(x_start>0),y_preded=(y_start>0),random_access=False,verbose=True,fix_algo=args.fix)
+            sample_rate=args.fallback_sample_ratio,min_sampled_points=10,x_preded=(x_start>0),y_preded=(y_start>0),random_access=False,fix_algo=args.fix)
         
         for i in range(max_level+1):
             #print(len(cur_qs[i]))
