@@ -8,7 +8,7 @@ from sklearn.linear_model import LinearRegression
 import math
 import random
 from utils import *
-
+import time
 def msc2d(array,error_bound,rate,maximum_rate,min_coeff_level,max_step,anchor_rate,rate_list=None,x_preded=False,y_preded=False,sz3_interp=False,multidim_level=10,lorenzo=-1,\
 sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_algo="none",min_level=0):#lorenzo:only check lorenzo fallback with level no larger than lorenzo level
 
@@ -114,6 +114,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
         selected_algo="none"
         if level<=multidim_level or not sz3_interp or fix_algo in ["linear","cubic","multidim"]:
             if fix_algo=="none" or fix_algo=="linear":
+                tt=time.time()
                 if level>=min_coeff_level:
                     reg_xs=[]
                     reg_ys=[]
@@ -211,6 +212,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                 best_qs=cur_qs.copy()
                 best_us=cur_us.copy()
                 selected_algo="interp_linear"
+                print(time.time()-tt)
 
         #print(len(cur_qs))
 
