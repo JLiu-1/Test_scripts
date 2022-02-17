@@ -195,7 +195,7 @@ elif args.order=="level":
     blocked_us=[[] for i in range(num_blocks)]
     max_level=int(math.log(args.max_step,2))
 
-    for level in range(max_level-1,0,-1):
+    for level in range(max_level-1,-1,-1):
         idx=0
 
         for x_start in range(0,last_x,max_step):
