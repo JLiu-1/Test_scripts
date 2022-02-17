@@ -197,6 +197,7 @@ elif args.order=="level":
 
     for level in range(max_level-1,0,-1):
         idx=0
+
         for x_start in range(0,last_x,max_step):
             for y_start in range(0,last_y,max_step):
                 
@@ -209,6 +210,7 @@ elif args.order=="level":
                     sample_rate=args.fallback_sample_ratio,min_sampled_points=10,x_preded=(x_start>0),y_preded=(y_start>0),random_access=False,fix_algo=args.fix,\
                     first_level=level,last_level=level,first_order="level")
                 if idx==0:
+                    print(level)
                     print(len(cur_qs[level]))
                 if "lorenzo" in cur_selected[-1]:
                     blocked_qs[idx]=[ [] for i in range(max_level+1)]
