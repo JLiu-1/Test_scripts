@@ -2,6 +2,7 @@ import os
 import numpy as np
 
 import argparse
+import math
 parser = argparse.ArgumentParser()
 
 parser.add_argument('--input','-i',type=str)
@@ -37,8 +38,10 @@ data=np.zeros((len(ebs)+1,2,2),dtype=np.float32)
 for i in range(2):
     data[1:,0,i]=ebs
     #data[0,1:,i]=idxrange
-if args.blockwise:
+if args.blockwise==1:
     script_name="multilevel_selective_compress_blockwise2d.py"
+elif args.blockwise==2:
+    script_name="multilevel_selective_compress_blockwise2d_rebuild.py"
 else:
     script_name="multilevel_selective_compress_2d_api.py"
 for i,eb in enumerate(ebs):
@@ -52,6 +55,8 @@ for i,eb in enumerate(ebs):
 		if args.anchor_rate==0:
 			anchor_ratio=1/(args.max_step**2)
 			cr=1/((1-anchor_ratio)/cr+anchor_ratio/2)
+            if args.blockwise>0:
+                cr=1/(1/cr+3*math.log(args.max_step,2)/( 2*32*(args.max_step**2)) )
 	command3="compareData -f %s %s" % (args.input,dout)
 	with os.popen(command3) as f:
 		lines=f.read().splitlines()
