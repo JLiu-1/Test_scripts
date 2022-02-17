@@ -168,13 +168,17 @@ for x_start in range(0,last_x,max_step):
             rate_list=rate_list,sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=args.lorenzo_fallback_check,\
             sample_rate=args.fallback_sample_ratio,min_sampled_points=10,x_preded=(x_start>0),y_preded=(y_start>0),random_access=False,fix_algo=args.fix)
         
-        for i in range(max_level+1):
-            print(len(cur_qs[i]))
-            qs[i]+=cur_qs[i]
+     
+        if (len(cur_qs[0])!=3072):
+
+            print(cur_qs)
+            #print(len(cur_qs[i]))
+            #qs[i]+=cur_qs[i]
 
         us+=cur_us
-        print("lor")
-        print(len(cur_lorenzo_qs))
+        if len(cur_lorenzo_qs)!=0:
+            print("lor")
+            print(len(cur_lorenzo_qs))
         lorenzo_qs+=cur_lorenzo_qs
 
         #if "lorenzo" in cur_selected[-1]:
