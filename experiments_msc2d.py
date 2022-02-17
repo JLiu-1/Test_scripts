@@ -42,6 +42,8 @@ if args.blockwise==1:
     script_name="multilevel_selective_compress_blockwise2d.py"
 elif args.blockwise==2:
     script_name="multilevel_selective_compress_blockwise2d_rebuild.py"
+elif args.blockwise==3:
+    script_name="multilevel_selective_compress_blockwise2d_rebuild.py --order level"    
 else:
     script_name="multilevel_selective_compress_2d_api.py"
 for i,eb in enumerate(ebs):
