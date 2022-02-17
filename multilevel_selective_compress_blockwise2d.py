@@ -160,6 +160,7 @@ lorenzo_sample_ratio=args.fallback_sample_ratio
 #currently no coeff and levelwise predictor selection.
 for x_start in range(0,last_x,max_step):
     for y_start in range(0,last_y,max_step):
+        print(x_start,y_start)
         x_end=size_x-1 if x_start==last_x-max_step else x_start+max_step 
         y_end=size_y-1 if y_start==last_y-max_step else y_start+max_step 
         array[x_start:x_end+1,y_start:y_end+1],cur_qs,cur_lorenzo_qs,cur_us,cur_selected=\
