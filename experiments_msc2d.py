@@ -45,10 +45,10 @@ elif args.blockwise==2:
 else:
     script_name="multilevel_selective_compress_2d_api.py"
 for i,eb in enumerate(ebs):
-	command1="python %s -i %s -o %s -q %s -u %s -s %d -r %f -m %f -x %d -y %d -e %f -cl %d -a %f -d %d -n %d --rlist %s -f %s"\
-	% (script_name,args.input, dout,qout,uout,args.max_step,args.rate,args.maximum_rate,args.size_x,args.size_y,eb,args.min_coeff_level,args.anchor_rate,args.multidim_level,args.sz_interp,rlist,args.fix)
-	os.system(command1)
-	command2="sz_backend %s %s " % (qout,uout)
+    command1="python %s -i %s -o %s -q %s -u %s -s %d -r %f -m %f -x %d -y %d -e %f -cl %d -a %f -d %d -n %d --rlist %s -f %s"\
+    % (script_name,args.input, dout,qout,uout,args.max_step,args.rate,args.maximum_rate,args.size_x,args.size_y,eb,args.min_coeff_level,args.anchor_rate,args.multidim_level,args.sz_interp,rlist,args.fix)
+    os.system(command1)
+    command2="sz_backend %s %s " % (qout,uout)
     with os.popen(command2) as f:
         lines=f.read().splitlines()
         cr=eval(lines[4].split("=")[-1])
@@ -57,16 +57,15 @@ for i,eb in enumerate(ebs):
             cr=1/((1-anchor_ratio)/cr+anchor_ratio/2)
         if args.blockwise>0:
             cr=1/(1/cr+3*math.log(args.max_step,2)/( 2*32*(args.max_step**2)) )
-	command3="compareData -f %s %s" % (args.input,dout)
-	with os.popen(command3) as f:
+    command3="compareData -f %s %s" % (args.input,dout)
+    with os.popen(command3) as f:
         lines=f.read().splitlines()
         psnr=eval(lines[6].split(',')[0].split('=')[1])
     
-	data[i+1][1][0]=cr
-	data[i+1][1][1]=psnr
-	command4="rm -f %s;rm -f %s;rm -f %s" % (dout,qout,uout)
-
-	os.system(command4)
+    data[i+1][1][0]=cr
+    data[i+1][1][1]=psnr
+    command4="rm -f %s;rm -f %s;rm -f %s" % (dout,qout,uout)
+    os.system(command4)
 
 
 np.savetxt("%s_final_cr.txt" % args.output,data[:,:,0],delimiter='\t')
