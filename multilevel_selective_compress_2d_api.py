@@ -31,11 +31,14 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
     edge_qs=[]
 #min_coeff_level=args.min_coeff_level
 #anchor=args.anchor
+    if anchor_rate>0:
+        anchor_eb=error_bound/anchor_rate
+    else:
+        anchor_eb=0
     if max_step>0:
     
     #anchor_rate=args.anchor_rate
-        if anchor_rate>0:
-            anchor_eb=error_bound/anchor_rate
+        
             if verbose:
                 print("Anchor eb:%f" % anchor_eb)
 
