@@ -209,9 +209,9 @@ elif args.order=="level":
                     rate_list=rate_list,sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=args.lorenzo_fallback_check,\
                     sample_rate=args.fallback_sample_ratio,min_sampled_points=10,x_preded=(x_start>0),y_preded=(y_start>0),random_access=False,fix_algo=args.fix,\
                     first_level=level,last_level=level,first_order="level")
-                if idx==0:
-                    print(level)
-                    print(len(cur_qs[level]))
+                #if idx==0:
+                    #print(level)
+                    #print(len(cur_qs[level]))
                 if "lorenzo" in cur_selected[-1]:
                     blocked_qs[idx]=[ [] for i in range(max_level+1)]
                     blocked_us[idx]=[]
