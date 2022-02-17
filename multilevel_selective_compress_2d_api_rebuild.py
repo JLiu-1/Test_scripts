@@ -328,7 +328,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                             cur_us.append(decomp)
                             #absloss+=abs(decomp)
                         array[x][y]=decomp
-                print(np.max(np.abs(orig_array-array)))
+                #print(np.max(np.abs(orig_array-array)))
                 if selected_algo=="none" or absloss<best_absloss:
                     selected_algo="interp_cubic"
                     best_preds=np.copy(array[x_start:last_x+1:step,y_start:last_y+1:step])
@@ -412,7 +412,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                             cur_us.append(decomp)
                     #absloss+=abs(decomp)
                         array[x][y]=decomp
-                print(np.max(np.abs(orig_array-array)))
+                #print(np.max(np.abs(orig_array-array)))
                 if selected_algo=="none" or absloss<best_absloss:
                     selected_algo="interp_fullmultidim"
                     best_preds=np.copy(array[x_start:last_x+1:step,y_start:last_y+1:step])
@@ -493,7 +493,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                             cur_us.append(decomp)
                         #absloss+=abs(decomp)
                         array[x][y]=decomp
-                print(np.max(np.abs(orig_array-array)))
+                #print(np.max(np.abs(orig_array-array)))
                 if selected_algo=="none" or absloss<best_absloss:
 
                     best_preds=np.copy(array[x_start:last_x+1:step,y_start:last_y+1:step])
@@ -572,7 +572,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                             cur_us.append(decomp)
                         #absloss+=abs(decomp)
                         array[x][y]=decomp
-                print(np.max(np.abs(orig_array-array)))
+                #print(np.max(np.abs(orig_array-array)))
                 if absloss<best_absloss:
 
                     best_preds=np.copy(array[x_start:last_x+1:step,y_start:last_y+1:step])
@@ -669,7 +669,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                         array[x][y]=decomp
 
 
-                print(np.max(np.abs(orig_array-array)))
+                #print(np.max(np.abs(orig_array-array)))
                 if selected_algo=="none" or absloss<best_absloss:
                     selected_algo="sz3interp_cubic_yx"
                     best_preds=np.copy(array[x_start:last_x+1:step,y_start:last_y+1:step])
@@ -758,7 +758,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                             #absloss+=abs(decomp)
                         array[x][y]=decomp
 
-                print(np.max(np.abs(orig_array-array)))
+                #print(np.max(np.abs(orig_array-array)))
             
                 if selected_algo=="none" or absloss<best_absloss:
                     selected_algo="sz3interp_cubic_xy"
@@ -855,7 +855,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                             best_us.append(decomp)
                 #absloss+=abs(decomp)
                         array[x][y]=decomp
-                print(np.max(np.abs(orig_array-array)))
+                #print(np.max(np.abs(orig_array-array)))
             
 
         #print(len(best_qs))
@@ -883,7 +883,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
         #print(len(qs))
         if verbose:
             print ("Level %d finished. Selected algorithm: %s. Mean prediction abs loss: %f." % (level,selected_algo,mean_l1_loss))
-        print(np.max(np.abs(orig_array-array)))
+        #print(np.max(np.abs(orig_array-array)))
         step=step//2
         level-=1
         #print(sum([len(_) for _ in qs] ))
