@@ -49,11 +49,11 @@ for i,eb in enumerate(ebs):
 	% (script_name,args.input, dout,qout,uout,args.max_step,args.rate,args.maximum_rate,args.size_x,args.size_y,eb,args.min_coeff_level,args.anchor_rate,args.multidim_level,args.sz_interp,rlist,args.fix)
 	os.system(command1)
 	command2="sz_backend %s %s " % (qout,uout)
-	with os.popen(command2) as f:
+    with os.popen(command2) as f:
 		lines=f.read().splitlines()
 		cr=eval(lines[4].split("=")[-1])
 		if args.anchor_rate==0:
-			anchor_ratio=1/(args.max_step**2)
+            anchor_ratio=1/(args.max_step**2)
             cr=1/((1-anchor_ratio)/cr+anchor_ratio/2)
         if args.blockwise>0:
             cr=1/(1/cr+3*math.log(args.max_step,2)/( 2*32*(args.max_step**2)) )
