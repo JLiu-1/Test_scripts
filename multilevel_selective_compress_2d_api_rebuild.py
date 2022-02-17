@@ -231,7 +231,8 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                 absloss=0
                 cur_qs=[]
                 cur_us=[]
-                array[x_start:last_x+1:step,y_start:last_y+1:step]=array_slice#reset array
+                if selected_algo!=None:
+                    array[x_start:last_x+1:step,y_start:last_y+1:step]=array_slice#reset array
                 if level>=min_coeff_level:
                     reg_xs=[]
                     reg_ys=[]
@@ -338,7 +339,8 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                 absloss=0
                 cur_qs=[]
                 cur_us=[]
-                array[x_start:last_x+1:step,y_start:last_y+1:step]=array_slice#reset array
+                if selected_algo!=None:
+                    array[x_start:last_x+1:step,y_start:last_y+1:step]=array_slice#reset array
                 if level>=min_coeff_level:
                     md_reg_xs=[]
                     md_reg_ys=[]
@@ -423,7 +425,8 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                 absloss=0
                 cur_qs=[]
                 cur_us=[]
-                array[x_start:last_x+1:step,y_start:last_y+1:step]=array_slice#reset array
+                if selected_algo!=None:
+                    array[x_start:last_x+1:step,y_start:last_y+1:step]=array_slice#reset array
                 
                 if level>=min_coeff_level:
                     reg_xs=[]
@@ -501,6 +504,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                 absloss=0
                 cur_qs=[]
                 cur_us=[]
+
                 array[x_start:last_x+1:step,y_start:last_y+1:step]=array_slice#reset array
                 
                 if level>=min_coeff_level:
@@ -580,7 +584,8 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                 absloss=0
                 cur_qs=[]
                 cur_us=[]
-                array[x_start:last_x+1:step,y_start:last_y+1:step]=array_slice#reset array
+                if selected_algo!=None:
+                    array[x_start:last_x+1:step,y_start:last_y+1:step]=array_slice#reset array
                 if level>=min_coeff_level:
                     reg_xs=[]
                     reg_ys=[]
@@ -874,6 +879,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
         #print(len(qs))
         if verbose:
             print ("Level %d finished. Selected algorithm: %s. Mean prediction abs loss: %f." % (level,selected_algo,mean_l1_loss))
+        print(np.max(np.abs(orig_array-array)))
         step=step//2
         level-=1
         #print(sum([len(_) for _ in qs] ))
