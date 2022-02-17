@@ -171,7 +171,7 @@ for x_start in range(0,last_x,max_step):
      
         if (len(cur_qs[0])!=3072):
 
-            print(cur_qs)
+            print(len(cur_qs))
             #print(len(cur_qs[i]))
             #qs[i]+=cur_qs[i]
 
