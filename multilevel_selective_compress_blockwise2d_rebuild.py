@@ -169,11 +169,15 @@ for x_start in range(0,last_x,max_step):
             sample_rate=args.fallback_sample_ratio,min_sampled_points=10,x_preded=(x_start>0),y_preded=(y_start>0),random_access=False,fix_algo=args.fix)
         
      
-        if (len(cur_qs[0])!=3072):
+        
 
-            print(len(cur_qs))
-            #print(len(cur_qs[i]))
-            #qs[i]+=cur_qs[i]
+        for i in range(len(cur_qs)):
+            pr=False
+            if (i==0 and len(cur_qs[0])!=3072):
+                pr=True
+            if pr:
+                print(len(cur_qs[i]))
+            qs[i]+=cur_qs[i]
 
         us+=cur_us
         if len(cur_lorenzo_qs)!=0:
