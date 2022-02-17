@@ -213,12 +213,13 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                             cur_us.append(decomp)
                     #absloss+=abs(decomp)
                         array[x][y]=decomp
-
+                print(np.max(np.abs(orig_array-array)))
                 best_preds=np.copy(array[x_start:last_x+1:step,y_start:last_y+1:step])
                 best_absloss=absloss
                 best_qs=cur_qs.copy()
                 best_us=cur_us.copy()
                 selected_algo="interp_linear"
+
 
         #print(len(cur_qs))
 
@@ -327,6 +328,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                             cur_us.append(decomp)
                             #absloss+=abs(decomp)
                         array[x][y]=decomp
+                print(np.max(np.abs(orig_array-array)))
                 if selected_algo=="none" or absloss<best_absloss:
                     selected_algo="interp_cubic"
                     best_preds=np.copy(array[x_start:last_x+1:step,y_start:last_y+1:step])
@@ -410,6 +412,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                             cur_us.append(decomp)
                     #absloss+=abs(decomp)
                         array[x][y]=decomp
+                print(np.max(np.abs(orig_array-array)))
                 if selected_algo=="none" or absloss<best_absloss:
                     selected_algo="interp_fullmultidim"
                     best_preds=np.copy(array[x_start:last_x+1:step,y_start:last_y+1:step])
@@ -490,7 +493,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                             cur_us.append(decomp)
                         #absloss+=abs(decomp)
                         array[x][y]=decomp
-
+                print(np.max(np.abs(orig_array-array)))
                 if selected_algo=="none" or absloss<best_absloss:
 
                     best_preds=np.copy(array[x_start:last_x+1:step,y_start:last_y+1:step])
@@ -569,7 +572,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                             cur_us.append(decomp)
                         #absloss+=abs(decomp)
                         array[x][y]=decomp
-
+                print(np.max(np.abs(orig_array-array)))
                 if absloss<best_absloss:
 
                     best_preds=np.copy(array[x_start:last_x+1:step,y_start:last_y+1:step])
@@ -666,7 +669,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                         array[x][y]=decomp
 
 
-            
+                print(np.max(np.abs(orig_array-array)))
                 if selected_algo=="none" or absloss<best_absloss:
                     selected_algo="sz3interp_cubic_yx"
                     best_preds=np.copy(array[x_start:last_x+1:step,y_start:last_y+1:step])
@@ -755,7 +758,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                             #absloss+=abs(decomp)
                         array[x][y]=decomp
 
-
+                print(np.max(np.abs(orig_array-array)))
             
                 if selected_algo=="none" or absloss<best_absloss:
                     selected_algo="sz3interp_cubic_xy"
@@ -852,6 +855,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                             best_us.append(decomp)
                 #absloss+=abs(decomp)
                         array[x][y]=decomp
+                print(np.max(np.abs(orig_array-array)))
             
 
         #print(len(best_qs))
