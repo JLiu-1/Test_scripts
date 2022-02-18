@@ -1554,7 +1554,7 @@ if __name__=="__main__":
                     for k in range(0,block_num_z,steplength):
                         x_start=max_step*i
                         y_start=max_step*j
-                        z_start=max_step*z
+                        z_start=max_step*k
                         x_end=x_start+max_step+1
                         y_end=y_start+max_step+1
                         z_end=z_start+max_step+1
@@ -1622,32 +1622,34 @@ if __name__=="__main__":
                 #print(themean)
                 for i in range(0,block_num_x,steplength):
                     for j in range(0,block_num_y,steplength):
-                      
-                        x_start=max_step*i
-                        y_start=max_step*j
-                        x_end=x_start+max_step+1
-                        y_end=y_start+max_step+1
-                        #print(x_start)
-                        #print(y_start)
-                        cur_array=np.copy(array[x_start:x_end,y_start:y_end,z_start:z_end])
-                        curmax=np.max(cur_array)
-                        curmin=np.min(cur_array)
-                        if curmax>themax:
-                            themax=curmax
-                        if curmin<themin:
-                            themin=curmin
-                        cur_array,cur_qs,edge_qs,cur_us,_=msc3d(cur_array,new_error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
-                                                sz_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo="none")
-                        #print(len(cur_qs[max_level]))
-                        #print(len(test_qs[max_level]))
-                        for level in range(max_level+1):
-                            #print(level)
-                            test_qs[level]+=cur_qs[level]
-                        test_us+=cur_us
-                        #zero_square_error=np.sum((array[x_start:x_end,y_start:y_end]-themean*np.ones((max_step+1,max_step+1)) )**2)
-                        square_error+=np.sum((array[x_start:x_end,y_start:y_end,z_start:z_end]-cur_array)**2)
-                        
-                        element_counts+=(max_step+1)**2 
+                        for k in range(0,block_num_z,steplength):
+                            x_start=max_step*i
+                            y_start=max_step*j
+                            z_start=max_step*k
+                            x_end=x_start+max_step+1
+                            y_end=y_start+max_step+1
+                            z_end=z_start+max_step+1
+                            #print(x_start)
+                            #print(y_start)
+                            cur_array=np.copy(array[x_start:x_end,y_start:y_end,z_start:z_end])
+                            curmax=np.max(cur_array)
+                            curmin=np.min(cur_array)
+                            if curmax>themax:
+                                themax=curmax
+                            if curmin<themin:
+                                themin=curmin
+                            cur_array,cur_qs,edge_qs,cur_us,_=msc3d(cur_array,new_error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
+                                                    sz_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo="none")
+                            #print(len(cur_qs[max_level]))
+                            #print(len(test_qs[max_level]))
+                            for level in range(max_level+1):
+                                #print(level)
+                                test_qs[level]+=cur_qs[level]
+                            test_us+=cur_us
+                            #zero_square_error=np.sum((array[x_start:x_end,y_start:y_end]-themean*np.ones((max_step+1,max_step+1)) )**2)
+                            square_error+=np.sum((array[x_start:x_end,y_start:y_end,z_start:z_end]-cur_array)**2)
+                            
+                            element_counts+=(max_step+1)**2 
                 t_mse=square_error/element_counts
                 #zero_mse=zero_square_error/element_counts
                 psnr_r=20*math.log(themax-themin,10)-10*math.log(t_mse,10)
