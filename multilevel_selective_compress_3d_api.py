@@ -31,60 +31,63 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
     edge_qs=[]
 #min_coeff_level=args.min_coeff_level
 #anchor=args.anchor
-    if max_step>0:
+    if anchor_rate>0:
+        anchor_eb=error_bound/anchor_rate
+    else:
+        anchor_eb=0
+    if max_step>0 and anchor_rate>0:
     
     #anchor_rate=args.anchor_rate
-        if anchor_rate>0:
-            anchor_eb=error_bound/anchor_rate
-            if verbose:
-                print("Anchor eb:%f" % anchor_eb)
+     
+        anchor_eb=error_bound/anchor_rate
+        if verbose:
+            print("Anchor eb:%f" % anchor_eb)
 
-            if max_level>=min_coeff_level :
-                reg_xs=[]
-                reg_ys=[]
-                for x in range(max_step,size_x,max_step):
-                    for y in range(max_step,size_y,max_step):
-                        for z in range(max_step,size_z,max_step):
-                            reg_xs.append(np.array(array[x-max_step:x+1,y-max_step:y+1,z-max_step:z+1][:7],dtype=np.float64))
-                            reg_ys.append(array[x][y][z])
-                            res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
-                            coef=res.coef_ 
-                            ince=res.intercept_
+        if max_level>=min_coeff_level :
+            reg_xs=[]
+            reg_ys=[]
+            for x in range(max_step,size_x,max_step):
+                for y in range(max_step,size_y,max_step):
+                    for z in range(max_step,size_z,max_step):
+                        reg_xs.append(np.array(array[x-max_step:x+1,y-max_step:y+1,z-max_step:z+1][:7],dtype=np.float64))
+                        reg_ys.append(array[x][y][z])
+                        res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
+                        coef=res.coef_ 
+                        ince=res.intercept_
 
  
-            startx=max_step if x_preded else 0
-            starty=max_step if y_preded else 0
-            startz=max_step if z_preded else 0
-            for x in range(startx,size_x,max_step):
-                for y in range(starty,size_y,max_step):
-                    for z in range(startz,size_y,max_step):
-                        orig=array[x][y][z]
-                        if x and y and z and max_level>=min_coeff_level:
-                            reg_block=array[x-max_step:x+1,y-max_step:y+1,z-max_step:z+1][:7]
-                            pred=np.dot(reg_block,coef)+ince
+        startx=max_step if x_preded else 0
+        starty=max_step if y_preded else 0
+        startz=max_step if z_preded else 0
+        for x in range(startx,size_x,max_step):
+            for y in range(starty,size_y,max_step):
+                for z in range(startz,size_y,max_step):
+                    orig=array[x][y][z]
+                    if x and y and z and max_level>=min_coeff_level:
+                        reg_block=array[x-max_step:x+1,y-max_step:y+1,z-max_step:z+1][:7]
+                        pred=np.dot(reg_block,coef)+ince
 
             
                 
-                        else:
-                            f_011=array[x-max_step][y][z] if x else 0
-                            f_101=array[x][y-max_step][z] if y else 0
-                            f_110=array[x][y][z-max_step] if z else 0
-                            f_001=array[x-max_step][y-max_step][z] if x and y else 0
-                            f_100=array[x][y-max_step][z-max_step] if y and z else 0
-                            f_010=array[x-max_step][y][z-max_step] if x and z else 0
-                            f_000=array[x-max_step][y-max_step][z-max_step] if x and y and z else 0
+                    else:
+                        f_011=array[x-max_step][y][z] if x else 0
+                        f_101=array[x][y-max_step][z] if y else 0
+                        f_110=array[x][y][z-max_step] if z else 0
+                        f_001=array[x-max_step][y-max_step][z] if x and y else 0
+                        f_100=array[x][y-max_step][z-max_step] if y and z else 0
+                        f_010=array[x-max_step][y][z-max_step] if x and z else 0
+                        f_000=array[x-max_step][y-max_step][z-max_step] if x and y and z else 0
                 
-                            pred=f_000+f_011+f_101+f_110-f_001-f_010-f_100
+                        pred=f_000+f_011+f_101+f_110-f_001-f_010-f_100
                 
         
                 
-                            q,decomp=quantize(orig,pred,anchor_eb)
-                            qs[max_level].append(q)
-                            if q==0:
-                                us.append(decomp)
-                            array[x][y][z]=decomp
-        else:
-            anchor_eb=0
+                        q,decomp=quantize(orig,pred,anchor_eb)
+                        qs[max_level].append(q)
+                        if q==0:
+                            us.append(decomp)
+                        array[x][y][z]=decomp
+       
     else:
         pass#raise error
 #print(len(qs))

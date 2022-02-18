@@ -31,55 +31,57 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
     edge_qs=[]
 #min_coeff_level=args.min_coeff_level
 #anchor=args.anchor
-    if max_step>0 and (first_level==None or max_level==first_level+1):
+    if anchor_rate>0:
+        anchor_eb=error_bound/anchor_rate
+    else:
+        anchor_eb=0
+    if max_step>0 and (first_level==None or max_level==first_level+1) and anchor_rate>0:
     
-    #anchor_rate=args.anchor_rate
-        if anchor_rate>0:
-            anchor_eb=error_bound/anchor_rate
-            if verbose:
-                print("Anchor eb:%f" % anchor_eb)
+   
+        
+        if verbose:
+            print("Anchor eb:%f" % anchor_eb)
 
-            if max_level>=min_coeff_level:
-                reg_xs=[]
-                reg_ys=[]
-                for x in range(x_start+max_step,x_end,max_step):
-                    for y in range(y_start,max_step,y_end,max_step):
-                        reg_xs.append(np.array([array[x-max_step][y-max_step],array[x-max_step][y],array[x][y-max_step]],dtype=np.float64))
-                        reg_ys.append(array[x][y])
-                        res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
-                        coef=res.coef_ 
-                        ince=res.intercept_
+        if max_level>=min_coeff_level:
+            reg_xs=[]
+            reg_ys=[]
+            for x in range(x_start+max_step,x_end,max_step):
+                for y in range(y_start,max_step,y_end,max_step):
+                    reg_xs.append(np.array([array[x-max_step][y-max_step],array[x-max_step][y],array[x][y-max_step]],dtype=np.float64))
+                    reg_ys.append(array[x][y])
+                    res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
+                    coef=res.coef_ 
+                    ince=res.intercept_
 
         
-            startx=max_step if x_preded else 0
-            starty=max_step if y_preded else 0
-
-            for x in range(x_start+startx,x_end,max_step):
-                for y in range(y_start+starty,y_end,max_step):
-                    orig=array[x][y]
-                    if x and y and max_level>=min_coeff_level:
-                        reg_block=np.array([array[x-max_step][y-max_step],array[x-max_step][y],array[x][y-max_step]],dtype=np.float64)
-                        pred=np.dot(reg_block,coef)+ince
+        startx=max_step if x_preded else 0
+        starty=max_step if y_preded else 0
+        
+        for x in range(x_start+startx,x_end,max_step):
+            for y in range(y_start+starty,y_end,max_step):
+                orig=array[x][y]
+                if x and y and max_level>=min_coeff_level:
+                    reg_block=np.array([array[x-max_step][y-max_step],array[x-max_step][y],array[x][y-max_step]],dtype=np.float64)
+                    pred=np.dot(reg_block,coef)+ince
 
             
                 
-                    else:
-                        f_01=array[x-max_step][y] if x else 0
-                        f_10=array[x][y-max_step] if y else 0
+                else:
+                    f_01=array[x-max_step][y] if x else 0
+                    f_10=array[x][y-max_step] if y else 0
             
-                        f_00=array[x-max_step][y-max_step] if x and y else 0
+                    f_00=array[x-max_step][y-max_step] if x and y else 0
                 
-                        pred=f_01+f_10-f_00
+                    pred=f_01+f_10-f_00
                 
         
                 
-                    q,decomp=quantize(orig,pred,anchor_eb)
-                    qs[max_level].append(q)
-                    if q==0:
-                        us.append(decomp)
-                    array[x][y]=decomp
-        else:
-            anchor_eb=0
+                q,decomp=quantize(orig,pred,anchor_eb)
+                qs[max_level].append(q)
+                if q==0:
+                    us.append(decomp)
+                array[x][y]=decomp
+        
     else:
         pass#raise error
 #print(len(qs))
@@ -90,13 +92,17 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
     global_last_y=((size_y-1)//max_step)*max_step
     step=max_step//2
     if first_level==None:
-        level=max_level-1
-    else:
-        level=first_level
+        first_level=max_level-1
+    level=max_level-1
+    
     #maxlevel_q_start=len(qs[max_level])
     u_start=len(us)
     cumulated_loss=0.0
     while level>=last_level:#step>0:
+        if level>first_level:
+            level-=1
+            step=step//2
+            continue
         cur_qs=[]
         cur_us=[]
         if rate_list!=None:
@@ -930,8 +936,9 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
     offset_y1=1 if y_preded else 0
     offset_x2=1 if random_access else 0
     offset_y2=1 if random_access else 0
-    lorenzo_2d(array,x_start+offset_x1,last_x+1,last_y+1,y_end-offset_y2)
-    lorenzo_2d(array,last_x+1,x_end-offset_x2,y_start+offset_y1,y_end-offset_y2)
+    if level==-1:
+        lorenzo_2d(array,x_start+offset_x1,last_x+1,last_y+1,y_end-offset_y2)
+        lorenzo_2d(array,last_x+1,x_end-offset_x2,y_start+offset_y1,y_end-offset_y2)
     return qs,edge_qs,us,selected_algos
 
 

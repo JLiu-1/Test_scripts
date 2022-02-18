@@ -62,6 +62,7 @@ parser.add_argument('--size_x','-x',type=int,default=1800)
 parser.add_argument('--size_y','-y',type=int,default=3600)
 parser.add_argument('--sz_interp','-n',type=int,default=0)
 parser.add_argument('--fix','-f',type=str,default="none")
+parser.add_argument('--order',type=str,default="block")
 args = parser.parse_args()
 
 size_x=args.size_x
@@ -158,35 +159,81 @@ last_y=((size_y-1)//max_step)*max_step
 lorenzo_level=args.lorenzo_fallback_check
 lorenzo_sample_ratio=args.fallback_sample_ratio
 #currently no coeff and levelwise predictor selection.
-for x_start in range(0,last_x,max_step):
-    for y_start in range(0,last_y,max_step):
-        x_end=size_x-1 if x_start==last_x-max_step else x_start+max_step 
-        y_end=size_y-1 if y_start==last_y-max_step else y_start+max_step 
-        print(x_start,y_start)
-        cur_qs,cur_lorenzo_qs,cur_us,cur_selected=\
-        msc2d(array,x_start,x_end+1,y_start,y_end+1,error_bound,rate,maximum_rate,min_coeff_level,max_step,anchor_rate,\
-            rate_list=rate_list,sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=args.lorenzo_fallback_check,\
-            sample_rate=args.fallback_sample_ratio,min_sampled_points=10,x_preded=(x_start>0),y_preded=(y_start>0),random_access=False,fix_algo=args.fix)
+if args.order=="block":
+    for x_start in range(0,last_x,max_step):
+        for y_start in range(0,last_y,max_step):
+            x_end=size_x-1 if x_start==last_x-max_step else x_start+max_step 
+            y_end=size_y-1 if y_start==last_y-max_step else y_start+max_step 
+            #print(x_start,y_start)
+            cur_qs,cur_lorenzo_qs,cur_us,cur_selected=\
+            msc2d(array,x_start,x_end+1,y_start,y_end+1,error_bound,rate,maximum_rate,min_coeff_level,max_step,anchor_rate,\
+                rate_list=rate_list,sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=args.lorenzo_fallback_check,\
+                sample_rate=args.fallback_sample_ratio,min_sampled_points=10,x_preded=(x_start>0),y_preded=(y_start>0),random_access=False,fix_algo=args.fix)
         
      
         #pr=False
 
-        for i in range(len(cur_qs)):
+            for i in range(len(cur_qs)):
             
             #if (i==0 and len(cur_qs[0])!=3072):
                 #pr=True
             #if pr:
                 #print(len(cur_qs[i]))
-            qs[i]+=cur_qs[i]
+                qs[i]+=cur_qs[i]
 
-        us+=cur_us
-        if len(cur_lorenzo_qs)!=0:
-            print("lor")
-            print(len(cur_lorenzo_qs))
-        lorenzo_qs+=cur_lorenzo_qs
+            us+=cur_us
+        #if len(cur_lorenzo_qs)!=0:
+        #    print("lor")
+        #    print(len(cur_lorenzo_qs))
+            lorenzo_qs+=cur_lorenzo_qs
 
         #if "lorenzo" in cur_selected[-1]:
             #print(x_start,y_start)
+elif args.order=="level":
+    num_blocks=((size_x-1)//max_step)*((size_y-1)//max_step)
+    blocked_qs=[[ [] for i in range(max_level+1)] for i in range(num_blocks)]
+    blocked_us=[[] for i in range(num_blocks)]
+    max_level=int(math.log(args.max_step,2))
+
+    for level in range(max_level-1,-1,-1):
+        idx=0
+
+        for x_start in range(0,last_x,max_step):
+            for y_start in range(0,last_y,max_step):
+                
+                x_end=size_x-1 if x_start==last_x-max_step else x_start+max_step 
+                y_end=size_y-1 if y_start==last_y-max_step else y_start+max_step 
+                #print(x_start,y_start)
+                cur_qs,cur_lorenzo_qs,cur_us,cur_selected=\
+                msc2d(array,x_start,x_end+1,y_start,y_end+1,error_bound,rate,maximum_rate,min_coeff_level,max_step,anchor_rate,\
+                    rate_list=rate_list,sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=args.lorenzo_fallback_check,\
+                    sample_rate=args.fallback_sample_ratio,min_sampled_points=10,x_preded=(x_start>0),y_preded=(y_start>0),random_access=False,fix_algo=args.fix,\
+                    first_level=level,last_level=level,first_order="level")
+                #if idx==0:
+                    #print(level)
+                    #print(len(cur_qs[level]))
+                if "lorenzo" in cur_selected[-1]:
+                    blocked_qs[idx]=[ [] for i in range(max_level+1)]
+                    blocked_us[idx]=[]
+                
+                    
+                blocked_qs[idx][level]=cur_qs[level]
+                blocked_us[idx]+=cur_us
+                if level==0:
+                    lorenzo_qs+=cur_lorenzo_qs
+
+                    
+
+
+
+                idx+=1
+    qs=[sum([blocked_qs[i][level] for i in range(num_blocks)],[]) for level in range(max_level+1)]
+    us=sum(blocked_us,[])
+
+
+
+else:
+    print("Wrong order.")
 
 
 
