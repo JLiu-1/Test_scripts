@@ -987,7 +987,7 @@ if __name__=="__main__":
         beta_list=[2,4,4,4,4]
         rate_list=None
         block_num_x=(args.size_x-1)//args.max_step
-        block_num_y=(args.size_x-1)//args.max_step
+        block_num_y=(args.size_y-1)//args.max_step
         steplength=int(math.sqrt(args.autotuning))
         bestalpha=1
         bestbeta=1
