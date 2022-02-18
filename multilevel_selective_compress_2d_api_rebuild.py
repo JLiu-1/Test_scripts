@@ -1025,8 +1025,8 @@ if __name__=="__main__":
                         themin=curmin
                     cur_qs,edge_qs,cur_us,_=msc2d(cur_array,0,max_step+1,0,max_step+1,error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
                                             sz3_interp=1,multidim_level=-1,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo="sz3_cubic")
-                    print(len(cur_qs[max_level]))
-                    print(len(test_qs[max_level]))
+                    #print(len(cur_qs[max_level]))
+                    #print(len(test_qs[max_level]))
                     for level in range(max_level+1):
                         #print(level)
                         test_qs[level]+=cur_qs[level]
@@ -1034,7 +1034,7 @@ if __name__=="__main__":
                     square_error+=np.sum((array[x_start:x_end,y_start:y_end]-cur_array)**2)
                     element_counts+=(max_step+1)**2 
             t_mse=square_error/element_counts
-            psnr=20*math.log(themax-themin,10)-10*log(mse,10)
+            psnr=20*math.log(themax-themin,10)-10*math.log(mse,10)
 
             np.array(sum(test_qs,[]),dtype=np.int32).tofile(tq_name)
             np.array(sum(test_us,[]),dtype=np.int32).tofile(tu_name)
