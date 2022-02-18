@@ -1003,6 +1003,7 @@ if __name__=="__main__":
             test_qs=[[] for i in range(max_level+1)]
             test_us=[]
             square_error=0
+            zero_square_error=0
             element_counts=0
             themax=-9999999999999
             themin=99999999999999
@@ -1031,11 +1032,16 @@ if __name__=="__main__":
                         #print(level)
                         test_qs[level]+=cur_qs[level]
                     test_us+=cur_us
+                    zero_square_error=np.sum((array[x_start:x_end,y_start:y_end]-np.zeros((max_step+1,max_step+1)))**2)
                     square_error+=np.sum((array[x_start:x_end,y_start:y_end]-cur_array)**2)
+                    zero
                     element_counts+=(max_step+1)**2 
             t_mse=square_error/element_counts
+            zero_mse=zero_square_error/element_counts
             psnr=20*math.log(themax-themin,10)-10*math.log(t_mse,10)
-
+            zero_psnr=20*math.log(themax-themin,10)-10*math.log(zero_mse,10)
+            print(zero_psnr)
+          
             np.array(sum(test_qs,[]),dtype=np.int32).tofile(tq_name)
             np.array(sum(test_us,[]),dtype=np.int32).tofile(tu_name)
             with os.popen("sz_backend %s %s" % (tq_name,tu_name)) as f:
@@ -1046,7 +1052,7 @@ if __name__=="__main__":
                     cr=1/((1-anchor_ratio)/cr+anchor_ratio/2)
                 bitrate=32/cr
             os.system("rm -f %s;rm -f %s" % (tq_name,tu_name))
-            pdb=(psnr-40)/bitrate
+            pdb=(psnr-zero_psnr)/bitrate
             if pdb>bestpdb:
                 bestalpha=alpha
                 bestbeta=beta
