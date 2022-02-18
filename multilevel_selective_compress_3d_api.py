@@ -1560,7 +1560,7 @@ if __name__=="__main__":
                         z_end=z_start+max_step+1
                         #print(x_start)
                         #print(y_start)
-                        cur_array=np.copy(array[x_start:x_end,y_start:y_end,z_start:z:end])
+                        cur_array=np.copy(array[x_start:x_end,y_start:y_end,z_start:z_end])
                         curmax=np.max(cur_array)
                         curmin=np.min(cur_array)
                         if curmax>themax:
