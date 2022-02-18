@@ -1034,7 +1034,7 @@ if __name__=="__main__":
                     test_us+=cur_us
                     zero_square_error=np.sum((array[x_start:x_end,y_start:y_end]-np.zeros((max_step+1,max_step+1)))**2)
                     square_error+=np.sum((array[x_start:x_end,y_start:y_end]-cur_array)**2)
-                    zero
+                    
                     element_counts+=(max_step+1)**2 
             t_mse=square_error/element_counts
             zero_mse=zero_square_error/element_counts
