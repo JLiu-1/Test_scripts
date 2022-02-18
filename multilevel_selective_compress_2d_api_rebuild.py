@@ -1039,7 +1039,7 @@ if __name__=="__main__":
                     anchor_ratio=1/(args.max_step**2)
                     cr=1/((1-anchor_ratio)/cr+anchor_ratio/2)
                 bitrate=32/cr
-            os.system("rm -f %s;rm -f %s" % (tq_name,tu_name))、
+            os.system("rm -f %s;rm -f %s" % (tq_name,tu_name))
             pdb=psnr/bitrate
             if pdb>bestpdb:
                 bestalpha=alpha
