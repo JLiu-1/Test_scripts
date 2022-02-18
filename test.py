@@ -26,7 +26,7 @@ for x in range(3,lastx+1):
 
 b=ave_error/count
 print(b)
-k=9/16
+k=(9/8)*math.sqrt(2/math.pi)/3
 rng=np.max(a)-np.min(a)
 e=rng*reb
 print(math.sqrt(5*k*e/b))
