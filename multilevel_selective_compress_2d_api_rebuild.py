@@ -1014,8 +1014,8 @@ if __name__=="__main__":
                     y_start=max_step*j
                     x_end=x_start+max_step+1
                     y_end=y_start+max_step+1
-                    print(x_start)
-                    print(y_start)
+                    #print(x_start)
+                    #print(y_start)
                     cur_array=np.copy(array[x_start:x_end,y_start:y_end])
                     curmax=np.max(cur_array)
                     curmin=np.min(cur_array)
