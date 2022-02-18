@@ -1034,7 +1034,7 @@ if __name__=="__main__":
                     square_error+=np.sum((array[x_start:x_end,y_start:y_end]-cur_array)**2)
                     element_counts+=(max_step+1)**2 
             t_mse=square_error/element_counts
-            psnr=20*math.log(themax-themin,10)-10*math.log(mse,10)
+            psnr=20*math.log(themax-themin,10)-10*math.log(t_mse,10)
 
             np.array(sum(test_qs,[]),dtype=np.int32).tofile(tq_name)
             np.array(sum(test_us,[]),dtype=np.int32).tofile(tu_name)
