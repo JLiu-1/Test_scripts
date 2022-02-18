@@ -1029,7 +1029,7 @@ if __name__=="__main__":
                     print(len(test_qs[max_level]))
                     for level in range(max_level+1):
                         #print(level)
-                        test_qs[level]+=cur_qs[i]
+                        test_qs[level]+=cur_qs[level]
                     test_us+=cur_us
                     square_error+=np.sum((array[x_start:x_end,y_start:y_end]-cur_array)**2)
                     element_counts+=(max_step+1)**2 
