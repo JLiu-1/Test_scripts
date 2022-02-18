@@ -1009,11 +1009,13 @@ if __name__=="__main__":
            
             for i in range(0,block_num_x,steplength):
                 for j in range(0,block_num_y,steplength):
-
+                  
                     x_start=max_step*i
                     y_start=max_step*j
                     x_end=x_start+max_step+1
                     y_end=y_start+max_step+1
+                    print(x_start)
+                    print(y_start)
                     cur_array=np.copy(array[x_start:x_end,y_start:y_end])
                     curmax=np.max(cur_array)
                     curmin=np.min(cur_array)
@@ -1026,7 +1028,7 @@ if __name__=="__main__":
                     #print(len(cur_qs))
                     #print(len(test_qs))
                     for level in range(max_level+1):
-                        print(level)
+                        #print(level)
                         test_qs[level]+=cur_qs[i]
                     test_us+=cur_us
                     square_error+=np.sum((array[x_start:x_end,y_start:y_end]-cur_array)**2)
