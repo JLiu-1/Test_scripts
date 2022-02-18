@@ -1007,7 +1007,7 @@ if __name__=="__main__":
             element_counts=0
             themax=-9999999999999
             themin=99999999999999
-            themean=np.mean(array)
+            themean=0
             print(themean)
             for i in range(0,block_num_x,steplength):
                 for j in range(0,block_num_y,steplength):
