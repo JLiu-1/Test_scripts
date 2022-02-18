@@ -962,24 +962,115 @@ if __name__=="__main__":
     parser.add_argument('--size_x','-x',type=int,default=1800)
     parser.add_argument('--size_y','-y',type=int,default=3600)
     parser.add_argument('--sz_interp','-n',type=int,default=0)
+    parser.add_argument('-autotuning','-t',type=int,default=0)
     parser.add_argument('--fix','-f',type=str,default="none")
     args = parser.parse_args()
     print(args)
     array=np.fromfile(args.input,dtype=np.float32).reshape((args.size_x,args.size_y))
     orig_array=np.copy(array)
-    error_bound=args.error*(np.max(array)-np.min(array))
+    rng=(np.max(array)-np.min(array))
+    error_bound=args.error*rng
     max_level=int(math.log(args.max_step,2))
     rate_list=args.rlist
+
     #print(rate_list)
-    if ((isinstance(rate_list,int) or isinstance(rate_list,float)) and  rate_list>0) or (isinstance(rate_list,list ) and rate_list[0]>0):
-
-        if isinstance(rate_list,int) or isinstance(rate_list,float):
-            rate_list=[rate_list]
-
-        while len(rate_list)<max_level:
-            rate_list.insert(0,rate_list[0])
-    else:
+    if args.autotuning!=0:
+        #pid=os.getpid()
+        alpha_list=[1,1.25,1.5,1.75,2]
+        beta_list=[2,4,4,4,4]
         rate_list=None
+        block_num_x=(args.size_x-1)//args.max_step
+        block_num_y=(args.size_x-1)//args.max_step
+        steplength=int(math.sqrt(args.autotuning))
+        bestalpha=1
+        bestbeta=1
+        bestpdb=0
+        bestb=0
+        bestp=0
+        pid=os.getpid()
+        tq_name="%s_tq.dat"%pid
+        tu_name="%s_tu.dat"%pid
+        for k,alpha in enumerate(alpha_list):
+            beta=beta_list[k]
+            test_qs=[[] for i in range(max_level+1)]
+            test_us=[]
+            square_error=0
+            element_counts=0
+            themax=-9999999999999
+            themin=99999999999999
+           
+            for i in range(0,block_num_x,steplength):
+                for j in range(0,block_num_y,steplength):
+
+                    x_start=max_step*i
+                    y_start=max_step*j
+                    x_end=x_start+max_step+1
+                    y_end=y_start+max_step+1
+                    cur_array=np.copy(array[x_start:x_end,y_start,y_end])
+                    curmax=np.max(cur_array)
+                    curmin=np.min(cur_array)
+                    if curmax>themax:
+                        themax=curmax
+                    if curmin<themin:
+                        themin=curmin
+                    cur_qs,edge_qs,cur_us,_=msc2d(cur_array,0,max_step+1,0,max_step+1,error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
+                                            sz3_interp=1,multidim_level=-1,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=True,fix_algo="sz3_cubic")
+                    for level in range(max_level+1):
+                        test_qs[level]+=cur_qs[i]
+                    test_us+=cur_us
+                    square_error+=np.sum((array[x_start:x_end,y_start,y_end]-cur_array)**2)
+                    element_counts+=(max_step+1)**2 
+            t_mse=square_error/element_counts
+            psnr=20*math.log(themax-themin,10)-10*log(mse,10)
+
+            np.array(sum(test_qs,[]),dtype=np.int32).tofile(tq_name)
+            np.array(sum(test_us,[]),dtype=np.int32).tofile(tu_name)
+            with os.popen("sz_backend %s %s" % (tq_name,tu_name)) as f:
+                lines=f.read().splitlines()
+                cr=eval(lines[4].split("=")[-1])
+                if args.anchor_rate==0:
+                    anchor_ratio=1/(args.max_step**2)
+                    cr=1/((1-anchor_ratio)/cr+anchor_ratio/2)
+                bitrate=32/cr
+            os.system("rm -f %s;rm -f %s" % (tq_name,tu_name))、
+            pdb=psnr/bitrate
+            if pdb>bestpdb:
+                bestalpha=alpha
+                bestbeta=beta
+                bestpdb=pdb
+                bestb=bitrate
+                bestp=psnr
+        print("Autotuning finished. Selected alpha: %f. Selected beta: %f. Best bitrate: %f. Best PSNR: %f."\
+        %(bestalpha,bestbeta,bestb,bestp) )
+        args.rate=bestalpha
+        args.maximum_rate=bestbeta
+
+
+
+
+            
+
+
+
+
+
+        
+
+
+
+
+
+    else:
+        if ((isinstance(rate_list,int) or isinstance(rate_list,float)) and  rate_list>0) or (isinstance(rate_list,list ) and rate_list[0]>0):
+
+            if isinstance(rate_list,int) or isinstance(rate_list,float):
+                rate_list=[rate_list]
+
+            while len(rate_list)<max_level:
+                rate_list.insert(0,rate_list[0])
+        else:
+            rate_list=None
+
     qs,edge_qs,us,_=msc2d(array,0,args.size_x,0,args.size_y,error_bound,args.rate,args.maximum_rate,args.min_coeff_level,args.max_step,args.anchor_rate,rate_list=rate_list,x_preded=False,y_preded=False,\
         sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=args.lorenzo_fallback_check,sample_rate=args.fallback_sample_ratio,min_sampled_points=100,random_access=False,verbose=True,fix_algo=args.fix)
     quants=np.concatenate( (np.array(edge_qs,dtype=np.int32),np.array(sum(qs,[]),dtype=np.int32) ) )
