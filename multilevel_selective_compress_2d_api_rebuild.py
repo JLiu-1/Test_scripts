@@ -1023,9 +1023,10 @@ if __name__=="__main__":
                         themin=curmin
                     cur_qs,edge_qs,cur_us,_=msc2d(cur_array,0,max_step+1,0,max_step+1,error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
                                             sz3_interp=1,multidim_level=-1,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo="sz3_cubic")
-                    print(len(cur_qs))
-                    print(len(test_qs))
+                    #print(len(cur_qs))
+                    #print(len(test_qs))
                     for level in range(max_level+1):
+                        print(level)
                         test_qs[level]+=cur_qs[i]
                     test_us+=cur_us
                     square_error+=np.sum((array[x_start:x_end,y_start:y_end]-cur_array)**2)
