@@ -1032,7 +1032,7 @@ if __name__=="__main__":
                         #print(level)
                         test_qs[level]+=cur_qs[level]
                     test_us+=cur_us
-                    zero_square_error=np.sum((array[x_start:x_end,y_start:y_end]-np.zeros((max_step+1,max_step+1)))**2)
+                    zero_square_error=np.sum((array[x_start:x_end,y_start:y_end]-np.mean(array[x_start:x_end,y_start:y_end])*np.ones((max_step+1,max_step+1)) )**2)
                     square_error+=np.sum((array[x_start:x_end,y_start:y_end]-cur_array)**2)
                     
                     element_counts+=(max_step+1)**2 
