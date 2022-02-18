@@ -1126,8 +1126,8 @@ if __name__=="__main__":
                 os.system("rm -f %s;rm -f %s" % (tq_name,tu_name))
                 a=(psnr-psnr_r)/(bitrate-bitrate_r)
                 b=psnr-a*bitrate
-                print(a)
-                print(b)
+                #print(a)
+                #print(b)
                 reg=a*bestb+b
                 if reg>bestp:
                     bestalpha=alpha
