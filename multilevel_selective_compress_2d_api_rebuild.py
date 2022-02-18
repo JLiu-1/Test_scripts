@@ -1068,9 +1068,9 @@ if __name__=="__main__":
                    
             else:
                 if psnr>bestp:
-                    new_error_bound=1.1*error_bound
+                    new_error_bound=1.2*error_bound
                 else:
-                    new_error_bound=0.9*error_bound
+                    new_error_bound=0.8*error_bound
                 test_qs=[[] for i in range(max_level+1)]
                 test_us=[]
                 square_error=0
