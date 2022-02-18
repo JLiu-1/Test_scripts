@@ -2,7 +2,7 @@ import numpy as np
 import sys
 reb=float(sys.argv[1])
 file="../JinyangLiu/SDRBENCH-CESM-ATM-cleared-1800x3600/CLDHGH_1_1800_3600.dat"
-
+import math
 a=np.fromfile(file,dtype=np.float32).reshape((1800,3600))
 
 max_step=64
