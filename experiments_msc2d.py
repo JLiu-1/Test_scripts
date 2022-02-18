@@ -20,6 +20,7 @@ parser.add_argument('--size_y','-y',type=int,default=3600)
 parser.add_argument('--fix','-f',type=str,default="none")
 parser.add_argument('--blockwise','-b',type=int,default=0)
 parser.add_argument('--fullbound','-u',type=int,default=0)
+parser.add_argument('--autotuning','-t',type=float,default=0.0)
 args = parser.parse_args()
 pid=str(os.getpid()).strip()
 dout="%s_d.dat" %pid 
@@ -50,8 +51,9 @@ elif args.blockwise==3:
 else:
     script_name="multilevel_selective_compress_2d_api.py"
 for i,eb in enumerate(ebs):
-    command1="python %s -i %s -o %s -q %s -u %s -s %d -r %f -m %f -x %d -y %d -e %f -cl %d -a %f -d %d -n %d --rlist %s -f %s"\
-    % (script_name,args.input, dout,qout,uout,args.max_step,args.rate,args.maximum_rate,args.size_x,args.size_y,eb,args.min_coeff_level,args.anchor_rate,args.multidim_level,args.sz_interp,rlist,args.fix)
+    command1="python %s -i %s -o %s -q %s -u %s -s %d -r %f -m %f -x %d -y %d -e %f -cl %d -a %f -d %d -n %d --rlist %s -f %s -t %f"\
+    % (script_name,args.input, dout,qout,uout,args.max_step,args.rate,args.maximum_rate,args.size_x,args.size_y,\
+        eb,args.min_coeff_level,args.anchor_rate,args.multidim_level,args.sz_interp,rlist,args.fix,args.autotuning)
     os.system(command1)
     command2="sz_backend %s %s " % (qout,uout)
     with os.popen(command2) as f:
