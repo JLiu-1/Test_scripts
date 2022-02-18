@@ -92,7 +92,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
     global_last_y=((size_y-1)//max_step)*max_step
     step=max_step//2
     if first_level==None:
-        first_level==max_level-1
+        first_level=max_level-1
     level=max_level-1
     
     #maxlevel_q_start=len(qs[max_level])
