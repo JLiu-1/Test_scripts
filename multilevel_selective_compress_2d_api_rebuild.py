@@ -1014,7 +1014,7 @@ if __name__=="__main__":
                     y_start=max_step*j
                     x_end=x_start+max_step+1
                     y_end=y_start+max_step+1
-                    cur_array=np.copy(array[x_start:x_end,y_start,y_end])
+                    cur_array=np.copy(array[x_start:x_end,y_start:y_end])
                     curmax=np.max(cur_array)
                     curmin=np.min(cur_array)
                     if curmax>themax:
@@ -1026,7 +1026,7 @@ if __name__=="__main__":
                     for level in range(max_level+1):
                         test_qs[level]+=cur_qs[i]
                     test_us+=cur_us
-                    square_error+=np.sum((array[x_start:x_end,y_start,y_end]-cur_array)**2)
+                    square_error+=np.sum((array[x_start:x_end,y_start:y_end]-cur_array)**2)
                     element_counts+=(max_step+1)**2 
             t_mse=square_error/element_counts
             psnr=20*math.log(themax-themin,10)-10*log(mse,10)
