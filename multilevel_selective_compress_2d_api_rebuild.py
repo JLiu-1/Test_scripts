@@ -969,7 +969,7 @@ if __name__=="__main__":
     parser.add_argument('--size_x','-x',type=int,default=1800)
     parser.add_argument('--size_y','-y',type=int,default=3600)
     parser.add_argument('--sz_interp','-n',type=int,default=0)
-    parser.add_argument('-autotuning','-t',type=int,default=0)
+    parser.add_argument('--autotuning','-t',type=int,default=0)
     parser.add_argument('--fix','-f',type=str,default="none")
     args = parser.parse_args()
     print(args)
