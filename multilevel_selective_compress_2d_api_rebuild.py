@@ -1046,7 +1046,7 @@ if __name__=="__main__":
                     cr=1/((1-anchor_ratio)/cr+anchor_ratio/2)
                 bitrate=32/cr
             os.system("rm -f %s;rm -f %s" % (tq_name,tu_name))
-            pdb=psnr/bitrate
+            pdb=(psnr-40)/bitrate
             if pdb>bestpdb:
                 bestalpha=alpha
                 bestbeta=beta
