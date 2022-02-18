@@ -18,14 +18,14 @@ parser.add_argument('--size_x','-x',type=int,default=129)
 parser.add_argument('--size_y','-y',type=int,default=129)
 parser.add_argument('--size_z','-z',type=int,default=129)
 parser.add_argument('--fix','-f',type=str,default="none")
-parser.add_argument('--fullbound','-f',type=int,default=0)
+parser.add_argument('--fullbound','-u',type=int,default=0)
 args = parser.parse_args()
 print(args)
 pid=str(os.getpid()).strip()
 dout="%s_d.dat" %pid 
 qout="%s_q.dat" %pid 
 uout="%s_u.dat" % pid
-if fullbound:
+if args.fullbound:
     ebs=[i*1e-4 for i in range(1,10)]+[i*1e-3 for i in range(1,11)]+[1.5e-2,2e-2]
 else:
     ebs=[i*1e-3 for i in range(1,11)]+[1.5e-2,2e-2]
