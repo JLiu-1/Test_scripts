@@ -997,6 +997,7 @@ if __name__=="__main__":
         pid=os.getpid()
         tq_name="%s_tq.dat"%pid
         tu_name="%s_tu.dat"%pid
+        max_step=args.max_step
         for k,alpha in enumerate(alpha_list):
             beta=beta_list[k]
             test_qs=[[] for i in range(max_level+1)]
