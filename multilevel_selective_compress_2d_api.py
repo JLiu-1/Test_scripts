@@ -1125,7 +1125,7 @@ if __name__=="__main__":
                 loss_dict={}
                 pred_candidates=[]
                 if args.sz_interp:
-                    pred_candidates+=["sz3_linear","sz3_cubic"]
+                    pred_candidates+=["sz3_linear_xy","sz3_linear_yx","sz3_cubic_xy","sz3_cubic_yx"]
                 if level<=args.multidim_level:
                     pred_candidates+=["linear","cubic","multidim"]
                 for i in range(0,block_num_x,steplength):
