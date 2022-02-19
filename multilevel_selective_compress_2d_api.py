@@ -82,12 +82,14 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                 if q==0:
                     us.append(decomp)
                 array[x][y]=decomp 
-
+    
     elif (first_level==None or max_level==first_level+1) and anchor_rate==0:
+        '''
         for x in range(startx,size_x,max_step):
             for y in range(starty,size_y,max_step):
                 orig=array[x][y]
                 us.append(orig)
+        '''
 #print(len(qs))
 
     last_x=((size_x-1)//max_step)*max_step
