@@ -128,6 +128,8 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
     #linear interp
         absloss=0
         selected_algo="none"
+        if fix_algo_list!=None:
+            fix_algo=fix_algo_list[level]
         if (fix_algo=="none" and level<=multidim_level) or fix_algo in ["linear","cubic","multidim"] or not sz3_interp:
             if fix_algo=="none" or fix_algo=="linear":
                 #tt=time.time()
