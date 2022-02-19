@@ -122,7 +122,8 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
         selected_algo="none"
         if fix_algo_list!=None:
             fix_algo=fix_algo_list[level]
-        if level<=multidim_level or not sz3_interp or fix_algo in ["linear","cubic","multidim"]:
+        print(fix_algo)
+        if (fix_algo=="none" and level<=multidim_level) or fix_algo in ["linear","cubic","multidim"] or not sz3_interp:
             if fix_algo=="none" or fix_algo=="linear":
                 #tt=time.time()
                 if level>=min_coeff_level:
@@ -421,7 +422,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                     best_qs=cur_qs.copy()
                     best_us=cur_us.copy()
         #sz3 pure 1D interp,linear and cubic, 2 directions.
-        if sz3_interp or fix_algo in ["sz3_linear","sz3_cubic","sz3_linear_yx","sz3_linear_xy","sz3_cubic_yx","sz3_cubic_xy"]:
+        if (fix_algo=="none" and sz3_interp) or fix_algo in ["sz3_linear","sz3_cubic","sz3_linear_yx","sz3_linear_xy","sz3_cubic_yx","sz3_cubic_xy"]:
             #linear
             #y then x
             #print("testing sz3 interp") 
@@ -1174,6 +1175,7 @@ if __name__=="__main__":
 
 
             fix_algo_list=fix_algo_list.reverse()
+            print(fix_algo_list)
         else:
             fix_algo_list=None
 
