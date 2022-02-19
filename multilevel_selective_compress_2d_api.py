@@ -1175,15 +1175,23 @@ if __name__=="__main__":
                         y_end=y_start+max_step+1
                         #print(x_start)
                         #print(y_start)
-                        cur_array=np.copy(array[x_start:x_end,y_start:y_end])
+                        #array[x_start:x_end,y_start:y_end]
                         for predictor in pred_candidates:
-                            cur_array,cur_qs,edge_qs,cur_us,_,lsd=msc2d(cur_array,error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
+                            array[x_start:x_end,y_start:y_end],cur_qs,edge_qs,cur_us,_,lsd=msc2d(array[x_start:x_end,y_start:y_end],error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
                                                                     sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,\
                                                                     min_sampled_points=100,random_access=False,verbose=False,first_level=level,last_level=level,fix_algo=best_predictor,fake_compression=False)
 
 
             fix_algo_list.reverse()
-            print(fix_algo_list)
+            #print(fix_algo_list)
+            for i in range(0,block_num_x,steplength):
+                for j in range(0,block_num_y,steplength):
+                  
+                        x_start=max_step*i
+                        y_start=max_step*j
+                        x_end=x_start+max_step+1
+                        y_end=y_start+max_step+1
+                        array[x_start:x_end,y_start:y_end]=np.copy(orig_array[x_start:x_end,y_start:y_end])
         else:
             fix_algo_list=None
 
@@ -1205,7 +1213,7 @@ if __name__=="__main__":
         
    
 
-
+    #array=np.copy(orig_array)
 
 
     array,qs,edge_qs,us,_,lsd=msc2d(array,error_bound,args.rate,args.maximum_rate,args.min_coeff_level,args.max_step,args.anchor_rate,rate_list=rate_list,x_preded=False,y_preded=False,\

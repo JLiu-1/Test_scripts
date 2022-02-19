@@ -1274,7 +1274,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                                 cur_us.append(decomp)
                         #absloss+=abs(decomp)
                             cur_array[x][y][z]=decomp 
-
+                loss_dict[level]["sz3_cubic_xyz"]=absloss
                 if selected_algo=="none" or absloss<best_absloss:
                     selected_algo="sz3_cubic_xyz"
                     best_preds=np.copy(cur_array)
@@ -1420,7 +1420,8 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
 
 
         mean_l1_loss=best_absloss/len(best_qs)
-        array[0:last_x+1:step,0:last_y+1:step,0:last_z+1:step]=best_preds
+        if not fake_compression:
+            array[0:last_x+1:step,0:last_y+1:step,0:last_z+1:step]=best_preds
         if selected_algo!="lorenzo_fallback":
             cumulated_loss+=best_absloss
         
