@@ -955,7 +955,8 @@ if __name__=="__main__":
     print(args)
     array=np.fromfile(args.input,dtype=np.float32).reshape((args.size_x,args.size_y))
     orig_array=np.copy(array)
-    error_bound=args.error*(np.max(array)-np.min(array))
+    rng=(np.max(array)-np.min(array))
+    error_bound=args.error*rng
     max_level=int(math.log(args.max_step,2))
     rate_list=args.rlist
     #print(rate_list)
@@ -999,12 +1000,14 @@ if __name__=="__main__":
                     #print(x_start)
                     #print(y_start)
                     cur_array=np.copy(array[x_start:x_end,y_start:y_end])
+                    '''
                     curmax=np.max(cur_array)
                     curmin=np.min(cur_array)
                     if curmax>themax:
                         themax=curmax
                     if curmin<themin:
                         themin=curmin
+                    '''
                     #left question: The predictor selection is separated on each block, which does not follow the real compression
                     #What about fix the prediction on SZ3_cubic?
                     cur_array,cur_qs,edge_qs,cur_us,_,lsd=msc2d(cur_array,error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
@@ -1021,7 +1024,7 @@ if __name__=="__main__":
                     element_counts+=(max_step+1)**2 
             t_mse=square_error/element_counts
             #zero_mse=zero_square_error/element_counts
-            psnr=20*math.log(themax-themin,10)-10*math.log(t_mse,10)
+            psnr=20*math.log(rng,10)-10*math.log(t_mse,10)
             #zero_psnr=20*math.log(themax-themin,10)-10*math.log(zero_mse,10)
             #print(zero_psnr)
           
@@ -1070,12 +1073,14 @@ if __name__=="__main__":
                         #print(x_start)
                         #print(y_start)
                         cur_array=np.copy(array[x_start:x_end,y_start:y_end])
+                        '''
                         curmax=np.max(cur_array)
                         curmin=np.min(cur_array)
                         if curmax>themax:
                             themax=curmax
                         if curmin<themin:
                             themin=curmin
+                        '''
                         cur_array,cur_qs,edge_qs,cur_us,_,lsd=msc2d(cur_array,new_error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
                                                 sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo=args.fix_algo,fix_algo_list=None)
                         #print(len(cur_qs[max_level]))
@@ -1090,7 +1095,7 @@ if __name__=="__main__":
                         element_counts+=(max_step+1)**2 
                 t_mse=square_error/element_counts
                 #zero_mse=zero_square_error/element_counts
-                psnr_r=20*math.log(themax-themin,10)-10*math.log(t_mse,10)
+                psnr_r=20*math.log(rng,10)-10*math.log(t_mse,10)
                 #zero_psnr=20*math.log(themax-themin,10)-10*math.log(zero_mse,10)
                 #print(zero_psnr)
               
