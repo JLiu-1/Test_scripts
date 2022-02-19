@@ -1658,7 +1658,7 @@ if __name__=="__main__":
                             #zero_square_error=np.sum((array[x_start:x_end,y_start:y_end]-themean*np.ones((max_step+1,max_step+1)) )**2)
                             square_error+=np.sum((array[x_start:x_end,y_start:y_end,z_start:z_end]-cur_array)**2)
                             
-                            element_counts+=(max_step+1)**2 
+                            element_counts+=(max_step+1)**3
                 t_mse=square_error/element_counts
                 #zero_mse=zero_square_error/element_counts
                 psnr_r=20*math.log(themax-themin,10)-10*math.log(t_mse,10)
