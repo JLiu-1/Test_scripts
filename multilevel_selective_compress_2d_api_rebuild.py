@@ -595,7 +595,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                         array[x][y]=decomp
                 #print(np.max(np.abs(orig_array-array)))
                 loss_dict[level]["sz3_linear_xy"]=absloss
-                if absloss<best_absloss:
+                if selected_algo=="none" or absloss<best_absloss:
 
                     best_preds=np.copy(array[x_start:last_x+1:step,y_start:last_y+1:step])
                     best_absloss=absloss
