@@ -1030,8 +1030,8 @@ if __name__=="__main__":
                     #print(x_start)
                     #print(y_start)
                     #cur_array=np.copy(array[x_start:x_end,y_start:y_end])
-                    curmax=np.max(cur_array)
-                    curmin=np.min(cur_array)
+                    curmax=np.max(array[x_start:x_end,y_start:y_end])
+                    curmin=np.min(array[x_start:x_end,y_start:y_end])
                     if curmax>themax:
                         themax=curmax
                     if curmin<themin:
@@ -1101,8 +1101,8 @@ if __name__=="__main__":
                         #print(x_start)
                         #print(y_start)
                         #cur_array=np.copy(array[x_start:x_end,y_start:y_end])
-                        curmax=np.max(cur_array)
-                        curmin=np.min(cur_array)
+                        curmax=np.max(array[x_start:x_end,y_start:y_end])
+                        curmin=np.min(array[x_start:x_end,y_start:y_end])
                         if curmax>themax:
                             themax=curmax
                         if curmin<themin:
