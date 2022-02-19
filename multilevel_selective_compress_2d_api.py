@@ -663,7 +663,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                         cur_array[x][y]=decomp
 
 
-                loss_dict["sz3_cubic_yx"]=absloss
+                loss_dict[level]["sz3_cubic_yx"]=absloss
                 if selected_algo=="none" or absloss<best_absloss:
                     selected_algo="sz3_cubic_yx"
                     best_preds=np.copy(cur_array)
