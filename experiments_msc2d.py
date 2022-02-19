@@ -21,6 +21,7 @@ parser.add_argument('--fix','-f',type=str,default="none")
 parser.add_argument('--blockwise','-b',type=int,default=0)
 parser.add_argument('--fullbound','-u',type=int,default=0)
 parser.add_argument('--autotuning','-t',type=float,default=0.0)
+parser.add_argument('--rebuild','-e',type=int,default=0)
 args = parser.parse_args()
 pid=str(os.getpid()).strip()
 dout="%s_d.dat" %pid 

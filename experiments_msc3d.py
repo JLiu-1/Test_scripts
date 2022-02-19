@@ -20,6 +20,7 @@ parser.add_argument('--size_z','-z',type=int,default=129)
 parser.add_argument('--fix','-f',type=str,default="none")
 parser.add_argument('--fullbound','-u',type=int,default=0)
 parser.add_argument('--autotuning','-t',type=float,default=0.0)
+parser.add_argument('--rebuild','-e',type=int,default=0)
 args = parser.parse_args()
 print(args)
 pid=str(os.getpid()).strip()
@@ -39,12 +40,19 @@ else:
     rlist="-1"
 #ebs=[1e-3,1e-2]
 data=np.zeros((len(ebs)+1,2,2),dtype=np.float32)
+
+
+if args.rebuild:
+    script_name="multilevel_selective_compress_3d_api_rebuild.py"
+else:
+    script_name="multilevel_selective_compress_3d_api.py"
+
 for i in range(2):
     data[1:,0,i]=ebs
     #data[0,1:,i]=idxrange
 for i,eb in enumerate(ebs):
-    command1="python multilevel_selective_compress_3d_api.py -i %s -o %s -q %s -u %s -s %d -r %f -m %f -x %d -y %d -z %d -e %f -cl %d -a %f -d %d -n %d --rlist %s -f %s -t %f"\
-    % (args.input, dout,qout,uout,args.max_step,args.rate,args.maximum_rate,args.size_x,args.size_y,args.size_z,eb,args.min_coeff_level,\
+    command1="python %s -i %s -o %s -q %s -u %s -s %d -r %f -m %f -x %d -y %d -z %d -e %f -cl %d -a %f -d %d -n %d --rlist %s -f %s -t %f"\
+    % (script_name,args.input, dout,qout,uout,args.max_step,args.rate,args.maximum_rate,args.size_x,args.size_y,args.size_z,eb,args.min_coeff_level,\
         args.anchor_rate,args.multidim_level,args.sz_interp,rlist,args.fix,args.autotuning)
     os.system(command1)
     command2="sz_backend %s %s " % (qout,uout)
