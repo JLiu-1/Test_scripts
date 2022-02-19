@@ -1740,7 +1740,7 @@ if __name__=="__main__":
 
                 print("Level %d tuned. Best predictor: %s." % (level,best_predictor))
                 fix_algo_list.append(best_predictor)
-                '''
+                
                 for i in range(0,block_num_x,steplength):
                     for j in range(0,block_num_y,steplength):
                         for k in range(0,block_num_z,steplength):
@@ -1755,14 +1755,14 @@ if __name__=="__main__":
                         #print(y_start)
                             #cur_array=np.copy(array[x_start:x_end,y_start:y_end,z_start:z_end])
                            
-                            array[x_start:x_end,y_start:y_end,z_start:z_end]=msc3d(array[x_start:x_end,y_start:y_end,z_start:z_end],error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
+                            array[x_start:x_end,y_start:y_end,z_start:z_end],cur_qs,edge_qs,cur_us,_,lsd=msc3d(array[x_start:x_end,y_start:y_end,z_start:z_end],error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
                                                                     sz_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,\
                                                                     min_sampled_points=100,random_access=False,verbose=False,first_level=level,last_level=level,fix_algo=best_predictor,fake_compression=False)
-                '''
+                
 
             fix_algo_list.reverse()
             print(fix_algo_list)
-            '''
+            
             for i in range(0,block_num_x,steplength):
                     for j in range(0,block_num_y,steplength):
                         for k in range(0,block_num_z,steplength):
@@ -1774,7 +1774,7 @@ if __name__=="__main__":
                             y_end=y_start+max_step+1
                             z_end=z_start+max_step+1
                             array[x_start:x_end,y_start:y_end,z_start:z_end]=orig_array[x_start:x_end,y_start:y_end,z_start:z_end]
-            '''
+            
         else:
             fix_algo_list=None
 
