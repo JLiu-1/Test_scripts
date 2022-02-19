@@ -43,30 +43,30 @@ for i in range(2):
     data[1:,0,i]=ebs
     #data[0,1:,i]=idxrange
 for i,eb in enumerate(ebs):
-	command1="python multilevel_selective_compress_3d_api.py -i %s -o %s -q %s -u %s -s %d -r %f -m %f -x %d -y %d -z %d -e %f -cl %d -a %f -d %d -n %d --rlist %s -f %s -t %f"\
-	% (args.input, dout,qout,uout,args.max_step,args.rate,args.maximum_rate,args.size_x,args.size_y,args.size_z,eb,args.min_coeff_level,\
-		args.anchor_rate,args.multidim_level,args.sz_interp,rlist,args.fix,args.autotuning)
-	os.system(command1)
-	command2="sz_backend %s %s " % (qout,uout)
-	with os.popen(command2) as f:
-		lines=f.read().splitlines()
-		#print(lines)
-		cr=eval(lines[4].split("=")[-1])
-		if args.anchor_rate==0:
+    command1="python multilevel_selective_compress_3d_api.py -i %s -o %s -q %s -u %s -s %d -r %f -m %f -x %d -y %d -z %d -e %f -cl %d -a %f -d %d -n %d --rlist %s -f %s -t %f"\
+    % (args.input, dout,qout,uout,args.max_step,args.rate,args.maximum_rate,args.size_x,args.size_y,args.size_z,eb,args.min_coeff_level,\
+        args.anchor_rate,args.multidim_level,args.sz_interp,rlist,args.fix,args.autotuning)
+    os.system(command1)
+    command2="sz_backend %s %s " % (qout,uout)
+    with os.popen(command2) as f:
+        lines=f.read().splitlines()
+        #print(lines)
+        cr=eval(lines[4].split("=")[-1])
+        if args.anchor_rate==0:
             ele_num=size_x*size_y*size_z
             anchor_num=(((size_x-1)//args.max_step)*args.max_step+1)*(((size_y-1)//args.max_step)*args.max_step+1)*(((size_z-1)//args.max_step)*args.max_step+1)
             #anchor_ratio=1/(args.max_step**2)
             cr=ele_num/((ele_num-anchor_num)/cr+anchor_num)
-	command3="compareData -f %s %s" % (args.input,dout)
-	with os.popen(command3) as f:
-		lines=f.read().splitlines()
-		psnr=eval(lines[6].split(',')[0].split('=')[1])
+    command3="compareData -f %s %s" % (args.input,dout)
+    with os.popen(command3) as f:
+        lines=f.read().splitlines()
+        psnr=eval(lines[6].split(',')[0].split('=')[1])
     
-	data[i+1][1][0]=cr
-	data[i+1][1][1]=psnr
-	command4="rm -f %s;rm -f %s;rm -f %s" % (dout,qout,uout)
+    data[i+1][1][0]=cr
+    data[i+1][1][1]=psnr
+    command4="rm -f %s;rm -f %s;rm -f %s" % (dout,qout,uout)
 
-	os.system(command4)
+    os.system(command4)
 
 
 np.savetxt("%s_final_cr.txt" % args.output,data[:,:,0],delimiter='\t')
