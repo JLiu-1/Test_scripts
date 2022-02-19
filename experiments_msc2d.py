@@ -60,7 +60,7 @@ for i,eb in enumerate(ebs):
         lines=f.read().splitlines()
         cr=eval(lines[4].split("=")[-1])
         if args.anchor_rate==0:
-            ele_num=size_x*size_y
+            ele_num=args.size_x*args.size_y
             anchor_num=(((size_x-1)//args.max_step)*args.max_step+1)*(((size_y-1)//args.max_step)*args.max_step+1)
             #anchor_ratio=1/(args.max_step**2)
             cr=ele_num/((ele_num-anchor_num)/cr+anchor_num)
