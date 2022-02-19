@@ -1037,7 +1037,7 @@ if __name__=="__main__":
                     if curmin<themin:
                         themin=curmin
                     #what about using an expanded array?
-                    cur_qs,edge_qs,cur_us,_=msc2d(array,x_start,x_end,y_start,y_end,error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
+                    cur_qs,edge_qs,cur_us,_lsd,=msc2d(array,x_start,x_end,y_start,y_end,error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
                                             sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo=args.fix_algo)
                     
                     #print(len(cur_qs[max_level]))
@@ -1108,7 +1108,7 @@ if __name__=="__main__":
                             themax=curmax
                         if curmin<themin:
                             themin=curmin
-                        cur_qs,edge_qs,cur_us,_=msc2d(array,x_start,x_end,y_start,y_end,new_error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
+                        cur_qs,edge_qs,cur_us,_,lsd=msc2d(array,x_start,x_end,y_start,y_end,new_error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
                                                 sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo=args.fix_algo)
                         
                         #print(len(cur_qs[max_level]))
@@ -1259,7 +1259,7 @@ if __name__=="__main__":
         else:
             rate_list=None
 
-    qs,edge_qs,us,_=msc2d(array,0,args.size_x,0,args.size_y,error_bound,args.rate,args.maximum_rate,args.min_coeff_level,args.max_step,args.anchor_rate,rate_list=rate_list,x_preded=False,y_preded=False,\
+    qs,edge_qs,us,_,lsd=msc2d(array,0,args.size_x,0,args.size_y,error_bound,args.rate,args.maximum_rate,args.min_coeff_level,args.max_step,args.anchor_rate,rate_list=rate_list,x_preded=False,y_preded=False,\
         sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=args.lorenzo_fallback_check,sample_rate=args.fallback_sample_ratio,min_sampled_points=100,random_access=False,verbose=True,fix_algo=args.fix_algo,fix_algo_list=fix_algo_list)
     quants=np.concatenate( (np.array(edge_qs,dtype=np.int32),np.array(sum(qs,[]),dtype=np.int32) ) )
     unpreds=np.array(us,dtype=np.float32)
