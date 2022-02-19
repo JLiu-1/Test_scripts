@@ -941,7 +941,7 @@ if __name__=="__main__":
     parser.add_argument('--size_y','-y',type=int,default=3600)
     parser.add_argument('--sz_interp','-n',type=int,default=0)
     parser.add_argument('--autotuning','-t',type=float,default=0.0)
-    parser.add_argument('--fix','-f',type=str,default="none")
+    parser.add_argument('--fix_algo','-f',type=str,default="none")
     args = parser.parse_args()
     print(args)
     array=np.fromfile(args.input,dtype=np.float32).reshape((args.size_x,args.size_y))
