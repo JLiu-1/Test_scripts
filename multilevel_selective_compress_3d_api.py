@@ -10,7 +10,7 @@ import random
 from utils import *
 
 def msc3d(array,error_bound,rate,maximum_rate,min_coeff_level,max_step,anchor_rate,rate_list=None,x_preded=False,y_preded=False,z_preded=False,multidim_level=10,sz_interp=False,lorenzo=-1,\
-sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_algo="none",min_level=0):#lorenzo:only check lorenzo fallback with level no larger than lorenzo level
+sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_algo="none",fix_algo_list=None,first_level=None,last_level=0,fake_compression=False):#lorenzo:only check lorenzo fallback with level no larger than lorenzo level
 
     size_x,size_y,size_z=array.shape
     #array=np.fromfile(args.input,dtype=np.float32).reshape((size_x,size_y))
@@ -35,10 +35,13 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
         anchor_eb=error_bound/anchor_rate
     else:
         anchor_eb=0
-    if max_step>0 and anchor_rate>0:
+    startx=max_step if x_preded else 0
+    starty=max_step if y_preded else 0
+    startz=max_step if z_preded else 0
+    if (first_level==None or max_level==first_level+1) and anchor_rate>0:
     
     #anchor_rate=args.anchor_rate
-     
+        
         anchor_eb=error_bound/anchor_rate
         if verbose:
             print("Anchor eb:%f" % anchor_eb)
@@ -56,9 +59,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                         ince=res.intercept_
 
  
-        startx=max_step if x_preded else 0
-        starty=max_step if y_preded else 0
-        startz=max_step if z_preded else 0
+        
         for x in range(startx,size_x,max_step):
             for y in range(starty,size_y,max_step):
                 for z in range(startz,size_y,max_step):
@@ -88,8 +89,8 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                             us.append(decomp)
                         array[x][y][z]=decomp
        
-    else:
-        pass#raise error
+    elif (first_level==None or max_level==first_level+1) and anchor_rate==0:
+        pass
 #print(len(qs))
 
     last_x=((size_x-1)//max_step)*max_step
@@ -100,6 +101,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
     #maxlevel_q_start=len(qs[max_level])
     u_start=len(us)
     cumulated_loss=0.0
+    loss_dict=[{} for i in range(max_level)]
     while level>=min_level:#step>0:
         cur_qs=[]
         cur_us=[]
@@ -123,6 +125,8 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
     #linear interp
         absloss=0
         selected_algo="none"
+        if fix_algo_list!=None:
+            fix_algo=fix_algo_list[level]
         if (fix_algo=="none" and level<=multidim_level) or fix_algo in ["linear","cubic","multidim"] or not sz_interp:
             if fix_algo=="none" or fix_algo=="linear":
 
@@ -354,12 +358,12 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                     
                             cur_array[x][y][z]=decomp
 
-
+                loss_dict[level]["linear"]=absloss
                 best_preds=np.copy(cur_array)
                 best_absloss=absloss
                 best_qs=cur_qs.copy()
                 best_us=cur_us.copy()
-                selected_algo="interp_linear"
+                selected_algo="linear"
 
             #print(len(cur_qs))
 
@@ -606,9 +610,9 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                                 cur_us.append(decomp)
                         #absloss+=abs(decomp)
                             cur_array[x][y][z]=decomp
-
+                loss_dict[level]["cubic"]=absloss
                 if selected_algo=="none" or absloss<best_absloss:
-                    selected_algo="interp_cubic"
+                    selected_algo="cubic"
                     best_preds=np.copy(cur_array)
                     best_absloss=absloss
                     best_qs=cur_qs.copy()
@@ -765,9 +769,9 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                    
                             cur_array[x][y][z]=decomp
 
-
+                loss_dict[level]["multidim"]=absloss
                 if selected_algo=="none" or absloss<best_absloss:
-                    selected_algo="interp_full_multidim"
+                    selected_algo="multidim"
                     best_preds=np.copy(cur_array)
                     best_absloss=absloss
                     best_qs=cur_qs.copy()
@@ -777,7 +781,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
         if (fix_algo=="none" and sz_interp) or fix_algo in ["sz3_linear","sz3_cubic"]:
             #1D linear
             #zyx
-            if fix_algo=="none" or fix_algo=="sz3_linear":
+            if fix_algo=="none" or fix_algo=="sz3_linear" or fix_algo=="sz3_linear_zyx":
                 absloss=0
                 cur_qs=[]
                 cur_us=[]
@@ -883,16 +887,16 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                                 cur_us.append(decomp)
                         #absloss+=abs(decomp)
                             cur_array[x][y][z]=decomp 
-
+                loss_dict[level]["sz3_linear_zyx"]=absloss
                 if selected_algo=="none" or absloss<best_absloss :
-                    selected_algo="sz3_interp_linear_zyx"
+                    selected_algo="sz3_linear_zyx"
                     best_preds=np.copy(cur_array)
                     best_absloss=absloss
                     best_qs=cur_qs.copy()
                     best_us=cur_us.copy()
 
 
-
+            if fix_algo=="none" or fix_algo=="sz3_linear" or fix_algo=="sz3_linear_xyz":
                 #xyz
                 absloss=0
                 cur_qs=[]
@@ -999,9 +1003,9 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                                 cur_us.append(decomp)
                         #absloss+=abs(decomp)
                             cur_array[x][y][z]=decomp 
-
+                loss_dict[level]["sz3_linear_xyz"]=absloss
                 if selected_algo=="none" or absloss<best_absloss:
-                    selected_algo="sz3_interp_linear_xyz"
+                    selected_algo="sz3_linear_xyz"
                     best_preds=np.copy(cur_array)
                     best_absloss=absloss
                     best_qs=cur_qs.copy()
@@ -1009,7 +1013,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
 
             #1D cubic
             #ZYX
-            if fix_algo=="none" or fix_algo=="sz3_cubic":
+            if fix_algo=="none" or fix_algo=="sz3_cubic" or fix_algo=="sz3_cubic_zyx":
                 absloss=0
                 cur_qs=[]
                 cur_us=[]
@@ -1133,9 +1137,9 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                                 cur_us.append(decomp)
                         #absloss+=abs(decomp)
                             cur_array[x][y][z]=decomp 
-
+                loss_dict[level]["sz3_cubic_zyx"]=absloss
                 if selected_algo=="none" or absloss<best_absloss:
-                    selected_algo="sz3_interp_cubic_zyx"
+                    selected_algo="sz3_cubic_zyx"
                     best_preds=np.copy(cur_array)
                     best_absloss=absloss
                     best_qs=cur_qs.copy()
@@ -1144,6 +1148,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
 
 
             #xyz
+            if fix_algo=="none" or fix_algo=="sz3_cubic" or fix_algo=="sz3_cubic_xyz":
                 absloss=0
                 cur_qs=[]
                 cur_us=[]
@@ -1269,7 +1274,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                             cur_array[x][y][z]=decomp 
 
                 if selected_algo=="none" or absloss<best_absloss:
-                    selected_algo="sz3_interp_cubic_xyz"
+                    selected_algo="sz3_cubic_xyz"
                     best_preds=np.copy(cur_array)
                     best_absloss=absloss
                     best_qs=cur_qs.copy()
