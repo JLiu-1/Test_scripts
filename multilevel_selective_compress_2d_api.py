@@ -122,7 +122,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
         selected_algo="none"
         if fix_algo_list!=None:
             fix_algo=fix_algo_list[level]
-        print(fix_algo)
+        #print(fix_algo)
         if (fix_algo=="none" and level<=multidim_level) or fix_algo in ["linear","cubic","multidim"] or not sz3_interp:
             if fix_algo=="none" or fix_algo=="linear":
                 #tt=time.time()
@@ -1174,7 +1174,7 @@ if __name__=="__main__":
                                                                     min_sampled_points=100,random_access=False,verbose=False,first_level=level,last_level=level,fix_algo=best_predictor,fake_compression=False)
 
 
-            fix_algo_list=fix_algo_list.reverse()
+            fix_algo_list.reverse()
             print(fix_algo_list)
         else:
             fix_algo_list=None
@@ -1184,6 +1184,7 @@ if __name__=="__main__":
 
 
     else:
+        fix_algo_list=None
         if ((isinstance(rate_list,int) or isinstance(rate_list,float)) and  rate_list>0) or (isinstance(rate_list,list ) and rate_list[0]>0):
 
             if isinstance(rate_list,int) or isinstance(rate_list,float):
@@ -1193,7 +1194,7 @@ if __name__=="__main__":
                 rate_list.insert(0,rate_list[0])
         else:
             rate_list=None
-        fix_algo_list=None
+        
    
 
 
