@@ -1481,7 +1481,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
     offset_z2=1 if random_access else 0
     lorenzo_3d(array,offset_x1,size_x-offset_x2,offset_y1,size_y-offset_y2,offset_z1,size_z-offset_z2)
     #lorenzo_2d(array,last_x+1,,offset_y1,size_y-offset_y2)
-    return array,qs,edge_qs,us,selected_algos
+    return array,qs,edge_qs,us,selected_algos,loss_dict
 
 
     
@@ -1576,7 +1576,7 @@ if __name__=="__main__":
                             themax=curmax
                         if curmin<themin:
                             themin=curmin
-                        cur_array,cur_qs,edge_qs,cur_us,_=msc3d(cur_array,error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
+                        cur_array,cur_qs,edge_qs,cur_us,_,lsd=msc3d(cur_array,error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
                                                 sz_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo="none")
                         #print(len(cur_qs[max_level]))
                         #print(len(test_qs[max_level]))
@@ -1647,7 +1647,7 @@ if __name__=="__main__":
                                 themax=curmax
                             if curmin<themin:
                                 themin=curmin
-                            cur_array,cur_qs,edge_qs,cur_us,_=msc3d(cur_array,new_error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
+                            cur_array,cur_qs,edge_qs,cur_us,_,lsd=msc3d(cur_array,new_error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
                                                     sz_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo="none")
                             #print(len(cur_qs[max_level]))
                             #print(len(test_qs[max_level]))
@@ -1696,8 +1696,81 @@ if __name__=="__main__":
         %(bestalpha,bestbeta,bestb,bestp) )
         args.rate=bestalpha
         args.maximum_rate=bestbeta
+
+        if args.fix_algo=="none":
+            print("Start predictor tuning.")
+            #tune predictor
+            fix_algo_list=[]
+            for level in range(max_level-1,-1,-1):
+                loss_dict={}
+                pred_candidates=[]
+                if args.sz_interp:
+                    pred_candidates+=["sz3_linear_xyz","sz3_linear_zyx","sz3_cubic_xyz","sz3_cubic_zyx"]
+                if level<=args.multidim_level:
+                    pred_candidates+=["linear","cubic","multidim"]
+                for i in range(0,block_num_x,steplength):
+                    for j in range(0,block_num_y,steplength):
+                        for k in range(0,block_num_z,steplength):
+                  
+                            x_start=max_step*i
+                            y_start=max_step*j
+                            z_start=max_step*k
+                            x_end=x_start+max_step+1
+                            y_end=y_start+max_step+1
+                            z_end=z_start+max_step+1
+                            #print(x_start)
+                            #print(y_start)
+                            cur_array=np.copy(array[x_start:x_end,y_start:y_end,z_start:z_end])
+                            for predictor in pred_candidates:
+                                cur_array,cur_qs,edge_qs,cur_us,_,lsd=msc3d(cur_array,error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
+                                                                        sz_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,\
+                                                                        min_sampled_points=100,random_access=False,verbose=False,first_level=level,last_level=level,fix_algo=predictor,fake_compression=True)
+                                cur_loss=lsd[level][predictor]
+                                if predictor not in loss_dict:
+                                    loss_dict[predictor]=cur_loss
+                                else:
+                                    loss_dict[predictor]+=cur_loss
+                best_predictor="none"
+                min_loss=9e20
+                for pred in loss_dict:
+                    pred_loss=loss_dict[pred]
+                    if pred_loss<min_loss:
+                        min_loss=pred_loss
+                        best_predictor=pred 
+
+                print("Level %d tuned. Best predictor: %s." % (level,best_predictor))
+                fix_algo_list.append(best_predictor)
+                for i in range(0,block_num_x,steplength):
+                    for j in range(0,block_num_y,steplength):
+                        for k in range(0,block_num_z,steplength):
+                  
+                            x_start=max_step*i
+                            y_start=max_step*j
+                            z_start=max_step*k
+                            x_end=x_start+max_step+1
+                            y_end=y_start+max_step+1
+                            z_end=z_start+max_step+1
+                        #print(x_start)
+                        #print(y_start)
+                            #cur_array=np.copy(array[x_start:x_end,y_start:y_end,z_start:z_end])
+                           
+                            array[x_start:x_end,y_start:y_end,z_start:z_end]=msc3d(array[x_start:x_end,y_start:y_end,z_start:z_end],error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
+                                                                    sz_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,\
+                                                                    min_sampled_points=100,random_access=False,verbose=False,first_level=level,last_level=level,fix_algo=best_predictor,fake_compression=False)
+
+
+            fix_algo_list.reverse()
+            print(fix_algo_list)
+        else:
+            fix_algo_list=None
+
+
+            
+
     else:
+        fix_algo_list=None
         if ((isinstance(rate_list,int) or isinstance(rate_list,float)) and  rate_list>0) or (isinstance(rate_list,list ) and rate_list[0]>0):
+
             if isinstance(rate_list,int) or isinstance(rate_list,float):
                 rate_list=[rate_list]
 
@@ -1707,7 +1780,7 @@ if __name__=="__main__":
             rate_list=None
 
     #print(rate_list)
-    array,qs,edge_qs,us,_=msc3d(array,error_bound,args.rate,args.maximum_rate,args.min_coeff_level,args.max_step,args.anchor_rate,rate_list=rate_list,x_preded=False,y_preded=False,z_preded=False,\
+    array,qs,edge_qs,us,_,lsd=msc3d(array,error_bound,args.rate,args.maximum_rate,args.min_coeff_level,args.max_step,args.anchor_rate,rate_list=rate_list,x_preded=False,y_preded=False,z_preded=False,\
         sz_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=args.lorenzo_fallback_check,sample_rate=args.fallback_sample_ratio,min_sampled_points=100,random_access=False,verbose=True,fix_algo=args.fix)
 
     quants=np.concatenate( (np.array(edge_qs,dtype=np.int32),np.array(sum(qs,[]),dtype=np.int32) ) )
