@@ -1185,6 +1185,7 @@ if __name__=="__main__":
 
             fix_algo_list.reverse()
             #print(fix_algo_list)
+            '''
             for i in range(0,block_num_x,steplength):
                 for j in range(0,block_num_y,steplength):
                   
@@ -1193,6 +1194,7 @@ if __name__=="__main__":
                         x_end=x_start+max_step+1
                         y_end=y_start+max_step+1
                         array[x_start:x_end,y_start:y_end]=np.copy(orig_array[x_start:x_end,y_start:y_end])
+            '''
         else:
             fix_algo_list=None
 
