@@ -1513,7 +1513,7 @@ if __name__=="__main__":
     parser.add_argument('--size_x','-x',type=int,default=129)
     parser.add_argument('--size_y','-y',type=int,default=129)
     parser.add_argument('--size_z','-z',type=int,default=129)
-    parser.add_argument('--fix','-f',type=str,default="none")
+    parser.add_argument('--fix_algo','-f',type=str,default="none")
     parser.add_argument('--autotuning','-t',type=float,default=0.0)
 #parser.add_argument('--level','-l',type=int,default=2)
 #parser.add_argument('--noise','-n',type=bool,default=False)
@@ -1577,7 +1577,7 @@ if __name__=="__main__":
                         if curmin<themin:
                             themin=curmin
                         cur_array,cur_qs,edge_qs,cur_us,_,lsd=msc3d(cur_array,error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
-                                                sz_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo="none")
+                                                sz_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo=args.fix_algo)
                         #print(len(cur_qs[max_level]))
                         #print(len(test_qs[max_level]))
                         for level in range(max_level+1):
@@ -1648,7 +1648,7 @@ if __name__=="__main__":
                             if curmin<themin:
                                 themin=curmin
                             cur_array,cur_qs,edge_qs,cur_us,_,lsd=msc3d(cur_array,new_error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
-                                                    sz_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo="none")
+                                                    sz_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo=args.fix_algo)
                             #print(len(cur_qs[max_level]))
                             #print(len(test_qs[max_level]))
                             for level in range(max_level+1):
@@ -1795,7 +1795,7 @@ if __name__=="__main__":
 
     #print(rate_list)
     array,qs,edge_qs,us,_,lsd=msc3d(array,error_bound,args.rate,args.maximum_rate,args.min_coeff_level,args.max_step,args.anchor_rate,rate_list=rate_list,x_preded=False,y_preded=False,z_preded=False,\
-        sz_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=args.lorenzo_fallback_check,sample_rate=args.fallback_sample_ratio,min_sampled_points=100,random_access=False,verbose=True,fix_algo=args.fix,fix_algo_list=fix_algo_list)
+        sz_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=args.lorenzo_fallback_check,sample_rate=args.fallback_sample_ratio,min_sampled_points=100,random_access=False,verbose=True,fix_algo=args.fix_algo,fix_algo_list=fix_algo_list)
 
     quants=np.concatenate( (np.array(edge_qs,dtype=np.int32),np.array(sum(qs,[]),dtype=np.int32) ) )
     unpreds=np.array(us,dtype=np.float32)
