@@ -1117,7 +1117,7 @@ if __name__=="__main__":
         args.rate=bestalpha
         args.maximum_rate=bestbeta
 
-        if fix_algo=="none":
+        if args.fix_algo=="none":
             print("Start predictor tuning.")
             #tune predictor
             fix_algo_list=[]
