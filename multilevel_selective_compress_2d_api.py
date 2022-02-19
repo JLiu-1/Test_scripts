@@ -502,7 +502,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                     best_us=cur_us.copy()
                     selected_algo="sz3_linear_yx"
 
-            if fix_algo=="none" or fix_algo=="sz3_linear" or fix_algo=="sz3_linear_xy"
+            if fix_algo=="none" or fix_algo=="sz3_linear" or fix_algo=="sz3_linear_xy":
             #x then y 
                 absloss=0
                 cur_qs=[]
@@ -582,7 +582,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
 
             #cubic interp
             #yx
-            if fix_algo=="none" or fix_algo=="sz3_cubic" or fix_algo=="":
+            if fix_algo=="none" or fix_algo=="sz3_cubic" or fix_algo=="sz3_cubic_yx":
                 absloss=0
                 cur_qs=[]
                 cur_us=[]
@@ -673,6 +673,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
 
 
                 #xy 
+            if fix_algo=="none" or fix_algo=="sz3_cubic" or fix_algo=="sz3_cubic_xy":
                 absloss=0
                 cur_qs=[]
                 cur_us=[]
