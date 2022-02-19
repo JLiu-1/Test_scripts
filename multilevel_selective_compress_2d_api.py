@@ -84,6 +84,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                 array[x][y]=decomp 
     
     elif (first_level==None or max_level==first_level+1) and anchor_rate==0:
+        pass
         '''
         for x in range(startx,size_x,max_step):
             for y in range(starty,size_y,max_step):
