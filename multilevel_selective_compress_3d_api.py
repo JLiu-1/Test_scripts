@@ -780,7 +780,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                     best_us=cur_us.copy()
 
 
-        if (fix_algo=="none" and sz_interp) or fix_algo in ["sz3_linear","sz3_cubic"]:
+        if (fix_algo=="none" and sz_interp) or fix_algo in ["sz3_linear","sz3_cubic","sz3_linear_zyx","sz3_linear_xyz","sz3_cubic_zyx","sz3_cubic_xyz"]:
             #1D linear
             #zyx
             if fix_algo=="none" or fix_algo=="sz3_linear" or fix_algo=="sz3_linear_zyx":
