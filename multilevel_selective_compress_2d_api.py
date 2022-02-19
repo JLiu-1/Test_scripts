@@ -35,6 +35,8 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
         anchor_eb=error_bound/anchor_rate
     else:
         anchor_eb=0
+    startx=max_step if x_preded else 0
+    starty=max_step if y_preded else 0
     if (first_level==None or max_level==first_level+1) and anchor_rate>0:
     
     #anchor_rate=args.anchor_rate
@@ -54,8 +56,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                     ince=res.intercept_
 
         
-        startx=max_step if x_preded else 0
-        starty=max_step if y_preded else 0
+        
 
         for x in range(startx,size_x,max_step):
             for y in range(starty,size_y,max_step):
