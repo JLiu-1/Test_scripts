@@ -80,6 +80,7 @@ if __name__=="__main__":
         for m,alpha in enumerate(alpha_list):
             for beta in beta_list:
                 #maybe some pruning
+                print(alpha,beta)
                 test_qs=[[] for i in range(max_level+1)]
                 test_us=[]
                 square_error=0
