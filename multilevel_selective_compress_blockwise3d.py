@@ -7,7 +7,7 @@ import argparse
 from sklearn.linear_model import LinearRegression
 import math
 import random
-from multilevel_selective_compress_2d_api import msc2d
+from multilevel_selective_compress_3d_api import msc3d
 from utils import *
 
 if __name__=="__main__":
@@ -39,11 +39,13 @@ if __name__=="__main__":
 
     size_x=args.size_x
     size_y=args.size_y
-    array=np.fromfile(args.input,dtype=np.float32).reshape((size_x,size_y))
+    size_z=args.size_z
+    parser.add_argument('--size_z','-z',type=int,default=129)
+    array=np.fromfile(args.input,dtype=np.float32).reshape((size_x,size_y,size_z))
     orig_array=np.copy(array)
     #if args.lorenzo_fallback_check:
         #orig_array=np.copy(array)
-    predicted=np.zeros((size_x,size_y),dtype=np.int16)
+    #predicted=np.zeros((size_x,size_y),dtype=np.int16)
     rng=(np.max(array)-np.min(array))
     error_bound=args.error*rng
     max_step=args.max_step
@@ -55,11 +57,13 @@ if __name__=="__main__":
     if args.autotuning!=0:
         #pid=os.getpid()
         alpha_list=[1,1.25,1.5,1.75,2]
+        #beta_list=[2,4,4,6,6]
         beta_list=[2,3,4]
         rate_list=None
         block_num_x=(args.size_x-1)//args.max_step
         block_num_y=(args.size_y-1)//args.max_step
-        steplength=int(math.sqrt(args.autotuning))
+        block_num_z=(args.size_z-1)//args.max_step
+        steplength=int(args.autotuning**(1/3))
         bestalpha=1
         bestbeta=1
         #bestpdb=0
@@ -72,7 +76,7 @@ if __name__=="__main__":
         tu_name="%s_tu.dat"%pid
         max_step=args.max_step
         max_level=int(math.log(max_step,2))
-        for k,alpha in enumerate(alpha_list):
+        for m,alpha in enumerate(alpha_list):
             for beta in beta_list:
                 #maybe some pruning
                 test_qs=[[] for i in range(max_level+1)]
@@ -86,14 +90,16 @@ if __name__=="__main__":
                 #print(themean)
                 for i in range(0,block_num_x,steplength):
                     for j in range(0,block_num_y,steplength):
-                          
-                        x_start=max_step*i
-                        y_start=max_step*j
-                        x_end=x_start+max_step+1
-                        y_end=y_start+max_step+1
+                        for k in range(0,block_num_z,steplength):
+                            x_start=max_step*i
+                            y_start=max_step*j
+                            z_start=max_step*k
+                            x_end=x_start+max_step+1
+                            y_end=y_start+max_step+1
+                            z_end=z_start+max_step+1
                             #print(x_start)
                             #print(y_start)
-                        cur_array=np.copy(array[x_start:x_end,y_start:y_end])
+                            cur_array=np.copy(array[x_start:x_end,y_start:y_end,z_start:z_end])
                             '''
                             curmax=np.max(cur_array)
                             curmin=np.min(cur_array)
@@ -102,47 +108,45 @@ if __name__=="__main__":
                             if curmin<themin:
                                 themin=curmin
                             '''
-                            #left question: The predictor selection is separated on each block, which does not follow the real compression
-                            #What about fix the prediction on SZ3_cubic?
-                        cur_array,cur_qs,edge_qs,cur_us,_,lsd=msc2d(cur_array,error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
-                                                sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo=args.fix_algo,fix_algo_list=None)
+                            cur_array,cur_qs,edge_qs,cur_us,_,lsd=msc3d(cur_array,error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
+                                                    sz_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo=args.fix_algo)
                             #print(len(cur_qs[max_level]))
                             #print(len(test_qs[max_level]))
-                        for level in range(max_level+1):
+                            for level in range(max_level+1):
                                 #print(level)
-                            test_qs[level]+=cur_qs[level]
-                        test_us+=cur_us
+                                test_qs[level]+=cur_qs[level]
+                            test_us+=cur_us
                             #zero_square_error=np.sum((array[x_start:x_end,y_start:y_end]-themean*np.ones((max_step+1,max_step+1)) )**2)
-                        square_error+=np.sum((array[x_start:x_end,y_start:y_end]-cur_array)**2)
+                            square_error+=np.sum((array[x_start:x_end,y_start:y_end,z_start:z_end]-cur_array)**2)
                             
-                        element_counts+=(max_step+1)**2 
+                            element_counts+=(max_step+1)**3 
                 t_mse=square_error/element_counts
-                    #zero_mse=zero_square_error/element_counts
+                #zero_mse=zero_square_error/element_counts
                 psnr=20*math.log(rng,10)-10*math.log(t_mse,10)
-                    #zero_psnr=20*math.log(themax-themin,10)-10*math.log(zero_mse,10)
-                    #print(zero_psnr)
-                  
+                #zero_psnr=20*math.log(themax-themin,10)-10*math.log(zero_mse,10)
+                #print(zero_psnr)
+              
                 np.array(sum(test_qs,[]),dtype=np.int32).tofile(tq_name)
                 np.array(sum(test_us,[]),dtype=np.int32).tofile(tu_name)
                 with os.popen("sz_backend %s %s" % (tq_name,tu_name)) as f:
                     lines=f.read().splitlines()
                     cr=eval(lines[4].split("=")[-1])
                     if args.anchor_rate==0:
-                        anchor_ratio=1/(args.max_step**2)
+                        anchor_ratio=1/(args.max_step**3)
                         cr=1/((1-anchor_ratio)/cr+anchor_ratio)
                     bitrate=32/cr
                 os.system("rm -f %s;rm -f %s" % (tq_name,tu_name))
-                    #pdb=(psnr-zero_psnr)/bitrate
+                #pdb=(psnr-zero_psnr)/bitrate
                 if psnr<=bestp and bitrate>=bestb:
                     continue
                 elif psnr>=bestp and bitrate<=bestb:
 
                     bestalpha=alpha
                     bestbeta=beta
-                       
+                   
                     bestb=bitrate
                     bestp=psnr
-                           
+                       
                 else:
                     if psnr>bestp:
                         new_error_bound=1.2*error_bound
@@ -155,18 +159,20 @@ if __name__=="__main__":
                     element_counts=0
                     themax=-9999999999999
                     themin=99999999999999
-                        #themean=0
-                        #print(themean)
+                    #themean=0
+                    #print(themean)
                     for i in range(0,block_num_x,steplength):
                         for j in range(0,block_num_y,steplength):
-                              
-                            x_start=max_step*i
-                            y_start=max_step*j
-                            x_end=x_start+max_step+1
-                            y_end=y_start+max_step+1
+                            for k in range(0,block_num_z,steplength):
+                                x_start=max_step*i
+                                y_start=max_step*j
+                                z_start=max_step*k
+                                x_end=x_start+max_step+1
+                                y_end=y_start+max_step+1
+                                z_end=z_start+max_step+1
                                 #print(x_start)
                                 #print(y_start)
-                            cur_array=np.copy(array[x_start:x_end,y_start:y_end])
+                                cur_array=np.copy(array[x_start:x_end,y_start:y_end,z_start:z_end])
                                 '''
                                 curmax=np.max(cur_array)
                                 curmin=np.min(cur_array)
@@ -175,51 +181,51 @@ if __name__=="__main__":
                                 if curmin<themin:
                                     themin=curmin
                                 '''
-                            cur_array,cur_qs,edge_qs,cur_us,_,lsd=msc2d(cur_array,new_error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
-                                                    sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo=args.fix_algo,fix_algo_list=None)
+                                cur_array,cur_qs,edge_qs,cur_us,_,lsd=msc3d(cur_array,new_error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
+                                                        sz_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo=args.fix_algo)
                                 #print(len(cur_qs[max_level]))
                                 #print(len(test_qs[max_level]))
-                            for level in range(max_level+1):
+                                for level in range(max_level+1):
                                     #print(level)
-                                test_qs[level]+=cur_qs[level]
-                            test_us+=cur_us
+                                    test_qs[level]+=cur_qs[level]
+                                test_us+=cur_us
                                 #zero_square_error=np.sum((array[x_start:x_end,y_start:y_end]-themean*np.ones((max_step+1,max_step+1)) )**2)
-                            square_error+=np.sum((array[x_start:x_end,y_start:y_end]-cur_array)**2)
+                                square_error+=np.sum((array[x_start:x_end,y_start:y_end,z_start:z_end]-cur_array)**2)
                                 
-                            element_counts+=(max_step+1)**2 
+                                element_counts+=(max_step+1)**3
                     t_mse=square_error/element_counts
-                        #zero_mse=zero_square_error/element_counts
+                    #zero_mse=zero_square_error/element_counts
                     psnr_r=20*math.log(rng,10)-10*math.log(t_mse,10)
-                        #zero_psnr=20*math.log(themax-themin,10)-10*math.log(zero_mse,10)
-                        #print(zero_psnr)
-                      
+                    #zero_psnr=20*math.log(themax-themin,10)-10*math.log(zero_mse,10)
+                    #print(zero_psnr)
+                  
                     np.array(sum(test_qs,[]),dtype=np.int32).tofile(tq_name)
                     np.array(sum(test_us,[]),dtype=np.int32).tofile(tu_name)
                     with os.popen("sz_backend %s %s" % (tq_name,tu_name)) as f:
                         lines=f.read().splitlines()
                         cr=eval(lines[4].split("=")[-1])
                         if args.anchor_rate==0:
-                            anchor_ratio=1/(args.max_step**2)
+                            anchor_ratio=1/(args.max_step**3)
                             cr=1/((1-anchor_ratio)/cr+anchor_ratio)
                         bitrate_r=32/cr
                     os.system("rm -f %s;rm -f %s" % (tq_name,tu_name))
                     a=(psnr-psnr_r)/(bitrate-bitrate_r)
                     b=psnr-a*bitrate
-                        #print(a)
-                        #print(b)
+                    #print(a)
+                    #print(b)
                     reg=a*bestb+b
                     if reg>bestp:
                         bestalpha=alpha
                         bestbeta=beta
-                       
+                   
                         bestb=bitrate
                         bestp=psnr
                 if alpha**(max_level-1)<=beta:
                     break
 
-                    
-                    
-                   
+                
+                
+               
 
 
         print("Autotuning finished. Selected alpha: %f. Selected beta: %f. Best bitrate: %f. Best PSNR: %f."\
@@ -246,7 +252,8 @@ if __name__=="__main__":
 
 
     last_x=((size_x-1)//max_step)*max_step
-    last_y=((size_y-1)//max_step)*max_step   
+    last_y=((size_y-1)//max_step)*max_step
+    last_z=((size_z-1)//max_step)*max_step   
 
     #il_count=0
     #ic_count=0
@@ -257,22 +264,24 @@ if __name__=="__main__":
     #currently no coeff and levelwise predictor selection.
     for x_start in range(0,last_x,max_step):
         for y_start in range(0,last_y,max_step):
-            print(x_start,y_start)
-            x_end=size_x-1 if x_start==last_x-max_step else x_start+max_step 
-            y_end=size_y-1 if y_start==last_y-max_step else y_start+max_step 
-            array[x_start:x_end+1,y_start:y_end+1],cur_qs,cur_lorenzo_qs,cur_us,cur_selected=\
-            msc2d(array[x_start:x_end+1,y_start:y_end+1],error_bound,rate,maximum_rate,min_coeff_level,max_step,anchor_rate,\
-                rate_list=rate_list,sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=args.lorenzo_fallback_check,\
-                sample_rate=args.fallback_sample_ratio,min_sampled_points=10,x_preded=(x_start>0),y_preded=(y_start>0),random_access=False,fix_algo=args.fix_algo)
-
-            for i in range(max_level+1):
-                #print(len(cur_qs[i]))
-                qs[i]+=cur_qs[i]
-
-            us+=cur_us
-            lorenzo_qs+=cur_lorenzo_qs
-            #if "lorenzo" in cur_selected[-1]:
+            for z_start in range(0,last_z,max_step):
                 #print(x_start,y_start)
+                x_end=size_x-1 if x_start==last_x-max_step else x_start+max_step 
+                y_end=size_y-1 if y_start==last_y-max_step else y_start+max_step 
+                z_end=size_z-1 if z_start==last_z-max_step else z_start+max_step 
+                array[x_start:x_end+1,y_start:y_end+1,z_start:z_end+1],cur_qs,cur_lorenzo_qs,cur_us,cur_selected=\
+                msc3d(array[x_start:x_end+1,y_start:y_end+1,z_start:z_end+1],error_bound,rate,maximum_rate,min_coeff_level,max_step,anchor_rate,\
+                    rate_list=rate_list,sz_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=args.lorenzo_fallback_check,\
+                    sample_rate=args.fallback_sample_ratio,min_sampled_points=10,x_preded=(x_start>0),y_preded=(y_start>0),z_preded=(z_start>0),random_access=False,fix_algo=args.fix_algo)
+
+                for i in range(max_level+1):
+                    #print(len(cur_qs[i]))
+                    qs[i]+=cur_qs[i]
+
+                us+=cur_us
+                lorenzo_qs+=cur_lorenzo_qs
+                #if "lorenzo" in cur_selected[-1]:
+                    #print(x_start,y_start)
 
 
 
