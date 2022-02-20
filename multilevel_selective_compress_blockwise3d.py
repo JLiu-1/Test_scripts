@@ -30,8 +30,8 @@ if __name__=="__main__":
     parser.add_argument('--fallback_sample_ratio','-p',type=float,default=0.05)
     parser.add_argument('--anchor_rate','-a',type=float,default=0.0)
 
-    parser.add_argument('--size_x','-x',type=int,default=1800)
-    parser.add_argument('--size_y','-y',type=int,default=3600)
+    parser.add_argument('--size_x','-x',type=int,default=129)
+    parser.add_argument('--size_y','-y',type=int,default=129)
     parser.add_argument('--size_z','-z',type=int,default=129)
     parser.add_argument('--sz_interp','-n',type=int,default=0)
     parser.add_argument('--fix_algo','-f',type=str,default="none")
