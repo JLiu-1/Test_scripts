@@ -43,12 +43,15 @@ data=np.zeros((len(ebs)+1,2,2),dtype=np.float32)
 for i in range(2):
     data[1:,0,i]=ebs
     #data[0,1:,i]=idxrange
-if args.blockwise==1:
-    script_name="multilevel_selective_compress_blockwise2d.py"
-elif args.blockwise==2:
+if args.blockwise==2:
     script_name="multilevel_selective_compress_blockwise2d_rebuild.py"
 elif args.blockwise==3:
     script_name="multilevel_selective_compress_blockwise2d_rebuild.py --order level"    
+
+elif args.blockwise==1:
+    script_name="multilevel_selective_compress_blockwise2d.py"
+elif args.rebuild:
+    script_name="multilevel_selective_compress_2d_api_rebuild.py"
 else:
     script_name="multilevel_selective_compress_2d_api.py"
 for i,eb in enumerate(ebs):
@@ -62,7 +65,7 @@ for i,eb in enumerate(ebs):
         cr=eval(lines[4].split("=")[-1])
         if args.anchor_rate==0:
             ele_num=args.size_x*args.size_y
-            anchor_num=(((args.size_x-1)//args.max_step)*args.max_step+1)*(((args.size_y-1)//args.max_step)*args.max_step+1)
+            anchor_num=((args.size_x-1)//args.max_step+1)*((args.size_y-1)//args.max_step+1)
             #anchor_ratio=1/(args.max_step**2)
             cr=ele_num/((ele_num-anchor_num)/cr+anchor_num)
         if args.blockwise>0:
