@@ -26,7 +26,7 @@ if __name__=="__main__":
     parser.add_argument('--maximum_rate','-m',type=float,default=10.0)
     #parser.add_argument('--cubic','-c',type=int,default=1)
     parser.add_argument('--multidim_level','-d',type=int,default=99)
-    parser.add_argument('--lorenzo_fallback_check','-l',type=int,default=-1)
+    parser.add_argument('--lorenzo_fallback_check','-l',type=int,default=0)
     parser.add_argument('--fallback_sample_ratio','-p',type=float,default=0.05)
     parser.add_argument('--anchor_rate','-a',type=float,default=0.0)
 
