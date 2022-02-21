@@ -852,8 +852,8 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,pred_ch
                 cur_qs=[]
                 cur_us=[]
                 cur_array=np.copy(array[0:last_x+1:step,0:last_y+1:step,0:last_z+1:step])#reset cur_array
-            if pred_check:
-                cur_preded=np.copy(preded[0:last_x+1:step,0:last_y+1:step,0:last_z+1:step])
+                if pred_check:
+                    cur_preded=np.copy(preded[0:last_x+1:step,0:last_y+1:step,0:last_z+1:step])
                 if level>=min_coeff_level:
                     reg_xs=[]
                     reg_ys=[]
