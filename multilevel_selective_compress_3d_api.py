@@ -10,9 +10,11 @@ import random
 from utils import *
 
 def msc3d(array,error_bound,rate,maximum_rate,min_coeff_level,max_step,anchor_rate,rate_list=None,x_preded=False,y_preded=False,z_preded=False,multidim_level=10,sz_interp=False,lorenzo=-1,\
-sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_algo="none",fix_algo_list=None,first_level=None,last_level=0,fake_compression=False):#lorenzo:only check lorenzo fallback with level no larger than lorenzo level
+sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,pred_check=True,fix_algo="none",fix_algo_list=None,first_level=None,last_level=0,fake_compression=False):#lorenzo:only check lorenzo fallback with level no larger than lorenzo level
 
     size_x,size_y,size_z=array.shape
+    if pred_check:
+        preded=np.zeros((size_x,size_y,size_z))
     #array=np.fromfile(args.input,dtype=np.float32).reshape((size_x,size_y))
     if lorenzo>=0:
         orig_array=np.copy(array)
@@ -22,11 +24,12 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
     #max_step=args.max_step
     #rate=args.rate
     max_level=int(math.log(max_step,2))
+
     selected_algos=[]
 
 
     qs=[ [] for i in range(max_level+1)]
-
+    
     us=[]
     edge_qs=[]
 #min_coeff_level=args.min_coeff_level
@@ -97,6 +100,8 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                 for z in range(startz,size_z,max_step):
                     orig=array[x][y][z]
                     us.append(orig)
+                    if pred_check:
+                        preded[x][y][z]=1
         
 #print(len(qs))
 
@@ -119,8 +124,13 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
         else:
             cur_eb=error_bound/min(maximum_rate,(rate**level))
         cur_array=np.copy(array[0:last_x+1:step,0:last_y+1:step,0:last_z+1:step])
-        #print(cur_array.shape)
         cur_size_x,cur_size_y,cur_size_z=cur_array.shape
+        if pred_check:
+            cur_preded=np.copy(preded[0:last_x+1:step,0:last_y+1:step,0:last_z+1:step])
+            best_preded=np.copy(preded[0:last_x+1:step,0:last_y+1:step,0:last_z+1:step])
+
+        #print(cur_array.shape)
+        
     #print(cur_size_x,cur_size_y)
         if verbose:
             print("Level %d started. Current step: %d. Current error_bound: %s." % (level,step,cur_eb))
@@ -158,6 +168,10 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                             #if z==cur_size_z-1:
                                 #continue
                             orig=cur_array[x][y][z]
+                            if pred_check:
+                                if cur_preded[x][y][z-1]==0 or cur_preded[x][y][z+1]==0:
+                                    print("error1")
+                                    return
                             if level>=min_coeff_level:
                                 pred= np.dot( np.array([cur_array[x][y][z-1],cur_array[x][y][z+1]]),coef )+ince 
                             else:
@@ -172,6 +186,9 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                                 cur_us.append(decomp)
                         #absloss+=abs(decomp)
                             cur_array[x][y][z]=decomp    
+                            if pred_check:
+                                cur_preded[x][y][z]=1
+
 
 
 
@@ -193,6 +210,10 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                             #if y==cur_size_y-1:
                                 #continue
                             orig=cur_array[x][y][z]
+                            if pred_check:
+                                if cur_preded[x][y-1][z]==0 or cur_preded[x][y+1][z]==0:
+                                    print("error2")
+                                    return
                             if level>=min_coeff_level:
                                 pred= np.dot( np.array([cur_array[x][y-1][z],cur_array[x][y+1][z]]),coef )+ince 
                             else:
@@ -207,6 +228,8 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                                 cur_us.append(decomp)
                         #absloss+=abs(decomp)
                             cur_array[x][y][z]=decomp 
+                            if pred_check:
+                                cur_preded[x][y][z]=1
 
                 if level>=min_coeff_level:
                     reg_xs=[]
@@ -226,6 +249,10 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                             #if x==cur_size_x-1:
                                 #continue
                             orig=cur_array[x][y][z]
+                            if pred_check:
+                                if cur_preded[x-1][y][z]==0 or cur_preded[x+1][y][z]==0:
+                                    print("error3")
+                                    return
                             if level>=min_coeff_level:
                                 pred= np.dot( np.array([cur_array[x-1][y][z],cur_array[x+1][y][z]]),coef )+ince 
                             else:
@@ -239,7 +266,9 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                             if q==0:
                                 cur_us.append(decomp)
                         #absloss+=abs(decomp)
-                            cur_array[x][y][z]=decomp     
+                            cur_array[x][y][z]=decomp   
+                            if pred_check:
+                                cur_preded[x][y][z]=1  
 
                 if level>=min_coeff_level:
                     md_reg_xs=[]
@@ -259,6 +288,10 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                         for z in range(zstart,cur_size_z,2):
                     
                             orig=cur_array[x][y][z]
+                            if pred_check:
+                                if cur_preded[x-1][y][z]==0 or cur_preded[x+1][y][z]==0 or cur_preded[x][y-1][z]==0 or cur_preded[x][y+1][z]==0:
+                                    print("error4")
+                                    return
                             if level>=min_coeff_level:
                                 pred=np.dot(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y-1][z],cur_array[x][y+1][z]]),md_coef)+md_ince
                             else:
@@ -273,6 +306,8 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                                 cur_us.append(decomp)
                     #absloss+=abs(decomp)
                             cur_array[x][y][z]=decomp
+                            if pred_check:
+                                cur_preded[x][y][z]=1  
 
                 if level>=min_coeff_level:
                     md_reg_xs=[]
@@ -280,6 +315,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                     for x in range(1,cur_size_x,2):
                         for y in range(ystart,cur_size_y,2):
                             for z in range(1,cur_size_z,2):
+
                                 md_reg_xs.append(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y][z-1],cur_array[x][y][z+1]],dtype=np.float64))
                                 md_reg_ys.append(cur_array[x][y][z])
                                 md_res=LinearRegression(fit_intercept=True).fit(md_reg_xs, md_reg_ys)
@@ -292,6 +328,10 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                         for z in range(1,cur_size_z,2):
                     
                             orig=cur_array[x][y][z]
+                            if pred_check:
+                                if cur_preded[x-1][y][z]==0 or cur_preded[x+1][y][z]==0 or cur_preded[x][y][z-1]==0 or cur_preded[x][y][z+1]==0:
+                                    print("error5")
+                                    return
                             if level>=min_coeff_level:
                                 pred=np.dot(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y][z-1],cur_array[x][y][z+1]]),md_coef)+md_ince
                             else:
@@ -305,6 +345,8 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                                 cur_us.append(decomp)
                     
                             cur_array[x][y][z]=decomp
+                            if pred_check:
+                                cur_preded[x][y][z]=1  
 
                 if level>=min_coeff_level:
                     md_reg_xs=[]
@@ -323,6 +365,10 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                         for z in range(1,cur_size_z,2):
                     
                             orig=cur_array[x][y][z]
+                            if pred_check:
+                                if cur_preded[x][y-1][z]==0 or cur_preded[x][y+1][z]==0 or cur_preded[x][y][z-1]==0 or cur_preded[x][y][z+1]==0:
+                                    print("error6")
+                                    return
                             if level>=min_coeff_level:
                                 pred=np.dot(np.array([cur_array[x][y-1][z],cur_array[x][y+1][z],cur_array[x][y][z-1],cur_array[x][y][z+1]]),md_coef)+md_ince
                             else:
@@ -336,6 +382,8 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                                 cur_us.append(decomp)
                     #absloss+=abs(decomp)
                             cur_array[x][y][z]=decomp
+                            if pred_check:
+                                cur_preded[x][y][z]=1  
             
                 if level>=min_coeff_level:
                     md_reg_xs=[]
@@ -354,6 +402,10 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                         for z in range(1,cur_size_z,2):
                     
                             orig=cur_array[x][y][z]
+                            if pred_check:
+                                if cur_preded[x-1][y][z]==0 or cur_preded[x+1][y][z]==0 or cur_preded[x][y-1][z]==0 or cur_preded[x][y+1][z]==0 or cur_preded[x][y][z-1]==0 or cur_preded[x][y][z+1]==0:
+                                    print("error7")
+                                    return
                             if level>=min_coeff_level:
                                 pred=np.dot(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y-1][z],cur_array[x][y+1][z],cur_array[x][y][z-1],cur_array[x][y][z+1] ]),md_coef)+md_ince
                             else:
@@ -366,9 +418,13 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                                 cur_us.append(decomp)
                     
                             cur_array[x][y][z]=decomp
+                            if pred_check:
+                                cur_preded[x][y][z]=1  
 
                 loss_dict[level]["linear"]=absloss
                 best_preds=np.copy(cur_array)
+                if pred_check:
+                    best_preded=np.copy(cur+preded)
                 best_absloss=absloss
                 best_qs=cur_qs.copy()
                 best_us=cur_us.copy()
@@ -795,6 +851,8 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                 cur_qs=[]
                 cur_us=[]
                 cur_array=np.copy(array[0:last_x+1:step,0:last_y+1:step,0:last_z+1:step])#reset cur_array
+                if pred_check:
+                    cur_preded=np.copy(preded[0:last_x+1:step,0:last_y+1:step,0:last_z+1:step])
                 if level>=min_coeff_level:
                     reg_xs=[]
                     reg_ys=[]
@@ -814,6 +872,11 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                             #if z==cur_size_z-1:
                                 #continue
                             orig=cur_array[x][y][z]
+                            if pred_check:
+                                if cur_preded[x][y][z-1]==0 or cur_preded[x][y][z+1]==0:
+                                    print("error11")
+                                return
+
                             if level>=min_coeff_level:
                                 pred= np.dot( np.array([cur_array[x][y][z-1],cur_array[x][y][z+1]]),coef )+ince 
                             else:
@@ -828,6 +891,8 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                                 cur_us.append(decomp)
                         #absloss+=abs(decomp)
                             cur_array[x][y][z]=decomp    
+                            if pred_check:
+                                cur_preded[x][y][z]=1
 
 
 
@@ -849,6 +914,10 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                             #if y==cur_size_y-1:
                                 #continue
                             orig=cur_array[x][y][z]
+                            if pred_check:
+                                if cur_preded[x][y-1][z]==0 or cur_preded[x][y+1][z]==0:
+                                    print("error12")
+                                return
                             if level>=min_coeff_level:
                                 pred= np.dot( np.array([cur_array[x][y-1][z],cur_array[x][y+1][z]]),coef )+ince 
                             else:
@@ -863,6 +932,8 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                                 cur_us.append(decomp)
                         #absloss+=abs(decomp)
                             cur_array[x][y][z]=decomp 
+                            if pred_check:
+                                cur_preded[x][y][z]=1
 
                 if level>=min_coeff_level:
                     reg_xs=[]
@@ -882,6 +953,10 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                             if x==cur_size_x-1:
                                 continue
                             orig=cur_array[x][y][z]
+                            if pred_check:
+                                if cur_preded[x-1][y][z]==0 or cur_preded[x+1][y][z]==0:
+                                    print("error12")
+                                return
                             if level>=min_coeff_level:
                                 pred= np.dot( np.array([cur_array[x-1][y][z],cur_array[x+1][y][z]]),coef )+ince 
                             else:
@@ -896,11 +971,15 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                                 cur_us.append(decomp)
                         #absloss+=abs(decomp)
                             cur_array[x][y][z]=decomp 
+                            if pred_check:
+                                cur_preded[x][y][z]=1
                 loss_dict[level]["sz3_linear_zyx"]=absloss
                 if selected_algo=="none" or absloss<best_absloss :
                     selected_algo="sz3_linear_zyx"
                     best_preds=np.copy(cur_array)
                     best_absloss=absloss
+                    if pred_check:
+                        best_preded=np.copy(cur_preded)
                     best_qs=cur_qs.copy()
                     best_us=cur_us.copy()
 
@@ -1429,6 +1508,8 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
         mean_l1_loss=best_absloss/len(best_qs)
         if not fake_compression:
             array[0:last_x+1:step,0:last_y+1:step,0:last_z+1:step]=best_preds
+            if pred_check:
+                preded[0:last_x+1:step,0:last_y+1:step,0:last_z+1:step]=best_preded
         if selected_algo!="lorenzo_fallback":
             cumulated_loss+=best_absloss
         
