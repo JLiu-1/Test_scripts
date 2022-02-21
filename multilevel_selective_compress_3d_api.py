@@ -14,7 +14,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
 
     size_x,size_y,size_z=array.shape
     #array=np.fromfile(args.input,dtype=np.float32).reshape((size_x,size_y))
-    if lorenzo>=0:
+    if lorenzo>=-1:
         orig_array=np.copy(array)
     if random_access and lorenzo>=0:
         lorenzo=0
@@ -1440,6 +1440,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
             print ("Level %d finished. Selected algorithm: %s. Mean prediction abs loss: %f." % (level,selected_algo,mean_l1_loss))
         step=step//2
         level-=1
+        print(np.max(np.abs(orig_array-array)))
         #print(sum([len(_) for _ in qs] ))
         #print(best_absloss)
         #print(cumulated_loss)
