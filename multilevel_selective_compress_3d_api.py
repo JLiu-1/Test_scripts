@@ -1473,7 +1473,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                     edge_qs.append(q)
                     if q==0:
                         us.append(decomp)
-                    array[x][y]=decomp
+                    array[x][y][z]=decomp
     offset_x1=1 if x_preded else 0
     offset_y1=1 if y_preded else 0
     offset_z1=1 if z_preded else 0
