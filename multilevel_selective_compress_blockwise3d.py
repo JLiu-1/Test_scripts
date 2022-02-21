@@ -268,7 +268,7 @@ if __name__=="__main__":
     for x_start in range(0,last_x,max_step):
         for y_start in range(0,last_y,max_step):
             for z_start in range(0,last_z,max_step):
-                print(x_start,y_start)
+                print(x_start,y_start,z_start)
                 x_end=size_x-1 if x_start==last_x-max_step else x_start+max_step 
                 y_end=size_y-1 if y_start==last_y-max_step else y_start+max_step 
                 z_end=size_z-1 if z_start==last_z-max_step else z_start+max_step 
