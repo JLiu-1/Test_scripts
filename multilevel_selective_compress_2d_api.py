@@ -1036,7 +1036,7 @@ if __name__=="__main__":
     if args.autotuning!=0:
         #pid=os.getpid()
         alpha_list=[1,1.25,1.5,1.75,2]
-        beta_list=[2,3,4]
+        beta_list=[2,4]
         rate_list=None
         block_num_x=(args.size_x-1)//args.max_step
         block_num_y=(args.size_y-1)//args.max_step
