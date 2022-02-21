@@ -878,7 +878,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,pred_ch
                             if pred_check:
                                 if cur_preded[x][y][z-1]==0 or cur_preded[x][y][z+1]==0:
                                     print("error11")
-                                return
+                                    return
 
                             if level>=min_coeff_level:
                                 pred= np.dot( np.array([cur_array[x][y][z-1],cur_array[x][y][z+1]]),coef )+ince 
