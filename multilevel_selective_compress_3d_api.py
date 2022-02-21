@@ -1528,12 +1528,13 @@ if __name__=="__main__":
 #parser.add_argument('--level','-l',type=int,default=2)
 #parser.add_argument('--noise','-n',type=bool,default=False)
 #parser.add_argument('--intercept','-t',type=bool,default=False)
+    
+    args = parser.parse_args()
+    print(args)
     if args.double:
         dtype=np.double
     else:
         dtype=np.float32
-    args = parser.parse_args()
-    print(args)
     array=np.fromfile(args.input,dtype=dtype).reshape((args.size_x,args.size_y,args.size_z))
     orig_array=np.copy(array)
     rng=np.max(array)-np.min(array)
