@@ -18,6 +18,7 @@ parser.add_argument('--size_x','-x',type=int,default=129)
 parser.add_argument('--size_y','-y',type=int,default=129)
 parser.add_argument('--size_z','-z',type=int,default=129)
 parser.add_argument('--fix','-f',type=str,default="none")
+parser.add_argument('--anchor_fix','-c',type=int,default=0)
 parser.add_argument('--fullbound','-u',type=int,default=0)
 parser.add_argument('--autotuning','-t',type=float,default=0.0)
 parser.add_argument('--rebuild','-e',type=int,default=0)
@@ -60,11 +61,13 @@ for i,eb in enumerate(ebs):
         lines=f.read().splitlines()
         #print(lines)
         cr=eval(lines[4].split("=")[-1])
-        if args.anchor_rate==0:
+        
+        if args.anchor_rate==0 and args.anchor_fix:
             ele_num=args.size_x*args.size_y*args.size_z
             anchor_num=((args.size_x-1)//args.max_step+1)*((args.size_y-1)//args.max_step+1)*((args.size_z-1)//args.max_step+1)
             #anchor_ratio=1/(args.max_step**2)
             cr=ele_num/((ele_num-anchor_num)/cr+anchor_num)
+        
     command3="compareData -f %s %s" % (args.input,dout)
     with os.popen(command3) as f:
         lines=f.read().splitlines()

@@ -20,6 +20,7 @@ parser.add_argument('--size_y','-y',type=int,default=3600)
 parser.add_argument('--fix','-f',type=str,default="none")
 parser.add_argument('--blockwise','-b',type=int,default=0)
 parser.add_argument('--fullbound','-u',type=int,default=0)
+parser.add_argument('--anchor_fix','-c',type=int,default=1)
 parser.add_argument('--autotuning','-t',type=float,default=0.0)
 parser.add_argument('--rebuild','-e',type=int,default=0)
 args = parser.parse_args()
@@ -63,7 +64,7 @@ for i,eb in enumerate(ebs):
     with os.popen(command2) as f:
         lines=f.read().splitlines()
         cr=eval(lines[4].split("=")[-1])
-        if args.anchor_rate==0:
+        if args.anchor_rate==0 and args.anchor_fix:
             ele_num=args.size_x*args.size_y
             anchor_num=((args.size_x-1)//args.max_step+1)*((args.size_y-1)//args.max_step+1)
             #anchor_ratio=1/(args.max_step**2)
