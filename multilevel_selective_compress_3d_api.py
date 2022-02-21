@@ -873,6 +873,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,pred_ch
                         for z in range(1,cur_size_z,2):
                             #if z==cur_size_z-1:
                                 #continue
+                            print("scbvbv")
                             orig=cur_array[x][y][z]
                             if pred_check:
                                 if cur_preded[x][y][z-1]==0 or cur_preded[x][y][z+1]==0:
@@ -887,6 +888,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,pred_ch
                                 absloss+=abs(orig-pred)
                             q,decomp=quantize(orig,pred,cur_eb)
                             cur_qs.append(q)
+
                 
 
                             if q==0:
@@ -895,6 +897,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,pred_ch
                             cur_array[x][y][z]=decomp    
                             if pred_check:
                                 cur_preded[x][y][z]=1
+                            print("scbvdwbv")
 
 
 
