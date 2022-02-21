@@ -1830,7 +1830,7 @@ if __name__=="__main__":
         sz_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=args.lorenzo_fallback_check,sample_rate=args.fallback_sample_ratio,min_sampled_points=100,random_access=False,verbose=True,fix_algo=args.fix_algo,fix_algo_list=fix_algo_list)
     print(len(edge_qs))
     quants=np.concatenate( (np.array(edge_qs,dtype=np.int32),np.array(sum(qs,[]),dtype=np.int32) ) )
-    unpreds=np.array(us,dtype=dtype)
+    unpreds=np.array(us,dtype=np.float32)
     array.tofile(args.output)
     quants.tofile(args.quant)
     unpreds.tofile(args.unpred)
