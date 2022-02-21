@@ -853,7 +853,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,pred_ch
                 cur_us=[]
                 cur_array=np.copy(array[0:last_x+1:step,0:last_y+1:step,0:last_z+1:step])#reset cur_array
                 if pred_check:
-                    print("bvbv")
+                    
                     cur_preded=np.copy(preded[0:last_x+1:step,0:last_y+1:step,0:last_z+1:step])
                 if level>=min_coeff_level:
                     reg_xs=[]
@@ -873,7 +873,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,pred_ch
                         for z in range(1,cur_size_z,2):
                             #if z==cur_size_z-1:
                                 #continue
-                            print("scbvbv")
+                            
                             orig=cur_array[x][y][z]
                             if pred_check:
                                 if cur_preded[x][y][z-1]==0 or cur_preded[x][y][z+1]==0:
@@ -897,7 +897,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,pred_ch
                             cur_array[x][y][z]=decomp    
                             if pred_check:
                                 cur_preded[x][y][z]=1
-                            print("scbvdwbv")
+                            
 
 
 
@@ -922,7 +922,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,pred_ch
                             if pred_check:
                                 if cur_preded[x][y-1][z]==0 or cur_preded[x][y+1][z]==0:
                                     print("error12")
-                                return
+                                    return
                             if level>=min_coeff_level:
                                 pred= np.dot( np.array([cur_array[x][y-1][z],cur_array[x][y+1][z]]),coef )+ince 
                             else:
@@ -961,7 +961,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,pred_ch
                             if pred_check:
                                 if cur_preded[x-1][y][z]==0 or cur_preded[x+1][y][z]==0:
                                     print("error12")
-                                return
+                                    return
                             if level>=min_coeff_level:
                                 pred= np.dot( np.array([cur_array[x-1][y][z],cur_array[x+1][y][z]]),coef )+ince 
                             else:
