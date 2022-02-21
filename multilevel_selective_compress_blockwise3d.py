@@ -276,7 +276,8 @@ if __name__=="__main__":
                 msc3d(array[x_start:x_end+1,y_start:y_end+1,z_start:z_end+1],error_bound,rate,maximum_rate,min_coeff_level,max_step,anchor_rate,\
                     rate_list=rate_list,sz_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=args.lorenzo_fallback_check,\
                     sample_rate=args.fallback_sample_ratio,min_sampled_points=10,x_preded=(x_start>0),y_preded=(y_start>0),z_preded=(z_start>0),random_access=False,fix_algo=args.fix_algo)
-               #print([len(_) for _ in cur_qs])
+                print(lsd[0])
+                #print([len(_) for _ in cur_qs])
                 #print(len(cur_us))
                 for i in range(max_level+1):
                     #print(len(cur_qs[i]))
