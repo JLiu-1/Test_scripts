@@ -268,7 +268,7 @@ if __name__=="__main__":
     for x_start in range(0,last_x,max_step):
         for y_start in range(0,last_y,max_step):
             for z_start in range(0,last_z,max_step):
-                #print(x_start,y_start)
+                print(x_start,y_start)
                 x_end=size_x-1 if x_start==last_x-max_step else x_start+max_step 
                 y_end=size_y-1 if y_start==last_y-max_step else y_start+max_step 
                 z_end=size_z-1 if z_start==last_z-max_step else z_start+max_step 
@@ -276,7 +276,8 @@ if __name__=="__main__":
                 msc3d(array[x_start:x_end+1,y_start:y_end+1,z_start:z_end+1],error_bound,rate,maximum_rate,min_coeff_level,max_step,anchor_rate,\
                     rate_list=rate_list,sz_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=args.lorenzo_fallback_check,\
                     sample_rate=args.fallback_sample_ratio,min_sampled_points=10,x_preded=(x_start>0),y_preded=(y_start>0),z_preded=(z_start>0),random_access=False,fix_algo=args.fix_algo)
-
+                print([len(_) for _ in cur_qs])
+                print(len(cur_us))
                 for i in range(max_level+1):
                     #print(len(cur_qs[i]))
                     qs[i]+=cur_qs[i]
