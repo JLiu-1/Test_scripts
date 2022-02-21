@@ -14,7 +14,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
 
     size_x,size_y,size_z=array.shape
     #array=np.fromfile(args.input,dtype=np.float32).reshape((size_x,size_y))
-    if lorenzo>=-1:
+    if lorenzo>=0:
         orig_array=np.copy(array)
     if random_access and lorenzo>=0:
         lorenzo=0
