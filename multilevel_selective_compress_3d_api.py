@@ -1806,7 +1806,7 @@ if __name__=="__main__":
     #print(rate_list)
     array,qs,edge_qs,us,_,lsd=msc3d(array,error_bound,args.rate,args.maximum_rate,args.min_coeff_level,args.max_step,args.anchor_rate,rate_list=rate_list,x_preded=False,y_preded=False,z_preded=False,\
         sz_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=args.lorenzo_fallback_check,sample_rate=args.fallback_sample_ratio,min_sampled_points=100,random_access=False,verbose=True,fix_algo=args.fix_algo,fix_algo_list=fix_algo_list)
-
+    print(len(edge_qs))
     quants=np.concatenate( (np.array(edge_qs,dtype=np.int32),np.array(sum(qs,[]),dtype=np.int32) ) )
     unpreds=np.array(us,dtype=np.float32)
     array.tofile(args.output)
