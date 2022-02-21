@@ -10,7 +10,7 @@ import random
 from utils import *
 import time
 def msc2d(array,error_bound,rate,maximum_rate,min_coeff_level,max_step,anchor_rate,rate_list=None,x_preded=False,y_preded=False,sz3_interp=False,multidim_level=10,lorenzo=-1,\
-sample_rate=0.05,min_sampled_points=10,new_q_order=1,random_access=False,verbose=False,fix_algo="none",fix_algo_list=None,first_level=None,last_level=0,fake_compression=False):#lorenzo:only check lorenzo fallback with level no larger than lorenzo level
+sample_rate=0.05,min_sampled_points=10,new_q_order=2,random_access=False,verbose=False,fix_algo="none",fix_algo_list=None,first_level=None,last_level=0,fake_compression=False):#lorenzo:only check lorenzo fallback with level no larger than lorenzo level
 
     size_x,size_y=array.shape
     #array=np.fromfile(args.input,dtype=np.float32).reshape((size_x,size_y))
