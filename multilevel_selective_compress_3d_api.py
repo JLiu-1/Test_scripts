@@ -1520,6 +1520,7 @@ if __name__=="__main__":
     parser.add_argument('--sz_interp','-n',type=int,default=0)
 
     parser.add_argument('--size_x','-x',type=int,default=129)
+    parser.add_argument('--double','-b',type=int,default=0)
     parser.add_argument('--size_y','-y',type=int,default=129)
     parser.add_argument('--size_z','-z',type=int,default=129)
     parser.add_argument('--fix_algo','-f',type=str,default="none")
@@ -1527,9 +1528,13 @@ if __name__=="__main__":
 #parser.add_argument('--level','-l',type=int,default=2)
 #parser.add_argument('--noise','-n',type=bool,default=False)
 #parser.add_argument('--intercept','-t',type=bool,default=False)
+    if args.double:
+        dtype=np.double
+    else:
+        dtype=np.float32
     args = parser.parse_args()
     print(args)
-    array=np.fromfile(args.input,dtype=np.float32).reshape((args.size_x,args.size_y,args.size_z))
+    array=np.fromfile(args.input,dtype=dtype).reshape((args.size_x,args.size_y,args.size_z))
     orig_array=np.copy(array)
     rng=np.max(array)-np.min(array)
     error_bound=args.error*rng
@@ -1601,7 +1606,7 @@ if __name__=="__main__":
                             for level in range(max_level+1):
                                 #print(level)
                                 test_qs[level]+=cur_qs[level]
-                            test_us+=cur_us
+                            #test_us+=cur_us
                             #zero_square_error=np.sum((array[x_start:x_end,y_start:y_end]-themean*np.ones((max_step+1,max_step+1)) )**2)
                             square_error+=np.sum((array[x_start:x_end,y_start:y_end,z_start:z_end]-cur_array)**2)
                             
@@ -1676,7 +1681,7 @@ if __name__=="__main__":
                                 for level in range(max_level+1):
                                     #print(level)
                                     test_qs[level]+=cur_qs[level]
-                                test_us+=cur_us
+                                #test_us+=cur_us
                                 #zero_square_error=np.sum((array[x_start:x_end,y_start:y_end]-themean*np.ones((max_step+1,max_step+1)) )**2)
                                 square_error+=np.sum((array[x_start:x_end,y_start:y_end,z_start:z_end]-cur_array)**2)
                                 
@@ -1824,7 +1829,7 @@ if __name__=="__main__":
         sz_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=args.lorenzo_fallback_check,sample_rate=args.fallback_sample_ratio,min_sampled_points=100,random_access=False,verbose=True,fix_algo=args.fix_algo,fix_algo_list=fix_algo_list)
     print(len(edge_qs))
     quants=np.concatenate( (np.array(edge_qs,dtype=np.int32),np.array(sum(qs,[]),dtype=np.int32) ) )
-    unpreds=np.array(us,dtype=np.float32)
+    unpreds=np.array(us,dtype=dtype)
     array.tofile(args.output)
     quants.tofile(args.quant)
     unpreds.tofile(args.unpred)
