@@ -846,12 +846,13 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,pred_ch
         if (fix_algo=="none" and sz_interp) or fix_algo in ["sz3_linear","sz3_cubic","sz3_linear_zyx","sz3_linear_xyz","sz3_cubic_zyx","sz3_cubic_xyz"]:
             #1D linear
             #zyx
+            print("bvbv")
             if fix_algo=="none" or fix_algo=="sz3_linear" or fix_algo=="sz3_linear_zyx":
                 absloss=0
                 cur_qs=[]
                 cur_us=[]
                 cur_array=np.copy(array[0:last_x+1:step,0:last_y+1:step,0:last_z+1:step])#reset cur_array
-                if pred_check:
+            if pred_check:
                     cur_preded=np.copy(preded[0:last_x+1:step,0:last_y+1:step,0:last_z+1:step])
                 if level>=min_coeff_level:
                     reg_xs=[]
