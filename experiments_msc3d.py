@@ -17,6 +17,7 @@ parser.add_argument('--rlist',type=float,default=-1,nargs="+")
 parser.add_argument('--size_x','-x',type=int,default=129)
 parser.add_argument('--size_y','-y',type=int,default=129)
 parser.add_argument('--size_z','-z',type=int,default=129)
+parser.add_argument('--double','-b',type=int,default=0)
 parser.add_argument('--fix','-f',type=str,default="none")
 parser.add_argument('--anchor_fix','-c',type=int,default=0)
 parser.add_argument('--fullbound','-u',type=int,default=0)
@@ -52,9 +53,9 @@ for i in range(2):
     data[1:,0,i]=ebs
     #data[0,1:,i]=idxrange
 for i,eb in enumerate(ebs):
-    command1="python %s -i %s -o %s -q %s -u %s -s %d -r %f -m %f -x %d -y %d -z %d -e %f -cl %d -a %f -d %d -n %d --rlist %s -f %s -t %f"\
+    command1="python %s -i %s -o %s -q %s -u %s -s %d -r %f -m %f -x %d -y %d -z %d -e %f -cl %d -a %f -d %d -n %d --rlist %s -f %s -t %f -b %d"\
     % (script_name,args.input, dout,qout,uout,args.max_step,args.rate,args.maximum_rate,args.size_x,args.size_y,args.size_z,eb,args.min_coeff_level,\
-        args.anchor_rate,args.multidim_level,args.sz_interp,rlist,args.fix,args.autotuning)
+        args.anchor_rate,args.multidim_level,args.sz_interp,rlist,args.fix,args.autotuning,args.double)
     os.system(command1)
     command2="sz_backend %s %s " % (qout,uout)
     with os.popen(command2) as f:
@@ -67,8 +68,12 @@ for i,eb in enumerate(ebs):
             anchor_num=((args.size_x-1)//args.max_step+1)*((args.size_y-1)//args.max_step+1)*((args.size_z-1)//args.max_step+1)
             #anchor_ratio=1/(args.max_step**2)
             cr=ele_num/((ele_num-anchor_num)/cr+anchor_num)
-        
-    command3="compareData -f %s %s" % (args.input,dout)
+        if args.double:
+        	cr=cr*2
+    if args.double:
+    	command3="compareData -d %s %s" % (args.input,dout)
+    else:
+    	command3="compareData -f %s %s" % (args.input,dout)
     with os.popen(command3) as f:
         lines=f.read().splitlines()
         psnr=eval(lines[6].split(',')[0].split('=')[1])
