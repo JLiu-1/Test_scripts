@@ -1549,7 +1549,8 @@ if __name__=="__main__":
         pid=os.getpid()
         tq_name="%s_tq.dat"%pid
         tu_name="%s_tu.dat"%pid
-        max_step=args.max_step
+        #max_step=args.max_step
+        max_step=16#special
         max_level=int(math.log(max_step,2))
         for m,alpha in enumerate(alpha_list):
             for beta in beta_list:
@@ -1709,6 +1710,7 @@ if __name__=="__main__":
 
         print("Autotuning finished. Selected alpha: %f. Selected beta: %f. Best bitrate: %f. Best PSNR: %f."\
         %(bestalpha,bestbeta,bestb,bestp) )
+        max_step=args.max_step#special
         args.rate=bestalpha
         args.maximum_rate=bestbeta
 
