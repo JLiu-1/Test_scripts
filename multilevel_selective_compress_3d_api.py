@@ -424,7 +424,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,pred_ch
                 loss_dict[level]["linear"]=absloss
                 best_preds=np.copy(cur_array)
                 if pred_check:
-                    best_preded=np.copy(cur+preded)
+                    best_preded=np.copy(cur_preded)
                 best_absloss=absloss
                 best_qs=cur_qs.copy()
                 best_us=cur_us.copy()
