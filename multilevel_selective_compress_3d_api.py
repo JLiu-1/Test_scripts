@@ -1535,9 +1535,11 @@ if __name__=="__main__":
         #beta_list=[2,4,4,6,6]
         beta_list=[2,4]
         rate_list=None
-        block_num_x=(args.size_x-1)//args.max_step
-        block_num_y=(args.size_y-1)//args.max_step
-        block_num_z=(args.size_z-1)//args.max_step
+        max_step=args.max_step
+        #max_step=16#special
+        block_num_x=(args.size_x-1)//max_step
+        block_num_y=(args.size_y-1)//max_step
+        block_num_z=(args.size_z-1)//max_step
         steplength=int(args.autotuning**(1/3))
         bestalpha=1
         bestbeta=1
@@ -1549,8 +1551,7 @@ if __name__=="__main__":
         pid=os.getpid()
         tq_name="%s_tq.dat"%pid
         tu_name="%s_tu.dat"%pid
-        #max_step=args.max_step
-        max_step=16#special
+        
         max_level=int(math.log(max_step,2))
         for m,alpha in enumerate(alpha_list):
             for beta in beta_list:
@@ -1560,8 +1561,8 @@ if __name__=="__main__":
                 square_error=0
                 #zero_square_error=0
                 element_counts=0
-                themax=-9999999999999
-                themin=99999999999999
+                #themax=-9999999999999
+                #themin=99999999999999
                 #themean=0
                 #print(themean)
                 for i in range(0,block_num_x,steplength):
@@ -1585,7 +1586,7 @@ if __name__=="__main__":
                                 themin=curmin
                             '''
                             #print("a")
-                            cur_array,cur_qs,edge_qs,cur_us,_,lsd=msc3d(cur_array,error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
+                            cur_array,cur_qs,edge_qs,cur_us,_,lsd=msc3d(cur_array,error_bound,alpha,beta,9999,max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
                                                     sz_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo=args.fix_algo)
                             #print("b")
                             #print(len(cur_qs[max_level]))
@@ -1660,7 +1661,7 @@ if __name__=="__main__":
                                     themin=curmin
                                 '''
                                 #print("v")
-                                cur_array,cur_qs,edge_qs,cur_us,_,lsd=msc3d(cur_array,new_error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
+                                cur_array,cur_qs,edge_qs,cur_us,_,lsd=msc3d(cur_array,new_error_bound,alpha,beta,9999,max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
                                                         sz_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo=args.fix_algo)
                                 #print("d")
                                 #print(len(cur_qs[max_level]))
