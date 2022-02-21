@@ -94,14 +94,7 @@ if __name__=="__main__":
                             #print(x_start)
                             #print(y_start)
                         cur_array=np.copy(array[x_start:x_end,y_start:y_end])
-                            '''
-                            curmax=np.max(cur_array)
-                            curmin=np.min(cur_array)
-                            if curmax>themax:
-                                themax=curmax
-                            if curmin<themin:
-                                themin=curmin
-                            '''
+                            
                             #left question: The predictor selection is separated on each block, which does not follow the real compression
                             #What about fix the prediction on SZ3_cubic?
                         cur_array,cur_qs,edge_qs,cur_us,_,lsd=msc2d(cur_array,error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
@@ -167,14 +160,7 @@ if __name__=="__main__":
                                 #print(x_start)
                                 #print(y_start)
                             cur_array=np.copy(array[x_start:x_end,y_start:y_end])
-                                '''
-                                curmax=np.max(cur_array)
-                                curmin=np.min(cur_array)
-                                if curmax>themax:
-                                    themax=curmax
-                                if curmin<themin:
-                                    themin=curmin
-                                '''
+                                
                             cur_array,cur_qs,edge_qs,cur_us,_,lsd=msc2d(cur_array,new_error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
                                                     sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo=args.fix_algo,fix_algo_list=None)
                                 #print(len(cur_qs[max_level]))
