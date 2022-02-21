@@ -1440,7 +1440,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
             print ("Level %d finished. Selected algorithm: %s. Mean prediction abs loss: %f." % (level,selected_algo,mean_l1_loss))
         step=step//2
         level-=1
-        print(np.max(np.abs(orig_array-array)))
+        #print(np.max(np.abs(orig_array-array)))
         #print(sum([len(_) for _ in qs] ))
         #print(best_absloss)
         #print(cumulated_loss)
@@ -1481,7 +1481,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
     offset_y2=1 if random_access else 0
     offset_z2=1 if random_access else 0
     lorenzo_3d(array,offset_x1,size_x-offset_x2,offset_y1,size_y-offset_y2,offset_z1,size_z-offset_z2)
-    print(np.max(np.abs(orig_array-array)))
+    #print(np.max(np.abs(orig_array-array)))
     #lorenzo_2d(array,last_x+1,,offset_y1,size_y-offset_y2)
     return array,qs,edge_qs,us,selected_algos,loss_dict
 
