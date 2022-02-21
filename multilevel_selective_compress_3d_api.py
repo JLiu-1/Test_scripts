@@ -1481,6 +1481,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
     offset_y2=1 if random_access else 0
     offset_z2=1 if random_access else 0
     lorenzo_3d(array,offset_x1,size_x-offset_x2,offset_y1,size_y-offset_y2,offset_z1,size_z-offset_z2)
+    print(np.max(np.abs(orig_array-array)))
     #lorenzo_2d(array,last_x+1,,offset_y1,size_y-offset_y2)
     return array,qs,edge_qs,us,selected_algos,loss_dict
 
@@ -1582,10 +1583,10 @@ if __name__=="__main__":
                             if curmin<themin:
                                 themin=curmin
                             '''
-                            print("a")
+                            #print("a")
                             cur_array,cur_qs,edge_qs,cur_us,_,lsd=msc3d(cur_array,error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
                                                     sz_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo=args.fix_algo)
-                            print("b")
+                            #print("b")
                             #print(len(cur_qs[max_level]))
                             #print(len(test_qs[max_level]))
                             for level in range(max_level+1):
@@ -1657,10 +1658,10 @@ if __name__=="__main__":
                                 if curmin<themin:
                                     themin=curmin
                                 '''
-                                print("v")
+                                #print("v")
                                 cur_array,cur_qs,edge_qs,cur_us,_,lsd=msc3d(cur_array,new_error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
                                                         sz_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo=args.fix_algo)
-                                print("d")
+                                #print("d")
                                 #print(len(cur_qs[max_level]))
                                 #print(len(test_qs[max_level]))
                                 for level in range(max_level+1):
