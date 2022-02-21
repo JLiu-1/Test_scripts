@@ -123,7 +123,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
         best_us=[]#need to copy
         xstart=2 if x_preded else 0
         ystart=2 if y_preded else 0
-        zstart=2 if y_preded else 0
+        zstart=2 if z_preded else 0
     #linear interp
         absloss=0
         selected_algo="none"
@@ -1475,7 +1475,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                     array[x][y]=decomp
     offset_x1=1 if x_preded else 0
     offset_y1=1 if y_preded else 0
-    offset_z1=1 if y_preded else 0
+    offset_z1=1 if z_preded else 0
     offset_x2=1 if random_access else 0
     offset_y2=1 if random_access else 0
     offset_z2=1 if random_access else 0
