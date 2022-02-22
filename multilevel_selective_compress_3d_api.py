@@ -876,28 +876,7 @@ fix_algo="none",fix_algo_list=None,first_level=None,last_level=0,fake_compressio
                     best_loss=loss
 
                    
-                    if new_q_order==1:
-                        for x in range(xstart,cur_size_x,2):
-                            for y in range(ystart,cur_size_y,2):
-                                for z in range(1,cur_size_z,2):
-                                    cur_qs.append(q_array[x][y][z])
-
-                        for x in range(xstart,cur_size_x,2):
-                            for y in range(1,cur_size_y,2):
-                                for z in range(1 if zstart>0 else 0,cur_size_z,1):
-                                    cur_qs.append(q_array[x][y][z])
-
-                        for x in range(1,cur_size_x,2):
-                            for y in range(1 if ystart>0 else 0,cur_size_y,1):
-                                for z in range(1 if zstart>0 else 0,cur_size_z,1):
-                                    cur_qs.append(q_array[x][y][z])
-                    elif new_q_order==2:
-                        for x in range(1 if xstart>0 else 0,cur_size_x,1):
-                            for y in range(1 if ystart>0 else 0,cur_size_y,1):
-                                for z in range(1 if zstart>0 else 0,cur_size_z,1):
-                                    if x%2==0 and y%2==0 and z%2==0:
-                                        continue
-                                    cur_qs.append(q_array[x][y][z])
+                    
 
                     
 
@@ -1103,33 +1082,12 @@ fix_algo="none",fix_algo_list=None,first_level=None,last_level=0,fake_compressio
                 if selected_algo=="none" or loss<best_loss:
                     selected_algo="multidim"
                     best_preds=np.copy(cur_array)
-<<<<<<< HEAD
-                    best_absloss=absloss
-                    if new_q_order==1:
-                        for x in range(xstart,cur_size_x,2):
-                            for y in range(ystart,cur_size_y,2):
-                                for z in range(1,cur_size_z,2):
-                                    cur_qs.append(q_array[x][y][z])
 
-                        for x in range(xstart,cur_size_x,2):
-                            for y in range(1,cur_size_y,2):
-                                for z in range(1 if zstart>0 else 0,cur_size_z,1):
-                                    cur_qs.append(q_array[x][y][z])
-
-                        for x in range(1,cur_size_x,2):
-                            for y in range(1 if ystart>0 else 0,cur_size_y,1):
-                                for z in range(1 if zstart>0 else 0,cur_size_z,1):
-                                    cur_qs.append(q_array[x][y][z])
-                    elif new_q_order==2:
-                        for x in range(1 if xstart>0 else 0,cur_size_x,1):
-                            for y in range(1 if ystart>0 else 0,cur_size_y,1):
-                                for z in range(1 if zstart>0 else 0,cur_size_z,1):
-                                    if x%2==0 and y%2==0 and z%2==0:
-                                        continue
-                                    cur_qs.append(q_array[x][y][z])
-=======
                     best_loss=loss
->>>>>>> f5694902d0c64e2031ac65f3a3f7466efc2618a0
+                    
+
+                    
+
                     best_qs=cur_qs.copy()
                     best_us=cur_us.copy()
 
