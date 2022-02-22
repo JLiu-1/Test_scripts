@@ -1234,81 +1234,7 @@ if __name__=="__main__":
         tu_name="%s_tu.dat"%pid
         max_step=args.max_step
         for k,alpha in enumerate(alpha_list):
-            beta=beta_list[k]
-            test_qs=[[] for i in range(max_level+1)]
-            test_us=[]
-            square_error=0
-            #zero_square_error=0
-            element_counts=0
-            themax=-9999999999999
-            themin=99999999999999
-            #themean=0
-            #print(themean)
-            for i in range(0,block_num_x,steplength):
-                for j in range(0,block_num_y,steplength):
-                  
-                    x_start=max_step*i
-                    y_start=max_step*j
-                    x_end=x_start+max_step+1
-                    y_end=y_start+max_step+1
-                    #print(x_start)
-                    #print(y_start)
-                    #cur_array=np.copy(array[x_start:x_end,y_start:y_end])
-                    '''
-                    curmax=np.max(array[x_start:x_end,y_start:y_end])
-                    curmin=np.min(array[x_start:x_end,y_start:y_end])
-                    if curmax>themax:
-                        themax=curmax
-                    if curmin<themin:
-                        themin=curmin
-                    '''
-                    #what about using an expanded array?
-                    cur_qs,edge_qs,cur_us,_,lsd=msc2d(array,x_start,x_end,y_start,y_end,error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
-                                            sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo=args.fix_algo)
-                    
-                    #print(len(cur_qs[max_level]))
-                    #print(len(test_qs[max_level]))
-                    for level in range(max_level+1):
-                        #print(level)
-                        test_qs[level]+=cur_qs[level]
-                    test_us+=cur_us
-                    #zero_square_error=np.sum((array[x_start:x_end,y_start:y_end]-themean*np.ones((max_step+1,max_step+1)) )**2)
-                    square_error+=np.sum((array[x_start:x_end,y_start:y_end]-orig_array[x_start:x_end,y_start:y_end])**2)
-                    array[x_start:x_end,y_start:y_end]=orig_array[x_start:x_end,y_start:y_end]
-                    
-                    element_counts+=(max_step+1)**2 
-            t_mse=square_error/element_counts
-            #zero_mse=zero_square_error/element_counts
-            psnr=20*math.log(rng,10)-10*math.log(t_mse,10)
-            #zero_psnr=20*math.log(themax-themin,10)-10*math.log(zero_mse,10)
-            #print(zero_psnr)
-          
-            np.array(sum(test_qs,[]),dtype=np.int32).tofile(tq_name)
-            np.array(sum(test_us,[]),dtype=np.int32).tofile(tu_name)
-            with os.popen("sz_backend %s %s" % (tq_name,tu_name)) as f:
-                lines=f.read().splitlines()
-                cr=eval(lines[4].split("=")[-1])
-                if args.anchor_rate==0:
-                    anchor_ratio=1/(args.max_step**2)
-                    cr=1/((1-anchor_ratio)/cr+anchor_ratio)
-                bitrate=32/cr
-            os.system("rm -f %s;rm -f %s" % (tq_name,tu_name))
-            #pdb=(psnr-zero_psnr)/bitrate
-            if psnr<=bestp and bitrate>=bestb:
-                continue
-            elif psnr>=bestp and bitrate<=bestb:
-
-                    bestalpha=alpha
-                    bestbeta=beta
-               
-                    bestb=bitrate
-                    bestp=psnr
-                   
-            else:
-                if psnr>bestp:
-                    new_error_bound=1.2*error_bound
-                else:
-                    new_error_bound=0.8*error_bound
+            for beta in beta_list:
                 test_qs=[[] for i in range(max_level+1)]
                 test_us=[]
                 square_error=0
@@ -1336,7 +1262,8 @@ if __name__=="__main__":
                         if curmin<themin:
                             themin=curmin
                         '''
-                        cur_qs,edge_qs,cur_us,_,lsd=msc2d(array,x_start,x_end,y_start,y_end,new_error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
+                        #what about using an expanded array?
+                        cur_qs,edge_qs,cur_us,_,lsd=msc2d(array,x_start,x_end,y_start,y_end,error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
                                                 sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo=args.fix_algo)
                         
                         #print(len(cur_qs[max_level]))
@@ -1352,7 +1279,7 @@ if __name__=="__main__":
                         element_counts+=(max_step+1)**2 
                 t_mse=square_error/element_counts
                 #zero_mse=zero_square_error/element_counts
-                psnr_r=20*math.log(rng,10)-10*math.log(t_mse,10)
+                psnr=20*math.log(rng,10)-10*math.log(t_mse,10)
                 #zero_psnr=20*math.log(themax-themin,10)-10*math.log(zero_mse,10)
                 #print(zero_psnr)
               
@@ -1364,19 +1291,94 @@ if __name__=="__main__":
                     if args.anchor_rate==0:
                         anchor_ratio=1/(args.max_step**2)
                         cr=1/((1-anchor_ratio)/cr+anchor_ratio)
-                    bitrate_r=32/cr
+                    bitrate=32/cr
                 os.system("rm -f %s;rm -f %s" % (tq_name,tu_name))
-                a=(psnr-psnr_r)/(bitrate-bitrate_r)
-                b=psnr-a*bitrate
-                #print(a)
-                #print(b)
-                reg=a*bestb+b
-                if reg>bestp:
-                    bestalpha=alpha
-                    bestbeta=beta
-               
-                    bestb=bitrate
-                    bestp=psnr
+                #pdb=(psnr-zero_psnr)/bitrate
+                if psnr<=bestp and bitrate>=bestb:
+                    continue
+                elif psnr>=bestp and bitrate<=bestb:
+
+                        bestalpha=alpha
+                        bestbeta=beta
+                   
+                        bestb=bitrate
+                        bestp=psnr
+                       
+                else:
+                    if psnr>bestp:
+                        new_error_bound=1.2*error_bound
+                    else:
+                        new_error_bound=0.8*error_bound
+                    test_qs=[[] for i in range(max_level+1)]
+                    test_us=[]
+                    square_error=0
+                    #zero_square_error=0
+                    element_counts=0
+                    themax=-9999999999999
+                    themin=99999999999999
+                    #themean=0
+                    #print(themean)
+                    for i in range(0,block_num_x,steplength):
+                        for j in range(0,block_num_y,steplength):
+                          
+                            x_start=max_step*i
+                            y_start=max_step*j
+                            x_end=x_start+max_step+1
+                            y_end=y_start+max_step+1
+                            #print(x_start)
+                            #print(y_start)
+                            #cur_array=np.copy(array[x_start:x_end,y_start:y_end])
+                            '''
+                            curmax=np.max(array[x_start:x_end,y_start:y_end])
+                            curmin=np.min(array[x_start:x_end,y_start:y_end])
+                            if curmax>themax:
+                                themax=curmax
+                            if curmin<themin:
+                                themin=curmin
+                            '''
+                            cur_qs,edge_qs,cur_us,_,lsd=msc2d(array,x_start,x_end,y_start,y_end,new_error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
+                                                    sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo=args.fix_algo)
+                            
+                            #print(len(cur_qs[max_level]))
+                            #print(len(test_qs[max_level]))
+                            for level in range(max_level+1):
+                                #print(level)
+                                test_qs[level]+=cur_qs[level]
+                            test_us+=cur_us
+                            #zero_square_error=np.sum((array[x_start:x_end,y_start:y_end]-themean*np.ones((max_step+1,max_step+1)) )**2)
+                            square_error+=np.sum((array[x_start:x_end,y_start:y_end]-orig_array[x_start:x_end,y_start:y_end])**2)
+                            array[x_start:x_end,y_start:y_end]=orig_array[x_start:x_end,y_start:y_end]
+                            
+                            element_counts+=(max_step+1)**2 
+                    t_mse=square_error/element_counts
+                    #zero_mse=zero_square_error/element_counts
+                    psnr_r=20*math.log(rng,10)-10*math.log(t_mse,10)
+                    #zero_psnr=20*math.log(themax-themin,10)-10*math.log(zero_mse,10)
+                    #print(zero_psnr)
+                  
+                    np.array(sum(test_qs,[]),dtype=np.int32).tofile(tq_name)
+                    np.array(sum(test_us,[]),dtype=np.int32).tofile(tu_name)
+                    with os.popen("sz_backend %s %s" % (tq_name,tu_name)) as f:
+                        lines=f.read().splitlines()
+                        cr=eval(lines[4].split("=")[-1])
+                        if args.anchor_rate==0:
+                            anchor_ratio=1/(args.max_step**2)
+                            cr=1/((1-anchor_ratio)/cr+anchor_ratio)
+                        bitrate_r=32/cr
+                    os.system("rm -f %s;rm -f %s" % (tq_name,tu_name))
+                    a=(psnr-psnr_r)/(bitrate-bitrate_r)
+                    b=psnr-a*bitrate
+                    #print(a)
+                    #print(b)
+                    reg=a*bestb+b
+                    if reg>bestp:
+                        bestalpha=alpha
+                        bestbeta=beta
+                   
+                        bestb=bitrate
+                        bestp=psnr
+                if alpha**(max_level-1)<=beta:
+                    break
 
                 
                 
