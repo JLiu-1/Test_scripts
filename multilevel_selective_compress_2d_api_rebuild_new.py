@@ -1012,7 +1012,7 @@ fix_algo_list=None,first_level=None,last_level=0,first_order="block",fake_compre
                 loss_dict[level]["sz3_cubic_xy"]=absloss
                 if selected_algo=="none" or absloss<best_absloss:
                     selected_algo="sz3_cubic_xy"
-                    best_preds=np.copy(array[x_start:last_x+1:step,y_start:last_y+1:step])
+                    best_preds=np.copy(array[x_start:x_end:step,y_start:y_end:step])
                     best_absloss=absloss
                     best_qs=cur_qs.copy()
                     best_us=cur_us.copy()
