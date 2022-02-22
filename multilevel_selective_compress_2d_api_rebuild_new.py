@@ -755,7 +755,7 @@ fix_algo_list=None,first_level=None,last_level=0,first_order="block",fake_compre
                 cur_qs=[]
                 cur_us=[]
                 if selected_algo!=None:
-                    array[x_start:x_end:step,y_start:x_end:step]=array_slice#reset array
+                    array[x_start:x_end:step,y_start:y_end:step]=array_slice#reset array
 
                 '''
                 if level>=min_coeff_level:
