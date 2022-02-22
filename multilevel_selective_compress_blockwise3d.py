@@ -275,6 +275,7 @@ if __name__=="__main__":
                 x_end=size_x-1 if x_start+block_size>=last_x else x_start+block_size
                 y_end=size_y-1 if y_start+block_size>=last_y else y_start+block_size
                 z_end=size_z-1 if z_start+block_size>=last_z else z_start+block_size
+                print(x_start,x_end,y_start,y_end,z_start,z_end)
                 #print(args.fix_algo)
                 #print(np.max(array[x_start:x_end+1,y_start:y_end+1,z_start:z_end+1]),np.min(array[x_start:x_end+1,y_start:y_end+1,z_start:z_end+1]))
                 array[x_start:x_end+1,y_start:y_end+1,z_start:z_end+1],cur_qs,cur_lorenzo_qs,cur_us,cur_selected,lsd=\
