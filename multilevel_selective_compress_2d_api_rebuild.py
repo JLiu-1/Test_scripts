@@ -9,8 +9,10 @@ import math
 import random
 from utils import *
 import time
-def msc2d(array,x_start,x_end,y_start,y_end,error_bound,rate,maximum_rate,min_coeff_level,max_step,anchor_rate,rate_list=None,x_preded=False,y_preded=False,sz3_interp=False,multidim_level=10,lorenzo=-1,\
-sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_algo="none",fix_algo_list=None,first_level=None,last_level=0,first_order="block",fake_compression=False):#lorenzo:only check lorenzo fallback with level no larger than lorenzo level
+def msc2d(array,x_start,x_end,y_start,y_end,error_bound,rate,maximum_rate,min_coeff_level,max_step,anchor_rate,\
+    rate_list=None,x_preded=False,y_preded=False,sz3_interp=False,multidim_level=10,lorenzo=-1,\
+sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_algo="none",\
+fix_algo_list=None,first_level=None,last_level=0,first_order="block",fake_compression=False):#lorenzo:only check lorenzo fallback with level no larger than lorenzo level
     #x_y_start should be on the anchor grid
     size_x,size_y=array.shape
     #array=np.fromfile(args.input,dtype=np.float32).reshape((size_x,size_y))
@@ -48,7 +50,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
             reg_xs=[]
             reg_ys=[]
             for x in range(x_start+max_step,x_end,max_step):
-                for y in range(y_start,max_step,y_end,max_step):
+                for y in range(y_start+max_step,y_end,max_step):
                     reg_xs.append(np.array([array[x-max_step][y-max_step],array[x-max_step][y],array[x][y-max_step]],dtype=np.float64))
                     reg_ys.append(array[x][y])
                     res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)

@@ -9,8 +9,10 @@ import math
 import random
 from utils import *
 
-def msc3d(array,error_bound,rate,maximum_rate,min_coeff_level,max_step,anchor_rate,rate_list=None,x_preded=False,y_preded=False,z_preded=False,multidim_level=10,sz_interp=False,lorenzo=-1,\
-sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose=False,pred_check=False,fix_algo="none",fix_algo_list=None,first_level=None,last_level=0,fake_compression=False):#lorenzo:only check lorenzo fallback with level no larger than lorenzo level
+def msc3d(array,error_bound,rate,maximum_rate,min_coeff_level,max_step,anchor_rate,rate_list=None,x_preded=False,\
+    y_preded=False,z_preded=False,multidim_level=10,sz_interp=False,lorenzo=-1,\
+sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose=False,pred_check=False,\
+fix_algo="none",fix_algo_list=None,first_level=None,last_level=0,fake_compression=False):#lorenzo:only check lorenzo fallback with level no larger than lorenzo level
 
     size_x,size_y,size_z=array.shape
     '''
@@ -121,6 +123,10 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
     cumulated_loss=0.0
     loss_dict=[{} for i in range(max_level)]
     while level>=last_level:#step>0:
+        if level>first_level:
+            level-=1
+            step=step//2
+            continue
         cur_qs=[]
         cur_us=[]
         if rate_list!=None:
@@ -500,6 +506,13 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                         for y in range(1 if ystart>0 else 0,cur_size_y,1):
                             for z in range(1 if zstart>0 else 0,cur_size_z,1):
                                 cur_qs.append(q_array[x][y][z])
+                elif new_q_order==2:
+                    for x in range(1 if xstart>0 else 0,cur_size_x,1):
+                        for y in range(1 if ystart>0 else 0,cur_size_y,1):
+                            for z in range(1 if zstart>0 else 0,cur_size_z,1):
+                                if x%2==0 and y%2==0 and z%2==0:
+                                    continue
+                                cur_qs.append(q_array[x][y][z])
 
                 best_qs=cur_qs.copy()
                 best_us=cur_us.copy()
@@ -517,6 +530,8 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                 cur_qs=[]
                 cur_us=[]
                 cur_array=np.copy(array[0:last_x+1:step,0:last_y+1:step,0:last_z+1:step])#reset cur_array
+                if new_q_order:
+                    q_array=np.zeros(cur_array.shape,dtype=np.int32)
                 if level>=min_coeff_level:
                     reg_xs=[]
                     reg_ys=[]
@@ -545,7 +560,10 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                             if (not random_access) or level!=0 or ((x!=cur_size_x-1 or last_x!=size_x-1) and (y!=cur_size_y-1 or last_y!=size_y-1)):
                                 absloss+=abs(orig-pred)
                             q,decomp=quantize(orig,pred,cur_eb)
-                            cur_qs.append(q)
+                            if new_q_order:
+                                q_array[x][y][z]=q
+                            else:
+                                cur_qs.append(q)
                     
                             if q==0:
                                 cur_us.append(decomp)
@@ -581,7 +599,10 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                             if (not random_access) or level!=0 or ((x!=cur_size_x-1 or last_x!=size_x-1) and (z!=cur_size_z-1 or last_z!=size_z-1)):
                                 absloss+=abs(orig-pred)
                             q,decomp=quantize(orig,pred,cur_eb)
-                            cur_qs.append(q)
+                            if new_q_order:
+                                q_array[x][y][z]=q
+                            else:
+                                cur_qs.append(q)
                     
                             if q==0:
                                 cur_us.append(decomp)
@@ -616,7 +637,10 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                             if (not random_access) or level!=0 or ( (y!=cur_size_y-1 or last_y!=size_y-1) and (z!=cur_size_z-1 or last_z!=size_z-1)):
                                 absloss+=abs(orig-pred)
                             q,decomp=quantize(orig,pred,cur_eb)
-                            cur_qs.append(q)
+                            if new_q_order:
+                                q_array[x][y][z]=q
+                            else:
+                                cur_qs.append(q)
                     
                             if q==0:
                                 cur_us.append(decomp)
@@ -652,7 +676,10 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                                 absloss+=abs(orig-pred)
                             q,decomp=quantize(orig,pred,cur_eb)
                     
-                            cur_qs.append(q)
+                            if new_q_order:
+                                q_array[x][y][z]=q
+                            else:
+                                cur_qs.append(q)
                             if q==0:
                                 cur_us.append(decomp)
                         #absloss+=abs(decomp)
@@ -684,7 +711,10 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                                 absloss+=abs(orig-pred)
                             q,decomp=quantize(orig,pred,cur_eb)
                     
-                            cur_qs.append(q)
+                            if new_q_order:
+                                q_array[x][y][z]=q
+                            else:
+                                cur_qs.append(q)
                             if q==0:
                                 cur_us.append(decomp)
                         #absloss+=abs(decomp)
@@ -715,7 +745,10 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                                 absloss+=abs(orig-pred)
                             q,decomp=quantize(orig,pred,cur_eb)
                     
-                            cur_qs.append(q)
+                            if new_q_order:
+                                q_array[x][y][z]=q
+                            else:
+                                cur_qs.append(q)
                             if q==0:
                                 cur_us.append(decomp)
                         #absloss+=abs(decomp)
@@ -745,7 +778,10 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                             absloss+=abs(orig-pred)
                             q,decomp=quantize(orig,pred,cur_eb)
                     
-                            cur_qs.append(q)
+                            if new_q_order:
+                                q_array[x][y][z]=q
+                            else:
+                                cur_qs.append(q)
                             if q==0:
                                 cur_us.append(decomp)
                         #absloss+=abs(decomp)
@@ -755,6 +791,28 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                     selected_algo="cubic"
                     best_preds=np.copy(cur_array)
                     best_absloss=absloss
+                    if new_q_order==1:
+                        for x in range(xstart,cur_size_x,2):
+                            for y in range(ystart,cur_size_y,2):
+                                for z in range(1,cur_size_z,2):
+                                    cur_qs.append(q_array[x][y][z])
+
+                        for x in range(xstart,cur_size_x,2):
+                            for y in range(1,cur_size_y,2):
+                                for z in range(1 if zstart>0 else 0,cur_size_z,1):
+                                    cur_qs.append(q_array[x][y][z])
+
+                        for x in range(1,cur_size_x,2):
+                            for y in range(1 if ystart>0 else 0,cur_size_y,1):
+                                for z in range(1 if zstart>0 else 0,cur_size_z,1):
+                                    cur_qs.append(q_array[x][y][z])
+                    elif new_q_order==2:
+                        for x in range(1 if xstart>0 else 0,cur_size_x,1):
+                            for y in range(1 if ystart>0 else 0,cur_size_y,1):
+                                for z in range(1 if zstart>0 else 0,cur_size_z,1):
+                                    if x%2==0 and y%2==0 and z%2==0:
+                                        continue
+                                    cur_qs.append(q_array[x][y][z])
                     best_qs=cur_qs.copy()
                     best_us=cur_us.copy()
         
@@ -789,7 +847,10 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                             absloss+=abs(orig-pred)
                             q,decomp=quantize(orig,pred,cur_eb)
                 
-                            cur_qs.append(q)
+                            if new_q_order:
+                                q_array[x][y][z]=q
+                            else:
+                                cur_qs.append(q)
                             if q==0:
                                 cur_us.append(decomp)
                                 #absloss+=abs(decomp)
@@ -845,7 +906,10 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                             if (not random_access) or level!=0 or ((x!=cur_size_x-1 or last_x!=size_x-1) and (y!=cur_size_y-1 or last_y!=size_y-1) and (z!=cur_size_z-1 or last_z!=size_z-1)):
                                 absloss+=abs(orig-pred)
                             q,decomp=quantize(orig,pred,cur_eb)
-                            cur_qs.append(q)
+                            if new_q_order:
+                                q_array[x][y][z]=q
+                            else:
+                                cur_qs.append(q)
                 
 
                             if q==0:
@@ -901,7 +965,10 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                             if (not random_access) or level!=0 or ((x!=cur_size_x-1 or last_x!=size_x-1) and (y!=cur_size_y-1 or last_y!=size_y-1) and (z!=cur_size_z-1 or last_z!=size_z-1)):
                                 absloss+=abs(orig-pred)
                             q,decomp=quantize(orig,pred,cur_eb)
-                            cur_qs.append(q)
+                            if new_q_order:
+                                q_array[x][y][z]=q
+                            else:
+                                cur_qs.append(q)
                 
 
                             if q==0:
@@ -914,6 +981,28 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                     selected_algo="multidim"
                     best_preds=np.copy(cur_array)
                     best_absloss=absloss
+                    if new_q_order==1:
+                        for x in range(xstart,cur_size_x,2):
+                            for y in range(ystart,cur_size_y,2):
+                                for z in range(1,cur_size_z,2):
+                                    cur_qs.append(q_array[x][y][z])
+
+                        for x in range(xstart,cur_size_x,2):
+                            for y in range(1,cur_size_y,2):
+                                for z in range(1 if zstart>0 else 0,cur_size_z,1):
+                                    cur_qs.append(q_array[x][y][z])
+
+                        for x in range(1,cur_size_x,2):
+                            for y in range(1 if ystart>0 else 0,cur_size_y,1):
+                                for z in range(1 if zstart>0 else 0,cur_size_z,1):
+                                    cur_qs.append(q_array[x][y][z])
+                    elif new_q_order==2:
+                        for x in range(1 if xstart>0 else 0,cur_size_x,1):
+                            for y in range(1 if ystart>0 else 0,cur_size_y,1):
+                                for z in range(1 if zstart>0 else 0,cur_size_z,1):
+                                    if x%2==0 and y%2==0 and z%2==0:
+                                        continue
+                                    cur_qs.append(q_array[x][y][z])
                     best_qs=cur_qs.copy()
                     best_us=cur_us.copy()
 

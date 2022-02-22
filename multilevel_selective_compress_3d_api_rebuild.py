@@ -9,10 +9,16 @@ import math
 import random
 from utils import *
 
-def msc3d(array,error_bound,rate,maximum_rate,min_coeff_level,max_step,anchor_rate,rate_list=None,x_preded=False,y_preded=False,z_preded=False,multidim_level=10,sz_interp=False,lorenzo=-1,\
-sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_algo="none",min_level=0):#lorenzo:only check lorenzo fallback with level no larger than lorenzo level
+def msc3d(array,x_start,x_end,y_start,y_end,z_start,z_end,error_bound,rate,maximum_rate,min_coeff_level,max_step,anchor_rate,\
+    rate_list=None,x_preded=False,y_preded=False,z_preded=False,multidim_level=10,sz_interp=False,lorenzo=-1,\
+sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose=False,pred_check=False\
+,fix_algo="none",fix_algo_list=None,first_level=None,last_level=0,first_order="block",fake_compression=False):#lorenzo:only check lorenzo fallback with level no larger than lorenzo level
 
     size_x,size_y,size_z=array.shape
+    '''
+    if pred_check:
+        preded=np.zeros((size_x,size_y,size_z))
+    '''
     #array=np.fromfile(args.input,dtype=np.float32).reshape((size_x,size_y))
     if lorenzo>=0:
         orig_array=np.copy(array)
@@ -22,82 +28,108 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
     #max_step=args.max_step
     #rate=args.rate
     max_level=int(math.log(max_step,2))
+
     selected_algos=[]
 
 
     qs=[ [] for i in range(max_level+1)]
-
+    
     us=[]
     edge_qs=[]
 #min_coeff_level=args.min_coeff_level
 #anchor=args.anchor
-    if max_step>0:
+    if anchor_rate>0:
+        anchor_eb=error_bound/anchor_rate
+    else:
+        anchor_eb=0
+    startx=max_step if x_preded else 0
+    starty=max_step if y_preded else 0
+    startz=max_step if z_preded else 0
+    if (first_level==None or max_level==first_level+1) and anchor_rate>0:
     
     #anchor_rate=args.anchor_rate
-        if anchor_rate>0:
-            anchor_eb=error_bound/anchor_rate
-            if verbose:
-                print("Anchor eb:%f" % anchor_eb)
+        
+        anchor_eb=error_bound/anchor_rate
+        if verbose:
+            print("Anchor eb:%f" % anchor_eb)
 
-            if max_level>=min_coeff_level :
-                reg_xs=[]
-                reg_ys=[]
-                for x in range(max_step,size_x,max_step):
-                    for y in range(max_step,size_y,max_step):
-                        for z in range(max_step,size_z,max_step):
-                            reg_xs.append(np.array(array[x-max_step:x+1,y-max_step:y+1,z-max_step:z+1][:7],dtype=np.float64))
-                            reg_ys.append(array[x][y][z])
-                            res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
-                            coef=res.coef_ 
-                            ince=res.intercept_
+        if max_level>=min_coeff_level :
+            reg_xs=[]
+            reg_ys=[]
+            for x in range(x_start+max_step,x_end,max_step):
+                for y in range(y_start+max_step,y_end,max_step):
+                    for z in range(z_start+max_step,z_end,max_step):
+                        reg_xs.append(np.array(array[x-max_step:x+1,y-max_step:y+1,z-max_step:z+1][:7],dtype=np.float64))
+                        reg_ys.append(array[x][y][z])
+                        res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
+                        coef=res.coef_ 
+                        ince=res.intercept_
 
  
-            startx=max_step if x_preded else 0
-            starty=max_step if y_preded else 0
-            startz=max_step if z_preded else 0
-            for x in range(startx,size_x,max_step):
-                for y in range(starty,size_y,max_step):
-                    for z in range(startz,size_y,max_step):
-                        orig=array[x][y][z]
-                        if x and y and z and max_level>=min_coeff_level:
-                            reg_block=array[x-max_step:x+1,y-max_step:y+1,z-max_step:z+1][:7]
-                            pred=np.dot(reg_block,coef)+ince
+        
+        for x in range(x_start+startx,x_end,max_step):
+            for y in range(y_start+starty,y_end,max_step):
+                for z in range(z_start+startz,z_end,max_step):
+                    orig=array[x][y][z]
+                    if x and y and z and max_level>=min_coeff_level:
+                        reg_block=array[x-max_step:x+1,y-max_step:y+1,z-max_step:z+1][:7]
+                        pred=np.dot(reg_block,coef)+ince
 
             
                 
-                        else:
-                            f_011=array[x-max_step][y][z] if x else 0
-                            f_101=array[x][y-max_step][z] if y else 0
-                            f_110=array[x][y][z-max_step] if z else 0
-                            f_001=array[x-max_step][y-max_step][z] if x and y else 0
-                            f_100=array[x][y-max_step][z-max_step] if y and z else 0
-                            f_010=array[x-max_step][y][z-max_step] if x and z else 0
-                            f_000=array[x-max_step][y-max_step][z-max_step] if x and y and z else 0
+                    else:
+                        f_011=array[x-max_step][y][z] if x else 0
+                        f_101=array[x][y-max_step][z] if y else 0
+                        f_110=array[x][y][z-max_step] if z else 0
+                        f_001=array[x-max_step][y-max_step][z] if x and y else 0
+                        f_100=array[x][y-max_step][z-max_step] if y and z else 0
+                        f_010=array[x-max_step][y][z-max_step] if x and z else 0
+                        f_000=array[x-max_step][y-max_step][z-max_step] if x and y and z else 0
                 
-                            pred=f_000+f_011+f_101+f_110-f_001-f_010-f_100
+                        pred=f_000+f_011+f_101+f_110-f_001-f_010-f_100
                 
         
                 
-                            q,decomp=quantize(orig,pred,anchor_eb)
-                            qs[max_level].append(q)
-                            if q==0:
-                                us.append(decomp)
-                            array[x][y][z]=decomp
-        else:
-            anchor_eb=0
-    else:
-        pass#raise error
+                        q,decomp=quantize(orig,pred,anchor_eb)
+                        qs[max_level].append(q)
+                        if q==0:
+                            us.append(decomp)
+                        array[x][y][z]=decomp
+       
+    elif (first_level==None or max_level==first_level+1) and anchor_rate==0:
+        #pass
+        
+        for x in range(x_start+startx,x_end,max_step):
+            for y in range(y_start+starty,y_end,max_step):
+                for z in range(z_start+startz,z_end,max_step):
+                    orig=array[x][y][z]
+                    us.append(orig)
+                    '''
+                    if pred_check:
+                        preded[x][y][z]=1
+                    '''
+        
 #print(len(qs))
 
-    last_x=((size_x-1)//max_step)*max_step
-    last_y=((size_y-1)//max_step)*max_step 
-    last_z=((size_z-1)//max_step)*max_step   
+    last_x=((x_end-1)//max_step)*max_step
+    last_y=((y_end-1)//max_step)*max_step 
+    last_z=((z_end-1)//max_step)*max_step   
+    global_last_x=((size_x-1)//max_step)*max_step
+    global_last_y=((size_y-1)//max_step)*max_step
+    global_last_z=((size_z-1)//max_step)*max_step
     step=max_step//2
     level=max_level-1
+    if first_level==None:
+        first_level=max_level-1
     #maxlevel_q_start=len(qs[max_level])
     u_start=len(us)
     cumulated_loss=0.0
-    while level>=min_level:#step>0:
+    loss_dict=[{} for i in range(max_level)]
+    while level>=last_level:#step>0:
+        if level>first_level:
+            level-=1
+            step=step//2
+            continue
         cur_qs=[]
         cur_us=[]
         if rate_list!=None:
@@ -105,8 +137,15 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
         else:
             cur_eb=error_bound/min(maximum_rate,(rate**level))
         cur_array=np.copy(array[0:last_x+1:step,0:last_y+1:step,0:last_z+1:step])
-        #print(cur_array.shape)
         cur_size_x,cur_size_y,cur_size_z=cur_array.shape
+        '''
+        if pred_check:
+            cur_preded=np.copy(preded[0:last_x+1:step,0:last_y+1:step,0:last_z+1:step])
+            best_preded=np.copy(preded[0:last_x+1:step,0:last_y+1:step,0:last_z+1:step])
+        '''
+
+        #print(cur_array.shape)
+        
     #print(cur_size_x,cur_size_y)
         if verbose:
             print("Level %d started. Current step: %d. Current error_bound: %s." % (level,step,cur_eb))
@@ -116,13 +155,16 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
         best_us=[]#need to copy
         xstart=2 if x_preded else 0
         ystart=2 if y_preded else 0
-        zstart=2 if y_preded else 0
+        zstart=2 if z_preded else 0
     #linear interp
         absloss=0
         selected_algo="none"
-        if level<=multidim_level or not sz_interp or fix_algo in ["linear","cubic","multidim"]:
+        if fix_algo_list!=None:
+            fix_algo=fix_algo_list[level]
+        if (fix_algo=="none" and level<=multidim_level) or fix_algo in ["linear","cubic","multidim"] or not sz_interp:
             if fix_algo=="none" or fix_algo=="linear":
-
+                if new_q_order:
+                    q_array=np.zeros(cur_array.shape,dtype=np.int32)
                 if level>=min_coeff_level:
                     reg_xs=[]
                     reg_ys=[]
@@ -142,6 +184,12 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                             #if z==cur_size_z-1:
                                 #continue
                             orig=cur_array[x][y][z]
+                            '''
+                            if pred_check:
+                                if cur_preded[x][y][z-1]==0 or cur_preded[x][y][z+1]==0:
+                                    print("error1")
+                                    return
+                            '''
                             if level>=min_coeff_level:
                                 pred= np.dot( np.array([cur_array[x][y][z-1],cur_array[x][y][z+1]]),coef )+ince 
                             else:
@@ -149,13 +197,21 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                             if (not random_access) or level!=0 or ((x!=cur_size_x-1 or last_x!=size_x-1) and (y!=cur_size_y-1 or last_y!=size_y-1)):
                                 absloss+=abs(orig-pred)
                             q,decomp=quantize(orig,pred,cur_eb)
-                            cur_qs.append(q)
+                            if new_q_order:
+                                q_array[x][y][z]=q
+                            else:
+                                cur_qs.append(q)
                 
 
                             if q==0:
                                 cur_us.append(decomp)
                         #absloss+=abs(decomp)
                             cur_array[x][y][z]=decomp    
+                            '''
+                            if pred_check:
+                                cur_preded[x][y][z]=1
+                            '''
+
 
 
 
@@ -177,6 +233,12 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                             #if y==cur_size_y-1:
                                 #continue
                             orig=cur_array[x][y][z]
+                            '''
+                            if pred_check:
+                                if cur_preded[x][y-1][z]==0 or cur_preded[x][y+1][z]==0:
+                                    print("error2")
+                                    return
+                            '''
                             if level>=min_coeff_level:
                                 pred= np.dot( np.array([cur_array[x][y-1][z],cur_array[x][y+1][z]]),coef )+ince 
                             else:
@@ -184,13 +246,20 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                             if (not random_access) or level!=0 or ((x!=cur_size_x-1 or last_x!=size_x-1) and (z!=cur_size_z-1 or last_z!=size_z-1)):
                                 absloss+=abs(orig-pred)
                             q,decomp=quantize(orig,pred,cur_eb)
-                            cur_qs.append(q)
+                            if new_q_order:
+                                q_array[x][y][z]=q
+                            else:
+                                cur_qs.append(q)
                 
 
                             if q==0:
                                 cur_us.append(decomp)
                         #absloss+=abs(decomp)
-                            cur_array[x][y][z]=decomp 
+                            cur_array[x][y][z]=decomp
+                            '''
+                            if pred_check:
+                                cur_preded[x][y][z]=1
+                            '''
 
                 if level>=min_coeff_level:
                     reg_xs=[]
@@ -210,6 +279,12 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                             #if x==cur_size_x-1:
                                 #continue
                             orig=cur_array[x][y][z]
+                            '''
+                            if pred_check:
+                                if cur_preded[x-1][y][z]==0 or cur_preded[x+1][y][z]==0:
+                                    print("error3")
+                                    return
+                            '''
                             if level>=min_coeff_level:
                                 pred= np.dot( np.array([cur_array[x-1][y][z],cur_array[x+1][y][z]]),coef )+ince 
                             else:
@@ -217,13 +292,20 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                             if (not random_access) or level!=0 or ((y!=cur_size_y-1 or last_y!=size_y-1) and (z!=cur_size_z-1 or last_z!=size_z-1)):
                                 absloss+=abs(orig-pred)
                             q,decomp=quantize(orig,pred,cur_eb)
-                            cur_qs.append(q)
+                            if new_q_order:
+                                q_array[x][y][z]=q
+                            else:
+                                cur_qs.append(q)
                 
 
                             if q==0:
                                 cur_us.append(decomp)
                         #absloss+=abs(decomp)
-                            cur_array[x][y][z]=decomp     
+                            cur_array[x][y][z]=decomp  
+                            ''' 
+                            if pred_check:
+                                cur_preded[x][y][z]=1  
+                            '''
 
                 if level>=min_coeff_level:
                     md_reg_xs=[]
@@ -243,6 +325,12 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                         for z in range(zstart,cur_size_z,2):
                     
                             orig=cur_array[x][y][z]
+                            '''
+                            if pred_check:
+                                if cur_preded[x-1][y][z]==0 or cur_preded[x+1][y][z]==0 or cur_preded[x][y-1][z]==0 or cur_preded[x][y+1][z]==0:
+                                    print("error4")
+                                    return
+                            '''
                             if level>=min_coeff_level:
                                 pred=np.dot(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y-1][z],cur_array[x][y+1][z]]),md_coef)+md_ince
                             else:
@@ -252,11 +340,18 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                                 absloss+=abs(orig-pred)
                             q,decomp=quantize(orig,pred,cur_eb)
                     
-                            cur_qs.append(q)
+                            if new_q_order:
+                                q_array[x][y][z]=q
+                            else:
+                                cur_qs.append(q)
                             if q==0:
                                 cur_us.append(decomp)
                     #absloss+=abs(decomp)
                             cur_array[x][y][z]=decomp
+                            '''
+                            if pred_check:
+                                cur_preded[x][y][z]=1  
+                            '''
 
                 if level>=min_coeff_level:
                     md_reg_xs=[]
@@ -264,6 +359,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                     for x in range(1,cur_size_x,2):
                         for y in range(ystart,cur_size_y,2):
                             for z in range(1,cur_size_z,2):
+
                                 md_reg_xs.append(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y][z-1],cur_array[x][y][z+1]],dtype=np.float64))
                                 md_reg_ys.append(cur_array[x][y][z])
                                 md_res=LinearRegression(fit_intercept=True).fit(md_reg_xs, md_reg_ys)
@@ -276,6 +372,12 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                         for z in range(1,cur_size_z,2):
                     
                             orig=cur_array[x][y][z]
+                            '''
+                            if pred_check:
+                                if cur_preded[x-1][y][z]==0 or cur_preded[x+1][y][z]==0 or cur_preded[x][y][z-1]==0 or cur_preded[x][y][z+1]==0:
+                                    print("error5")
+                                    return
+                            '''
                             if level>=min_coeff_level:
                                 pred=np.dot(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y][z-1],cur_array[x][y][z+1]]),md_coef)+md_ince
                             else:
@@ -284,11 +386,18 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                                 absloss+=abs(orig-pred)
                             q,decomp=quantize(orig,pred,cur_eb)
                 
-                            cur_qs.append(q)
+                            if new_q_order:
+                                q_array[x][y][z]=q
+                            else:
+                                cur_qs.append(q)
                             if q==0:
                                 cur_us.append(decomp)
                     
                             cur_array[x][y][z]=decomp
+                            '''
+                            if pred_check:
+                                cur_preded[x][y][z]=1  
+                            '''
 
                 if level>=min_coeff_level:
                     md_reg_xs=[]
@@ -307,6 +416,12 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                         for z in range(1,cur_size_z,2):
                     
                             orig=cur_array[x][y][z]
+                            '''
+                            if pred_check:
+                                if cur_preded[x][y-1][z]==0 or cur_preded[x][y+1][z]==0 or cur_preded[x][y][z-1]==0 or cur_preded[x][y][z+1]==0:
+                                    print("error6")
+                                    return
+                            '''
                             if level>=min_coeff_level:
                                 pred=np.dot(np.array([cur_array[x][y-1][z],cur_array[x][y+1][z],cur_array[x][y][z-1],cur_array[x][y][z+1]]),md_coef)+md_ince
                             else:
@@ -315,11 +430,19 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                                 absloss+=abs(orig-pred)
                             q,decomp=quantize(orig,pred,cur_eb)
                 
-                            cur_qs.append(q)
+                            if new_q_order:
+                                q_array[x][y][z]=q
+                            else:
+                                cur_qs.append(q)
                             if q==0:
                                 cur_us.append(decomp)
                     #absloss+=abs(decomp)
                             cur_array[x][y][z]=decomp
+                            '''
+                            if pred_check:
+
+                                cur_preded[x][y][z]=1  
+                            '''
             
                 if level>=min_coeff_level:
                     md_reg_xs=[]
@@ -338,6 +461,12 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                         for z in range(1,cur_size_z,2):
                     
                             orig=cur_array[x][y][z]
+                            '''
+                            if pred_check:
+                                if cur_preded[x-1][y][z]==0 or cur_preded[x+1][y][z]==0 or cur_preded[x][y-1][z]==0 or cur_preded[x][y+1][z]==0 or cur_preded[x][y][z-1]==0 or cur_preded[x][y][z+1]==0:
+                                    print("error7")
+                                    return
+                            '''
                             if level>=min_coeff_level:
                                 pred=np.dot(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y-1][z],cur_array[x][y+1][z],cur_array[x][y][z-1],cur_array[x][y][z+1] ]),md_coef)+md_ince
                             else:
@@ -345,18 +474,52 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                             absloss+=abs(orig-pred)
                             q,decomp=quantize(orig,pred,cur_eb)
                 
-                            cur_qs.append(q)
+                            if new_q_order:
+                                q_array[x][y][z]=q
+                            else:
+                                cur_qs.append(q)
                             if q==0:
                                 cur_us.append(decomp)
                     
                             cur_array[x][y][z]=decomp
+                            '''
+                            if pred_check:
+                                cur_preded[x][y][z]=1  
+                            '''
 
-
+                loss_dict[level]["linear"]=absloss
                 best_preds=np.copy(cur_array)
+                '''
+                if pred_check:
+                    best_preded=np.copy(cur_preded)
+                '''
                 best_absloss=absloss
+                if new_q_order==1:
+                    for x in range(xstart,cur_size_x,2):
+                        for y in range(ystart,cur_size_y,2):
+                            for z in range(1,cur_size_z,2):
+                                cur_qs.append(q_array[x][y][z])
+
+                    for x in range(xstart,cur_size_x,2):
+                        for y in range(1,cur_size_y,2):
+                            for z in range(1 if zstart>0 else 0,cur_size_z,1):
+                                cur_qs.append(q_array[x][y][z])
+
+                    for x in range(1,cur_size_x,2):
+                        for y in range(1 if ystart>0 else 0,cur_size_y,1):
+                            for z in range(1 if zstart>0 else 0,cur_size_z,1):
+                                cur_qs.append(q_array[x][y][z])
+                elif new_q_order==2:
+                    for x in range(1 if xstart>0 else 0,cur_size_x,1):
+                        for y in range(1 if ystart>0 else 0,cur_size_y,1):
+                            for z in range(1 if zstart>0 else 0,cur_size_z,1):
+                                if x%2==0 and y%2==0 and z%2==0:
+                                    continue
+                                cur_qs.append(q_array[x][y][z])
+
                 best_qs=cur_qs.copy()
                 best_us=cur_us.copy()
-                selected_algo="interp_linear"
+                selected_algo="linear"
 
             #print(len(cur_qs))
 
@@ -370,6 +533,8 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                 cur_qs=[]
                 cur_us=[]
                 cur_array=np.copy(array[0:last_x+1:step,0:last_y+1:step,0:last_z+1:step])#reset cur_array
+                if new_q_order:
+                    q_array=np.zeros(cur_array.shape,dtype=np.int32)
                 if level>=min_coeff_level:
                     reg_xs=[]
                     reg_ys=[]
@@ -398,7 +563,10 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                             if (not random_access) or level!=0 or ((x!=cur_size_x-1 or last_x!=size_x-1) and (y!=cur_size_y-1 or last_y!=size_y-1)):
                                 absloss+=abs(orig-pred)
                             q,decomp=quantize(orig,pred,cur_eb)
-                            cur_qs.append(q)
+                            if new_q_order:
+                                q_array[x][y][z]=q
+                            else:
+                                cur_qs.append(q)
                     
                             if q==0:
                                 cur_us.append(decomp)
@@ -434,7 +602,10 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                             if (not random_access) or level!=0 or ((x!=cur_size_x-1 or last_x!=size_x-1) and (z!=cur_size_z-1 or last_z!=size_z-1)):
                                 absloss+=abs(orig-pred)
                             q,decomp=quantize(orig,pred,cur_eb)
-                            cur_qs.append(q)
+                            if new_q_order:
+                                q_array[x][y][z]=q
+                            else:
+                                cur_qs.append(q)
                     
                             if q==0:
                                 cur_us.append(decomp)
@@ -469,7 +640,10 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                             if (not random_access) or level!=0 or ( (y!=cur_size_y-1 or last_y!=size_y-1) and (z!=cur_size_z-1 or last_z!=size_z-1)):
                                 absloss+=abs(orig-pred)
                             q,decomp=quantize(orig,pred,cur_eb)
-                            cur_qs.append(q)
+                            if new_q_order:
+                                q_array[x][y][z]=q
+                            else:
+                                cur_qs.append(q)
                     
                             if q==0:
                                 cur_us.append(decomp)
@@ -505,7 +679,10 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                                 absloss+=abs(orig-pred)
                             q,decomp=quantize(orig,pred,cur_eb)
                     
-                            cur_qs.append(q)
+                            if new_q_order:
+                                q_array[x][y][z]=q
+                            else:
+                                cur_qs.append(q)
                             if q==0:
                                 cur_us.append(decomp)
                         #absloss+=abs(decomp)
@@ -537,7 +714,10 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                                 absloss+=abs(orig-pred)
                             q,decomp=quantize(orig,pred,cur_eb)
                     
-                            cur_qs.append(q)
+                            if new_q_order:
+                                q_array[x][y][z]=q
+                            else:
+                                cur_qs.append(q)
                             if q==0:
                                 cur_us.append(decomp)
                         #absloss+=abs(decomp)
@@ -568,7 +748,10 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                                 absloss+=abs(orig-pred)
                             q,decomp=quantize(orig,pred,cur_eb)
                     
-                            cur_qs.append(q)
+                            if new_q_order:
+                                q_array[x][y][z]=q
+                            else:
+                                cur_qs.append(q)
                             if q==0:
                                 cur_us.append(decomp)
                         #absloss+=abs(decomp)
@@ -598,16 +781,41 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                             absloss+=abs(orig-pred)
                             q,decomp=quantize(orig,pred,cur_eb)
                     
-                            cur_qs.append(q)
+                            if new_q_order:
+                                q_array[x][y][z]=q
+                            else:
+                                cur_qs.append(q)
                             if q==0:
                                 cur_us.append(decomp)
                         #absloss+=abs(decomp)
                             cur_array[x][y][z]=decomp
-
+                loss_dict[level]["cubic"]=absloss
                 if selected_algo=="none" or absloss<best_absloss:
-                    selected_algo="interp_cubic"
+                    selected_algo="cubic"
                     best_preds=np.copy(cur_array)
                     best_absloss=absloss
+                    if new_q_order==1:
+                        for x in range(xstart,cur_size_x,2):
+                            for y in range(ystart,cur_size_y,2):
+                                for z in range(1,cur_size_z,2):
+                                    cur_qs.append(q_array[x][y][z])
+
+                        for x in range(xstart,cur_size_x,2):
+                            for y in range(1,cur_size_y,2):
+                                for z in range(1 if zstart>0 else 0,cur_size_z,1):
+                                    cur_qs.append(q_array[x][y][z])
+
+                        for x in range(1,cur_size_x,2):
+                            for y in range(1 if ystart>0 else 0,cur_size_y,1):
+                                for z in range(1 if zstart>0 else 0,cur_size_z,1):
+                                    cur_qs.append(q_array[x][y][z])
+                    elif new_q_order==2:
+                        for x in range(1 if xstart>0 else 0,cur_size_x,1):
+                            for y in range(1 if ystart>0 else 0,cur_size_y,1):
+                                for z in range(1 if zstart>0 else 0,cur_size_z,1):
+                                    if x%2==0 and y%2==0 and z%2==0:
+                                        continue
+                                    cur_qs.append(q_array[x][y][z])
                     best_qs=cur_qs.copy()
                     best_us=cur_us.copy()
         
@@ -642,7 +850,10 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                             absloss+=abs(orig-pred)
                             q,decomp=quantize(orig,pred,cur_eb)
                 
-                            cur_qs.append(q)
+                            if new_q_order:
+                                q_array[x][y][z]=q
+                            else:
+                                cur_qs.append(q)
                             if q==0:
                                 cur_us.append(decomp)
                                 #absloss+=abs(decomp)
@@ -698,7 +909,10 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                             if (not random_access) or level!=0 or ((x!=cur_size_x-1 or last_x!=size_x-1) and (y!=cur_size_y-1 or last_y!=size_y-1) and (z!=cur_size_z-1 or last_z!=size_z-1)):
                                 absloss+=abs(orig-pred)
                             q,decomp=quantize(orig,pred,cur_eb)
-                            cur_qs.append(q)
+                            if new_q_order:
+                                q_array[x][y][z]=q
+                            else:
+                                cur_qs.append(q)
                 
 
                             if q==0:
@@ -754,7 +968,10 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                             if (not random_access) or level!=0 or ((x!=cur_size_x-1 or last_x!=size_x-1) and (y!=cur_size_y-1 or last_y!=size_y-1) and (z!=cur_size_z-1 or last_z!=size_z-1)):
                                 absloss+=abs(orig-pred)
                             q,decomp=quantize(orig,pred,cur_eb)
-                            cur_qs.append(q)
+                            if new_q_order:
+                                q_array[x][y][z]=q
+                            else:
+                                cur_qs.append(q)
                 
 
                             if q==0:
@@ -762,23 +979,51 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                    
                             cur_array[x][y][z]=decomp
 
-
+                loss_dict[level]["multidim"]=absloss
                 if selected_algo=="none" or absloss<best_absloss:
-                    selected_algo="interp_full_multidim"
+                    selected_algo="multidim"
                     best_preds=np.copy(cur_array)
                     best_absloss=absloss
+                    if new_q_order==1:
+                        for x in range(xstart,cur_size_x,2):
+                            for y in range(ystart,cur_size_y,2):
+                                for z in range(1,cur_size_z,2):
+                                    cur_qs.append(q_array[x][y][z])
+
+                        for x in range(xstart,cur_size_x,2):
+                            for y in range(1,cur_size_y,2):
+                                for z in range(1 if zstart>0 else 0,cur_size_z,1):
+                                    cur_qs.append(q_array[x][y][z])
+
+                        for x in range(1,cur_size_x,2):
+                            for y in range(1 if ystart>0 else 0,cur_size_y,1):
+                                for z in range(1 if zstart>0 else 0,cur_size_z,1):
+                                    cur_qs.append(q_array[x][y][z])
+                    elif new_q_order==2:
+                        for x in range(1 if xstart>0 else 0,cur_size_x,1):
+                            for y in range(1 if ystart>0 else 0,cur_size_y,1):
+                                for z in range(1 if zstart>0 else 0,cur_size_z,1):
+                                    if x%2==0 and y%2==0 and z%2==0:
+                                        continue
+                                    cur_qs.append(q_array[x][y][z])
                     best_qs=cur_qs.copy()
                     best_us=cur_us.copy()
 
 
-        if sz_interp or fix_algo in ["sz3_linear","sz3_cubic"]:
+        if (fix_algo=="none" and sz_interp) or fix_algo in ["sz3_linear","sz3_cubic","sz3_linear_zyx","sz3_linear_xyz","sz3_cubic_zyx","sz3_cubic_xyz"]:
             #1D linear
             #zyx
-            if fix_algo=="none" or fix_algo=="sz3_linear":
+            
+            if fix_algo=="none" or fix_algo=="sz3_linear" or fix_algo=="sz3_linear_zyx":
                 absloss=0
                 cur_qs=[]
                 cur_us=[]
                 cur_array=np.copy(array[0:last_x+1:step,0:last_y+1:step,0:last_z+1:step])#reset cur_array
+                '''
+                if pred_check:
+                    
+                    cur_preded=np.copy(preded[0:last_x+1:step,0:last_y+1:step,0:last_z+1:step])
+                '''
                 if level>=min_coeff_level:
                     reg_xs=[]
                     reg_ys=[]
@@ -797,7 +1042,15 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                         for z in range(1,cur_size_z,2):
                             #if z==cur_size_z-1:
                                 #continue
+                            
                             orig=cur_array[x][y][z]
+                            '''
+                            if pred_check:
+                                if cur_preded[x][y][z-1]==0 or cur_preded[x][y][z+1]==0:
+                                    print("error11")
+                                    return
+                            '''
+
                             if level>=min_coeff_level:
                                 pred= np.dot( np.array([cur_array[x][y][z-1],cur_array[x][y][z+1]]),coef )+ince 
                             else:
@@ -806,12 +1059,18 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                                 absloss+=abs(orig-pred)
                             q,decomp=quantize(orig,pred,cur_eb)
                             cur_qs.append(q)
+
                 
 
                             if q==0:
                                 cur_us.append(decomp)
                         #absloss+=abs(decomp)
-                            cur_array[x][y][z]=decomp    
+                            cur_array[x][y][z]=decomp   
+                            ''' 
+                            if pred_check:
+                                cur_preded[x][y][z]=1
+                            '''
+                            
 
 
 
@@ -833,6 +1092,14 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                             #if y==cur_size_y-1:
                                 #continue
                             orig=cur_array[x][y][z]
+                            '''
+                            if pred_check:
+
+                                if cur_preded[x][y-1][z]==0 or cur_preded[x][y+1][z]==0:
+                                    print("error12")
+                                    return
+
+                            '''
                             if level>=min_coeff_level:
                                 pred= np.dot( np.array([cur_array[x][y-1][z],cur_array[x][y+1][z]]),coef )+ince 
                             else:
@@ -847,6 +1114,11 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                                 cur_us.append(decomp)
                         #absloss+=abs(decomp)
                             cur_array[x][y][z]=decomp 
+                            '''
+                            if pred_check:
+                                cur_preded[x][y][z]=1
+                            '''
+
 
                 if level>=min_coeff_level:
                     reg_xs=[]
@@ -866,6 +1138,12 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                             if x==cur_size_x-1:
                                 continue
                             orig=cur_array[x][y][z]
+                            '''
+                            if pred_check:
+                                if cur_preded[x-1][y][z]==0 or cur_preded[x+1][y][z]==0:
+                                    print("error12")
+                                    return
+                            '''
                             if level>=min_coeff_level:
                                 pred= np.dot( np.array([cur_array[x-1][y][z],cur_array[x+1][y][z]]),coef )+ince 
                             else:
@@ -880,16 +1158,24 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                                 cur_us.append(decomp)
                         #absloss+=abs(decomp)
                             cur_array[x][y][z]=decomp 
-
+                            '''
+                            if pred_check:
+                                cur_preded[x][y][z]=1
+                            '''
+                loss_dict[level]["sz3_linear_zyx"]=absloss
                 if selected_algo=="none" or absloss<best_absloss :
-                    selected_algo="sz3_interp_linear_zyx"
+                    selected_algo="sz3_linear_zyx"
                     best_preds=np.copy(cur_array)
                     best_absloss=absloss
+                    '''
+                    if pred_check:
+                        best_preded=np.copy(cur_preded)
+                    '''
                     best_qs=cur_qs.copy()
                     best_us=cur_us.copy()
 
 
-
+            if fix_algo=="none" or fix_algo=="sz3_linear" or fix_algo=="sz3_linear_xyz":
                 #xyz
                 absloss=0
                 cur_qs=[]
@@ -996,9 +1282,9 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                                 cur_us.append(decomp)
                         #absloss+=abs(decomp)
                             cur_array[x][y][z]=decomp 
-
+                loss_dict[level]["sz3_linear_xyz"]=absloss
                 if selected_algo=="none" or absloss<best_absloss:
-                    selected_algo="sz3_interp_linear_xyz"
+                    selected_algo="sz3_linear_xyz"
                     best_preds=np.copy(cur_array)
                     best_absloss=absloss
                     best_qs=cur_qs.copy()
@@ -1006,7 +1292,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
 
             #1D cubic
             #ZYX
-            if fix_algo=="none" or fix_algo=="sz3_cubic":
+            if fix_algo=="none" or fix_algo=="sz3_cubic" or fix_algo=="sz3_cubic_zyx":
                 absloss=0
                 cur_qs=[]
                 cur_us=[]
@@ -1130,9 +1416,9 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                                 cur_us.append(decomp)
                         #absloss+=abs(decomp)
                             cur_array[x][y][z]=decomp 
-
+                loss_dict[level]["sz3_cubic_zyx"]=absloss
                 if selected_algo=="none" or absloss<best_absloss:
-                    selected_algo="sz3_interp_cubic_zyx"
+                    selected_algo="sz3_cubic_zyx"
                     best_preds=np.copy(cur_array)
                     best_absloss=absloss
                     best_qs=cur_qs.copy()
@@ -1141,6 +1427,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
 
 
             #xyz
+            if fix_algo=="none" or fix_algo=="sz3_cubic" or fix_algo=="sz3_cubic_xyz":
                 absloss=0
                 cur_qs=[]
                 cur_us=[]
@@ -1264,9 +1551,9 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                                 cur_us.append(decomp)
                         #absloss+=abs(decomp)
                             cur_array[x][y][z]=decomp 
-
+                loss_dict[level]["sz3_cubic_xyz"]=absloss
                 if selected_algo=="none" or absloss<best_absloss:
-                    selected_algo="sz3_interp_cubic_xyz"
+                    selected_algo="sz3_cubic_xyz"
                     best_preds=np.copy(cur_array)
                     best_absloss=absloss
                     best_qs=cur_qs.copy()
@@ -1367,7 +1654,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
             if absloss*len(total_points)/len(sampled_points)<best_absloss+cumulated_loss:
                 selected_algo="lorenzo_fallback"
                 best_absloss=0
-                best_preds=array[0:last_x+1:step,0:last_y+1:step,0:last_z+1:step]
+                best_preds=np.copy(cur_orig_array)
                 best_qs=[]
                 best_us=[]
            
@@ -1410,7 +1697,12 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
 
 
         mean_l1_loss=best_absloss/len(best_qs)
-        array[0:last_x+1:step,0:last_y+1:step,0:last_z+1:step]=best_preds
+        if not fake_compression:
+            array[0:last_x+1:step,0:last_y+1:step,0:last_z+1:step]=best_preds
+            '''
+            if pred_check:
+                preded[0:last_x+1:step,0:last_y+1:step,0:last_z+1:step]=best_preded
+            '''
         if selected_algo!="lorenzo_fallback":
             cumulated_loss+=best_absloss
         
@@ -1429,6 +1721,7 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
             print ("Level %d finished. Selected algorithm: %s. Mean prediction abs loss: %f." % (level,selected_algo,mean_l1_loss))
         step=step//2
         level-=1
+        #print(np.max(np.abs(orig_array-array)))
         #print(sum([len(_) for _ in qs] ))
         #print(best_absloss)
         #print(cumulated_loss)
@@ -1461,16 +1754,17 @@ sample_rate=0.05,min_sampled_points=10,random_access=False,verbose=False,fix_alg
                     edge_qs.append(q)
                     if q==0:
                         us.append(decomp)
-                    array[x][y]=decomp
+                    array[x][y][z]=decomp
     offset_x1=1 if x_preded else 0
     offset_y1=1 if y_preded else 0
-    offset_z1=1 if y_preded else 0
+    offset_z1=1 if z_preded else 0
     offset_x2=1 if random_access else 0
     offset_y2=1 if random_access else 0
     offset_z2=1 if random_access else 0
     lorenzo_3d(array,offset_x1,size_x-offset_x2,offset_y1,size_y-offset_y2,offset_z1,size_z-offset_z2)
+    #print(np.max(np.abs(orig_array-array)))
     #lorenzo_2d(array,last_x+1,,offset_y1,size_y-offset_y2)
-    return array,qs,edge_qs,us,selected_algos
+    return array,qs,edge_qs,us,selected_algos,loss_dict
 
 
     
@@ -1500,33 +1794,315 @@ if __name__=="__main__":
     parser.add_argument('--sz_interp','-n',type=int,default=0)
 
     parser.add_argument('--size_x','-x',type=int,default=129)
+    parser.add_argument('--double','-b',type=int,default=0)
     parser.add_argument('--size_y','-y',type=int,default=129)
     parser.add_argument('--size_z','-z',type=int,default=129)
-    parser.add_argument('--fix','-f',type=str,default="none")
+    parser.add_argument('--fix_algo','-f',type=str,default="none")
+    parser.add_argument('--autotuning','-t',type=float,default=0.0)
 #parser.add_argument('--level','-l',type=int,default=2)
 #parser.add_argument('--noise','-n',type=bool,default=False)
 #parser.add_argument('--intercept','-t',type=bool,default=False)
+    
     args = parser.parse_args()
     print(args)
-    array=np.fromfile(args.input,dtype=np.float32).reshape((args.size_x,args.size_y,args.size_z))
+    if args.double:
+        dtype=np.double
+    else:
+        dtype=np.float32
+    array=np.fromfile(args.input,dtype=dtype).reshape((args.size_x,args.size_y,args.size_z))
     orig_array=np.copy(array)
-    error_bound=args.error*(np.max(array)-np.min(array))
+    rng=np.max(array)-np.min(array)
+    error_bound=args.error*rng
     max_level=int(math.log(args.max_step,2))
     rate_list=args.rlist
     #print(rate_list)
-    if ((isinstance(rate_list,int) or isinstance(rate_list,float)) and  rate_list>0) or (isinstance(rate_list,list ) and rate_list[0]>0):
-        if isinstance(rate_list,int) or isinstance(rate_list,float):
-            rate_list=[rate_list]
-
-        while len(rate_list)<max_level:
-            rate_list.insert(0,rate_list[0])
-    else:
+    if args.autotuning!=0:
+        #pid=os.getpid()
+        alpha_list=[1,1.25,1.5,1.75,2]
+        #beta_list=[2,4,4,6,6]
+        beta_list=[2,4]
         rate_list=None
+        max_step=args.max_step
+        #max_step=16#special
+        block_num_x=(args.size_x-1)//max_step
+        block_num_y=(args.size_y-1)//max_step
+        block_num_z=(args.size_z-1)//max_step
+        steplength=int(args.autotuning**(1/3))
+        bestalpha=1
+        bestbeta=1
+        #bestpdb=0
+        bestb=9999
+        #bestb_r=9999
+        bestp=0
+        #bestp_r=0
+        pid=os.getpid()
+        tq_name="%s_tq.dat"%pid
+        tu_name="%s_tu.dat"%pid
+        
+        max_level=int(math.log(max_step,2))
+        for m,alpha in enumerate(alpha_list):
+            for beta in beta_list:
+                #maybe some pruning
+                test_qs=[[] for i in range(max_level+1)]
+                test_us=[]
+                square_error=0
+                #zero_square_error=0
+                element_counts=0
+                #themax=-9999999999999
+                #themin=99999999999999
+                #themean=0
+                #print(themean)
+                for i in range(0,block_num_x,steplength):
+                    for j in range(0,block_num_y,steplength):
+                        for k in range(0,block_num_z,steplength):
+                            x_start=max_step*i
+                            y_start=max_step*j
+                            z_start=max_step*k
+                            x_end=x_start+max_step+1
+                            y_end=y_start+max_step+1
+                            z_end=z_start+max_step+1
+                            #print(x_start)
+                            #print(y_start)
+                            cur_array=np.copy(array[x_start:x_end,y_start:y_end,z_start:z_end])
+                            '''
+                            curmax=np.max(cur_array)
+                            curmin=np.min(cur_array)
+                            if curmax>themax:
+                                themax=curmax
+                            if curmin<themin:
+                                themin=curmin
+                            '''
+                            #print("a")
+                            cur_array,cur_qs,edge_qs,cur_us,_,lsd=msc3d(cur_array,error_bound,alpha,beta,9999,max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
+                                                    sz_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo=args.fix_algo)
+                            #print("b")
+                            #print(len(cur_qs[max_level]))
+                            #print(len(test_qs[max_level]))
+                            for level in range(max_level+1):
+                                #print(level)
+                                test_qs[level]+=cur_qs[level]
+                            #test_us+=cur_us
+                            #zero_square_error=np.sum((array[x_start:x_end,y_start:y_end]-themean*np.ones((max_step+1,max_step+1)) )**2)
+                            square_error+=np.sum((array[x_start:x_end,y_start:y_end,z_start:z_end]-cur_array)**2)
+                            
+                            element_counts+=(max_step+1)**3 
+                t_mse=square_error/element_counts
+                #zero_mse=zero_square_error/element_counts
+                psnr=20*math.log(rng,10)-10*math.log(t_mse,10)
+                #zero_psnr=20*math.log(themax-themin,10)-10*math.log(zero_mse,10)
+                #print(zero_psnr)
+              
+                np.array(sum(test_qs,[]),dtype=np.int32).tofile(tq_name)
+                np.array(sum(test_us,[]),dtype=np.int32).tofile(tu_name)
+                with os.popen("sz_backend %s %s" % (tq_name,tu_name)) as f:
+                    lines=f.read().splitlines()
+                    cr=eval(lines[4].split("=")[-1])
+                    if args.anchor_rate==0:
+                        anchor_ratio=1/(args.max_step**3)
+                        cr=1/((1-anchor_ratio)/cr+anchor_ratio)
+                    bitrate=32/cr
+                os.system("rm -f %s;rm -f %s" % (tq_name,tu_name))
+                #pdb=(psnr-zero_psnr)/bitrate
+                if psnr<=bestp and bitrate>=bestb:
+                    continue
+                elif psnr>=bestp and bitrate<=bestb:
+
+                    bestalpha=alpha
+                    bestbeta=beta
+                   
+                    bestb=bitrate
+                    bestp=psnr
+                       
+                else:
+                    if psnr>bestp:
+                        new_error_bound=1.2*error_bound
+                    else:
+                        new_error_bound=0.8*error_bound
+                    test_qs=[[] for i in range(max_level+1)]
+                    test_us=[]
+                    square_error=0
+                    #zero_square_error=0
+                    element_counts=0
+                    themax=-9999999999999
+                    themin=99999999999999
+                    #themean=0
+                    #print(themean)
+                    for i in range(0,block_num_x,steplength):
+                        for j in range(0,block_num_y,steplength):
+                            for k in range(0,block_num_z,steplength):
+                                x_start=max_step*i
+                                y_start=max_step*j
+                                z_start=max_step*k
+                                x_end=x_start+max_step+1
+                                y_end=y_start+max_step+1
+                                z_end=z_start+max_step+1
+                                #print(x_start)
+                                #print(y_start)
+                                cur_array=np.copy(array[x_start:x_end,y_start:y_end,z_start:z_end])
+                                '''
+                                curmax=np.max(cur_array)
+                                curmin=np.min(cur_array)
+                                if curmax>themax:
+                                    themax=curmax
+                                if curmin<themin:
+                                    themin=curmin
+                                '''
+                                #print("v")
+                                cur_array,cur_qs,edge_qs,cur_us,_,lsd=msc3d(cur_array,new_error_bound,alpha,beta,9999,max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
+                                                        sz_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo=args.fix_algo)
+                                #print("d")
+                                #print(len(cur_qs[max_level]))
+                                #print(len(test_qs[max_level]))
+                                for level in range(max_level+1):
+                                    #print(level)
+                                    test_qs[level]+=cur_qs[level]
+                                #test_us+=cur_us
+                                #zero_square_error=np.sum((array[x_start:x_end,y_start:y_end]-themean*np.ones((max_step+1,max_step+1)) )**2)
+                                square_error+=np.sum((array[x_start:x_end,y_start:y_end,z_start:z_end]-cur_array)**2)
+                                
+                                element_counts+=(max_step+1)**3
+                    t_mse=square_error/element_counts
+                    #zero_mse=zero_square_error/element_counts
+                    psnr_r=20*math.log(rng,10)-10*math.log(t_mse,10)
+                    #zero_psnr=20*math.log(themax-themin,10)-10*math.log(zero_mse,10)
+                    #print(zero_psnr)
+                  
+                    np.array(sum(test_qs,[]),dtype=np.int32).tofile(tq_name)
+                    np.array(sum(test_us,[]),dtype=np.int32).tofile(tu_name)
+                    with os.popen("sz_backend %s %s" % (tq_name,tu_name)) as f:
+                        lines=f.read().splitlines()
+                        cr=eval(lines[4].split("=")[-1])
+                        if args.anchor_rate==0:
+                            anchor_ratio=1/(args.max_step**3)
+                            cr=1/((1-anchor_ratio)/cr+anchor_ratio)
+                        bitrate_r=32/cr
+                    os.system("rm -f %s;rm -f %s" % (tq_name,tu_name))
+                    a=(psnr-psnr_r)/(bitrate-bitrate_r)
+                    b=psnr-a*bitrate
+                    #print(a)
+                    #print(b)
+                    reg=a*bestb+b
+                    if reg>bestp:
+                        bestalpha=alpha
+                        bestbeta=beta
+                   
+                        bestb=bitrate
+                        bestp=psnr
+                if alpha**(max_level-1)<=beta:
+                    break
+
+                
+                
+               
+
+
+        print("Autotuning finished. Selected alpha: %f. Selected beta: %f. Best bitrate: %f. Best PSNR: %f."\
+        %(bestalpha,bestbeta,bestb,bestp) )
+        max_step=args.max_step#special
+        args.rate=bestalpha
+        args.maximum_rate=bestbeta
+
+        if args.fix_algo=="none":
+            print("Start predictor tuning.")
+            #tune predictor
+            fix_algo_list=[]
+            for level in range(max_level-1,-1,-1):
+                loss_dict={}
+                pred_candidates=[]
+                if args.sz_interp:
+                    pred_candidates+=["sz3_linear_xyz","sz3_linear_zyx","sz3_cubic_xyz","sz3_cubic_zyx"]
+                if level<=args.multidim_level:
+                    pred_candidates+=["linear","cubic","multidim"]
+                for i in range(0,block_num_x,steplength):
+                    for j in range(0,block_num_y,steplength):
+                        for k in range(0,block_num_z,steplength):
+                  
+                            x_start=max_step*i
+                            y_start=max_step*j
+                            z_start=max_step*k
+                            x_end=x_start+max_step+1
+                            y_end=y_start+max_step+1
+                            z_end=z_start+max_step+1
+                            #print(x_start)
+                            #print(y_start)
+                            cur_array=np.copy(array[x_start:x_end,y_start:y_end,z_start:z_end])
+                            for predictor in pred_candidates:
+                                cur_array,cur_qs,edge_qs,cur_us,_,lsd=msc3d(cur_array,error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
+                                                                        sz_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,\
+                                                                        min_sampled_points=100,random_access=False,verbose=False,first_level=level,last_level=level,fix_algo=predictor,fake_compression=True)
+                                cur_loss=lsd[level][predictor]
+                                if predictor not in loss_dict:
+                                    loss_dict[predictor]=cur_loss
+                                else:
+                                    loss_dict[predictor]+=cur_loss
+                best_predictor="none"
+                min_loss=9e20
+                for pred in loss_dict:
+                    pred_loss=loss_dict[pred]
+                    if pred_loss<min_loss:
+                        min_loss=pred_loss
+                        best_predictor=pred 
+
+                print("Level %d tuned. Best predictor: %s." % (level,best_predictor))
+                fix_algo_list.append(best_predictor)
+                '''
+                for i in range(0,block_num_x,steplength):
+                    for j in range(0,block_num_y,steplength):
+                        for k in range(0,block_num_z,steplength):
+                  
+                            x_start=max_step*i
+                            y_start=max_step*j
+                            z_start=max_step*k
+                            x_end=x_start+max_step+1
+                            y_end=y_start+max_step+1
+                            z_end=z_start+max_step+1
+                        #print(x_start)
+                        #print(y_start)
+                            #cur_array=np.copy(array[x_start:x_end,y_start:y_end,z_start:z_end])
+                           
+                            array[x_start:x_end,y_start:y_end,z_start:z_end],cur_qs,edge_qs,cur_us,_,lsd=msc3d(array[x_start:x_end,y_start:y_end,z_start:z_end],error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
+                                                                    sz_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,\
+                                                                    min_sampled_points=100,random_access=False,verbose=False,first_level=level,last_level=level,fix_algo=best_predictor,fake_compression=False)
+                '''
+
+            fix_algo_list.reverse()
+            print(fix_algo_list)
+            '''
+            for i in range(0,block_num_x,steplength):
+                    for j in range(0,block_num_y,steplength):
+                        for k in range(0,block_num_z,steplength):
+                  
+                            x_start=max_step*i
+                            y_start=max_step*j
+                            z_start=max_step*k
+                            x_end=x_start+max_step+1
+                            y_end=y_start+max_step+1
+                            z_end=z_start+max_step+1
+                            array[x_start:x_end,y_start:y_end,z_start:z_end]=orig_array[x_start:x_end,y_start:y_end,z_start:z_end]
+            '''
+            
+        else:
+            fix_algo_list=None
+
+
+            
+
+    else:
+        fix_algo_list=None
+        if ((isinstance(rate_list,int) or isinstance(rate_list,float)) and  rate_list>0) or (isinstance(rate_list,list ) and rate_list[0]>0):
+
+            if isinstance(rate_list,int) or isinstance(rate_list,float):
+                rate_list=[rate_list]
+
+            while len(rate_list)<max_level:
+                rate_list.insert(0,rate_list[0])
+        else:
+            rate_list=None
 
     #print(rate_list)
-    array,qs,edge_qs,us,_=msc3d(array,error_bound,args.rate,args.maximum_rate,args.min_coeff_level,args.max_step,args.anchor_rate,rate_list=rate_list,x_preded=False,y_preded=False,z_preded=False,\
-        sz_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=args.lorenzo_fallback_check,sample_rate=args.fallback_sample_ratio,min_sampled_points=100,random_access=False,verbose=True,fix_algo=args.fix)
-
+    array,qs,edge_qs,us,_,lsd=msc3d(array,error_bound,args.rate,args.maximum_rate,args.min_coeff_level,args.max_step,args.anchor_rate,rate_list=rate_list,x_preded=False,y_preded=False,z_preded=False,\
+        sz_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=args.lorenzo_fallback_check,sample_rate=args.fallback_sample_ratio,min_sampled_points=100,random_access=False,verbose=True,fix_algo=args.fix_algo,fix_algo_list=fix_algo_list)
+    print(len(edge_qs))
     quants=np.concatenate( (np.array(edge_qs,dtype=np.int32),np.array(sum(qs,[]),dtype=np.int32) ) )
     unpreds=np.array(us,dtype=np.float32)
     array.tofile(args.output)
