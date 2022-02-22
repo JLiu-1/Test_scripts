@@ -46,3 +46,30 @@ def estimate_bitrate(quant_bins):
         p=bins[b]/count
         bitrate-=p*math.log(p,2)
     return bitrate
+
+def interp_linear(x,y):#-1,1
+    return (x+y)*0.5
+
+def exterp_linear(x,y):#-3 -1
+    return -0.5*x+1.5*y 
+
+def interp_quad(a,b,c):#-1,1,3
+    return (3*a+6*b-c)*0.125
+
+def interp_quad2(a,b,c):#-3,-1,1
+    return (-a+6*b+3*c)*0.125
+
+def exterp_quad(a,b,c):#-5,-3,-1
+    return (3 * a - 10 * b + 15 * c) *0.125
+
+def interp_cubic(a,b,c,d):#-3,-1,1,3
+    return (-a+9*b+9*c-d)*0.0625
+
+def lor_2d(a,b,c):
+    return b+c-a
+
+def interp_2d(a,b,c,d):
+    return (a+b+c+d)*0.25
+
+def interp_3d(a,b,c,d,e,f):
+    return (a+b+c+d+e+f)/6
