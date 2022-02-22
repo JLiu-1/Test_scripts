@@ -1117,10 +1117,14 @@ fix_algo_list=None,first_level=None,last_level=0,first_order="block",fake_compre
         mean_l1_loss=best_absloss/len(best_qs)
 
         
-        if selected_algo!="lorenzo_fallback" and not fake_compression:
-            array[x_start:x_end:step,y_start:y_end:step]=best_preds
+        if fake_compression:
+            array[x_start:last_x+1:step,y_start:last_y+1:step]=array_slice
+        else:
+            array[x_start:last_x+1:step,y_start:last_y+1:step]=best_preds
+
+        if selected_algo!="lorenzo_fallback":
             cumulated_loss+=best_absloss
-        
+
         else:
             cumulated_loss=best_absloss
         
@@ -1392,6 +1396,7 @@ if __name__=="__main__":
 
         if args.fix_algo=="none":
             print("Start predictor tuning.")
+            #test_array=np.copy(array)
             #tune predictor
             fix_algo_list=[]
             for level in range(max_level-1,-1,-1):
@@ -1430,7 +1435,7 @@ if __name__=="__main__":
 
                 print("Level %d tuned. Best predictor: %s." % (level,best_predictor))
                 fix_algo_list.append(best_predictor)
-                #'''
+                '''
                 for i in range(0,block_num_x,steplength):
                     for j in range(0,block_num_y,steplength):
                   
@@ -1445,11 +1450,11 @@ if __name__=="__main__":
                         cur_qs,edge_qs,cur_us,_,lsd=msc2d(array,x_start,x_end,y_start,y_end,error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
                                                                 sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,\
                                                                 min_sampled_points=100,random_access=False,verbose=False,first_level=level,last_level=level,fix_algo=best_predictor,fake_compression=False)
-                #'''
+                '''
 
             fix_algo_list.reverse()
             #print(fix_algo_list)
-            #'''
+            '''
             for i in range(0,block_num_x,steplength):
                 for j in range(0,block_num_y,steplength):
                   
@@ -1458,7 +1463,7 @@ if __name__=="__main__":
                         x_end=x_start+max_step+1
                         y_end=y_start+max_step+1
                         array[x_start:x_end,y_start:y_end]=orig_array[x_start:x_end,y_start:y_end]
-            #'''
+            '''
         else:
             fix_algo_list=None
 

@@ -899,10 +899,17 @@ fix_algo_list=None,first_level=None,last_level=0,first_order="block",fake_compre
         mean_l1_loss=best_absloss/len(best_qs)
 
         
-        if selected_algo!="lorenzo_fallback" and not fake_compression:
-            array[x_start:last_x+1:step,y_start:last_y+1:step]=best_preds
-            cumulated_loss+=best_absloss
         
+            
+            
+        if fake_compression:
+            array[x_start:last_x+1:step,y_start:last_y+1:step]=array_slice
+        else:
+            array[x_start:last_x+1:step,y_start:last_y+1:step]=best_preds
+
+        if selected_algo!="lorenzo_fallback":
+            cumulated_loss+=best_absloss
+
         else:
             cumulated_loss=best_absloss
         
@@ -1167,7 +1174,7 @@ if __name__=="__main__":
 
         print("Autotuning finished. Selected alpha: %f. Selected beta: %f. Best bitrate: %f. Best PSNR: %f."\
         %(bestalpha,bestbeta,bestb,bestp) )
-        print(np.max(np.abs(array-orig_array)))
+        #print(np.max(np.abs(array-orig_array)))
         args.rate=bestalpha
         args.maximum_rate=bestbeta
 
