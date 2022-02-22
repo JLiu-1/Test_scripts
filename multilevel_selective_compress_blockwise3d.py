@@ -37,6 +37,7 @@ if __name__=="__main__":
     parser.add_argument('--sz_interp','-n',type=int,default=0)
     parser.add_argument('--fix_algo','-f',type=str,default="none")
     parser.add_argument('--autotuning','-t',type=float,default=0.0)
+    parser.add_argument('--criteria','-c',type=str,default="l1")
     args = parser.parse_args()
 
     size_x=args.size_x
@@ -113,7 +114,7 @@ if __name__=="__main__":
                                 themin=curmin
                             '''
                             cur_array,cur_qs,edge_qs,cur_us,_,lsd=msc3d(cur_array,error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
-                                                    sz_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo=args.fix_algo)
+                                                    sz_interp=args.sz_interp,selection_criteria=args.criteria,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo=args.fix_algo)
                             #print(len(cur_qs[max_level]))
                             #print(len(test_qs[max_level]))
                             for level in range(max_level+1):
@@ -186,7 +187,7 @@ if __name__=="__main__":
                                     themin=curmin
                                 '''
                                 cur_array,cur_qs,edge_qs,cur_us,_,lsd=msc3d(cur_array,new_error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
-                                                        sz_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo=args.fix_algo)
+                                                        sz_interp=args.sz_interp,selection_criteria=args.criteria,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo=args.fix_algo)
                                 #print(len(cur_qs[max_level]))
                                 #print(len(test_qs[max_level]))
                                 for level in range(max_level+1):
@@ -278,7 +279,7 @@ if __name__=="__main__":
                 #print(np.max(array[x_start:x_end+1,y_start:y_end+1,z_start:z_end+1]),np.min(array[x_start:x_end+1,y_start:y_end+1,z_start:z_end+1]))
                 array[x_start:x_end+1,y_start:y_end+1,z_start:z_end+1],cur_qs,cur_lorenzo_qs,cur_us,cur_selected,lsd=\
                 msc3d(array[x_start:x_end+1,y_start:y_end+1,z_start:z_end+1],error_bound,rate,maximum_rate,min_coeff_level,max_step,anchor_rate,\
-                    rate_list=rate_list,sz_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=args.lorenzo_fallback_check,\
+                    rate_list=rate_list,sz_interp=args.sz_interp,selection_criteria=args.criteria,multidim_level=args.multidim_level,lorenzo=args.lorenzo_fallback_check,\
                     sample_rate=args.fallback_sample_ratio,min_sampled_points=10,x_preded=(x_start>0),y_preded=(y_start>0),z_preded=(z_start>0),random_access=False,fix_algo=args.fix_algo)
                 #if np.max(array[x_start:x_end+1,y_start:y_end+1,z_start:z_end+1])!=np.min(array[x_start:x_end+1,y_start:y_end+1,z_start:z_end+1]):
                     #print(cur_selected)

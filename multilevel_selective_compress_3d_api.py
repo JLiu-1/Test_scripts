@@ -10,7 +10,7 @@ import random
 from utils import *
 
 def msc3d(array,error_bound,rate,maximum_rate,min_coeff_level,max_step,anchor_rate,rate_list=None,x_preded=False,y_preded=False,z_preded=False,multidim_level=10,sz_interp=False,lorenzo=-1,\
-sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose=False,pred_check=False,fix_algo="none",fix_algo_list=None,first_level=None,last_level=0,fake_compression=False):#lorenzo:only check lorenzo fallback with level no larger than lorenzo level
+sample_rate=0.05,min_sampled_points=10,new_q_order=0,selection_criteria="l1",random_access=False,verbose=False,pred_check=False,fix_algo="none",fix_algo_list=None,first_level=None,last_level=0,fake_compression=False):#lorenzo:only check lorenzo fallback with level no larger than lorenzo level
 
     size_x,size_y,size_z=array.shape
     '''
@@ -141,14 +141,14 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
         if verbose:
             print("Level %d started. Current step: %d. Current error_bound: %s." % (level,step,cur_eb))
         best_preds=None#need to copy
-        best_absloss=None
+        best_loss=None
         best_qs=[]#need to copy
         best_us=[]#need to copy
         xstart=2 if x_preded else 0
         ystart=2 if y_preded else 0
         zstart=2 if z_preded else 0
     #linear interp
-        absloss=0
+        loss=0
         selected_algo="none"
         if fix_algo_list!=None:
             fix_algo=fix_algo_list[level]
@@ -186,7 +186,10 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                             else:
                                 pred=(cur_array[x][y][z-1]+cur_array[x][y][z+1])*0.5
                             if (not random_access) or level!=0 or ((x!=cur_size_x-1 or last_x!=size_x-1) and (y!=cur_size_y-1 or last_y!=size_y-1)):
-                                absloss+=abs(orig-pred)
+                                if selection_criteria=="l1":
+                                    loss+=abs(orig-pred)
+                                elif selection_criteria=="l2":
+                                    loss+=(orig-pred)**2
                             q,decomp=quantize(orig,pred,cur_eb)
                             if new_q_order:
                                 q_array[x][y][z]=q
@@ -235,7 +238,10 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                             else:
                                 pred=(cur_array[x][y-1][z]+cur_array[x][y+1][z])*0.5
                             if (not random_access) or level!=0 or ((x!=cur_size_x-1 or last_x!=size_x-1) and (z!=cur_size_z-1 or last_z!=size_z-1)):
-                                absloss+=abs(orig-pred)
+                                if selection_criteria=="l1":
+                                    loss+=abs(orig-pred)
+                                elif selection_criteria=="l2":
+                                    loss+=(orig-pred)**2
                             q,decomp=quantize(orig,pred,cur_eb)
                             if new_q_order:
                                 q_array[x][y][z]=q
@@ -281,7 +287,10 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                             else:
                                 pred=(cur_array[x-1][y][z]+cur_array[x+1][y][z])*0.5
                             if (not random_access) or level!=0 or ((y!=cur_size_y-1 or last_y!=size_y-1) and (z!=cur_size_z-1 or last_z!=size_z-1)):
-                                absloss+=abs(orig-pred)
+                                if selection_criteria=="l1":
+                                    loss+=abs(orig-pred)
+                                elif selection_criteria=="l2":
+                                    loss+=(orig-pred)**2
                             q,decomp=quantize(orig,pred,cur_eb)
                             if new_q_order:
                                 q_array[x][y][z]=q
@@ -328,7 +337,10 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                                 pred=(cur_array[x-1][y][z]+cur_array[x+1][y][z]+cur_array[x][y-1][z]+cur_array[x][y+1][z])*0.25
 
                             if (not random_access) or level!=0 or z!=cur_size_z-1 or last_z!=size_z-1:
-                                absloss+=abs(orig-pred)
+                                if selection_criteria=="l1":
+                                    loss+=abs(orig-pred)
+                                elif selection_criteria=="l2":
+                                    loss+=(orig-pred)**2
                             q,decomp=quantize(orig,pred,cur_eb)
                     
                             if new_q_order:
@@ -374,7 +386,10 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                             else:
                                 pred=(cur_array[x-1][y][z]+cur_array[x+1][y][z]+cur_array[x][y][z-1]+cur_array[x][y][z+1])*0.25
                             if (not random_access) or level!=0 or y!=cur_size_y-1 or last_y!=size_y-1:
-                                absloss+=abs(orig-pred)
+                                if selection_criteria=="l1":
+                                    loss+=abs(orig-pred)
+                                elif selection_criteria=="l2":
+                                    loss+=(orig-pred)**2
                             q,decomp=quantize(orig,pred,cur_eb)
                 
                             if new_q_order:
@@ -418,7 +433,10 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                             else:
                                 pred=(cur_array[x][y-1][z]+cur_array[x][y+1][z]+cur_array[x][y][z-1]+cur_array[x][y][z+1])*0.25
                             if (not random_access) or level!=0 or x!=cur_size_x-1 or last_x!=size_x-1:
-                                absloss+=abs(orig-pred)
+                                if selection_criteria=="l1":
+                                    loss+=abs(orig-pred)
+                                elif selection_criteria=="l2":
+                                    loss+=(orig-pred)**2
                             q,decomp=quantize(orig,pred,cur_eb)
                 
                             if new_q_order:
@@ -462,7 +480,10 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                                 pred=np.dot(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y-1][z],cur_array[x][y+1][z],cur_array[x][y][z-1],cur_array[x][y][z+1] ]),md_coef)+md_ince
                             else:
                                 pred=(cur_array[x-1][y][z]+cur_array[x+1][y][z]+cur_array[x][y-1][z]+cur_array[x][y+1][z]+cur_array[x][y][z-1]+cur_array[x][y][z+1])/6
-                            absloss+=abs(orig-pred)
+                            if selection_criteria=="l1":
+                                loss+=abs(orig-pred)
+                            elif selection_criteria=="l2":
+                                loss+=(orig-pred)**2
                             q,decomp=quantize(orig,pred,cur_eb)
                 
                             if new_q_order:
@@ -477,14 +498,7 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                             if pred_check:
                                 cur_preded[x][y][z]=1  
                             '''
-
-                loss_dict[level]["linear"]=absloss
-                best_preds=np.copy(cur_array)
-                '''
-                if pred_check:
-                    best_preded=np.copy(cur_preded)
-                '''
-                best_absloss=absloss
+ 
                 if new_q_order==1:
                     for x in range(xstart,cur_size_x,2):
                         for y in range(ystart,cur_size_y,2):
@@ -500,6 +514,29 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                         for y in range(1 if ystart>0 else 0,cur_size_y,1):
                             for z in range(1 if zstart>0 else 0,cur_size_z,1):
                                 cur_qs.append(q_array[x][y][z])
+                elif new_q_order==2:
+                    for x in range(1 if xstart>0 else 0,cur_size_x,1):
+                        for y in range(1 if ystart>0 else 0,cur_size_y,1):
+                            for z in range(1 if zstart>0 else 0,cur_size_z,1):
+                                if x%2==0 and y%2==0 and z%2==0:
+                                    continue
+                                cur_qs.append(q_array[x][y][z])
+
+                if selection_criteria=="bitrate":
+                    loss=estimate_bitrate(cur_qs)
+
+
+
+
+
+                loss_dict[level]["linear"]=loss
+                best_preds=np.copy(cur_array)
+                '''
+                if pred_check:
+                    best_preded=np.copy(cur_preded)
+                '''
+                best_loss=loss
+                
 
                 best_qs=cur_qs.copy()
                 best_us=cur_us.copy()
@@ -513,10 +550,12 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
             #if cubic:
             #print("cubic")
             if fix_algo=="none" or fix_algo=="cubic":
-                absloss=0
+                loss=0
                 cur_qs=[]
                 cur_us=[]
                 cur_array=np.copy(array[0:last_x+1:step,0:last_y+1:step,0:last_z+1:step])#reset cur_array
+                if new_q_order:
+                    q_array=np.zeros(cur_array.shape,dtype=np.int32)
                 if level>=min_coeff_level:
                     reg_xs=[]
                     reg_ys=[]
@@ -543,9 +582,15 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                             else:
                                 pred=(cur_array[x][y][z-1]+cur_array[x][y][z+1])*0.5
                             if (not random_access) or level!=0 or ((x!=cur_size_x-1 or last_x!=size_x-1) and (y!=cur_size_y-1 or last_y!=size_y-1)):
-                                absloss+=abs(orig-pred)
+                                if selection_criteria=="l1":
+                                    loss+=abs(orig-pred)
+                                elif selection_criteria=="l2":
+                                    loss+=(orig-pred)**2
                             q,decomp=quantize(orig,pred,cur_eb)
-                            cur_qs.append(q)
+                            if new_q_order:
+                                q_array[x][y][z]=q
+                            else:
+                                cur_qs.append(q)
                     
                             if q==0:
                                 cur_us.append(decomp)
@@ -579,9 +624,15 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                             else:
                                 pred=(cur_array[x][y-1][z]+cur_array[x][y+1][z])*0.5
                             if (not random_access) or level!=0 or ((x!=cur_size_x-1 or last_x!=size_x-1) and (z!=cur_size_z-1 or last_z!=size_z-1)):
-                                absloss+=abs(orig-pred)
+                                if selection_criteria=="l1":
+                                    loss+=abs(orig-pred)
+                                elif selection_criteria=="l2":
+                                    loss+=(orig-pred)**2
                             q,decomp=quantize(orig,pred,cur_eb)
-                            cur_qs.append(q)
+                            if new_q_order:
+                                q_array[x][y][z]=q
+                            else:
+                                cur_qs.append(q)
                     
                             if q==0:
                                 cur_us.append(decomp)
@@ -614,9 +665,15 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                             else:
                                 pred=(cur_array[x-1][y][z]+cur_array[x+1][y][z])*0.5
                             if (not random_access) or level!=0 or ( (y!=cur_size_y-1 or last_y!=size_y-1) and (z!=cur_size_z-1 or last_z!=size_z-1)):
-                                absloss+=abs(orig-pred)
+                                if selection_criteria=="l1":
+                                    loss+=abs(orig-pred)
+                                elif selection_criteria=="l2":
+                                    loss+=(orig-pred)**2
                             q,decomp=quantize(orig,pred,cur_eb)
-                            cur_qs.append(q)
+                            if new_q_order:
+                                q_array[x][y][z]=q
+                            else:
+                                cur_qs.append(q)
                     
                             if q==0:
                                 cur_us.append(decomp)
@@ -649,10 +706,16 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                                 pred=(cur_array[x-1][y][z]+cur_array[x+1][y][z]+cur_array[x][y-1][z]+cur_array[x][y+1][z])*0.25
         
                             if (not random_access) or level!=0 or z!=cur_size_z-1 or last_z!=size_z-1:
-                                absloss+=abs(orig-pred)
+                                if selection_criteria=="l1":
+                                    loss+=abs(orig-pred)
+                                elif selection_criteria=="l2":
+                                    loss+=(orig-pred)**2
                             q,decomp=quantize(orig,pred,cur_eb)
                     
-                            cur_qs.append(q)
+                            if new_q_order:
+                                q_array[x][y][z]=q
+                            else:
+                                cur_qs.append(q)
                             if q==0:
                                 cur_us.append(decomp)
                         #absloss+=abs(decomp)
@@ -681,10 +744,16 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                             else:
                                 pred=(cur_array[x-1][y][z]+cur_array[x+1][y][z]+cur_array[x][y][z-1]+cur_array[x][y][z+1])*0.25
                             if (not random_access) or level!=0 or y!=cur_size_y-1 or last_y!=size_y-1:
-                                absloss+=abs(orig-pred)
+                                if selection_criteria=="l1":
+                                    loss+=abs(orig-pred)
+                                elif selection_criteria=="l2":
+                                    loss+=(orig-pred)**2
                             q,decomp=quantize(orig,pred,cur_eb)
                     
-                            cur_qs.append(q)
+                            if new_q_order:
+                                q_array[x][y][z]=q
+                            else:
+                                cur_qs.append(q)
                             if q==0:
                                 cur_us.append(decomp)
                         #absloss+=abs(decomp)
@@ -712,10 +781,16 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                             else:
                                 pred=(cur_array[x][y-1][z]+cur_array[x][y+1][z]+cur_array[x][y][z-1]+cur_array[x][y][z+1])*0.25
                             if (not random_access) or level!=0 or (x!=cur_size_x-1 or last_x!=size_x-1) :
-                                absloss+=abs(orig-pred)
+                                if selection_criteria=="l1":
+                                    loss+=abs(orig-pred)
+                                elif selection_criteria=="l2":
+                                    loss+=(orig-pred)**2
                             q,decomp=quantize(orig,pred,cur_eb)
                     
-                            cur_qs.append(q)
+                            if new_q_order:
+                                q_array[x][y][z]=q
+                            else:
+                                cur_qs.append(q)
                             if q==0:
                                 cur_us.append(decomp)
                         #absloss+=abs(decomp)
@@ -742,28 +817,64 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                                 pred=np.dot(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y-1][z],cur_array[x][y+1][z],cur_array[x][y][z-1],cur_array[x][y][z+1] ]),md_coef)+md_ince
                             else:
                                 pred=(cur_array[x-1][y][z]+cur_array[x+1][y][z]+cur_array[x][y-1][z]+cur_array[x][y+1][z]+cur_array[x][y][z-1]+cur_array[x][y][z+1])/6
-                            absloss+=abs(orig-pred)
+                            if selection_criteria=="l1":
+                                loss+=abs(orig-pred)
+                            elif selection_criteria=="l2":
+                                loss+=(orig-pred)**2
                             q,decomp=quantize(orig,pred,cur_eb)
                     
-                            cur_qs.append(q)
+                            if new_q_order:
+                                q_array[x][y][z]=q
+                            else:
+                                cur_qs.append(q)
                             if q==0:
                                 cur_us.append(decomp)
                         #absloss+=abs(decomp)
                             cur_array[x][y][z]=decomp
-                loss_dict[level]["cubic"]=absloss
-                if selected_algo=="none" or absloss<best_absloss:
+
+
+                if new_q_order==1:
+                    for x in range(xstart,cur_size_x,2):
+                        for y in range(ystart,cur_size_y,2):
+                            for z in range(1,cur_size_z,2):
+                                cur_qs.append(q_array[x][y][z])
+
+                    for x in range(xstart,cur_size_x,2):
+                        for y in range(1,cur_size_y,2):
+                            for z in range(1 if zstart>0 else 0,cur_size_z,1):
+                                cur_qs.append(q_array[x][y][z])
+
+                    for x in range(1,cur_size_x,2):
+                        for y in range(1 if ystart>0 else 0,cur_size_y,1):
+                            for z in range(1 if zstart>0 else 0,cur_size_z,1):
+                                cur_qs.append(q_array[x][y][z])
+                elif new_q_order==2:
+                    for x in range(1 if xstart>0 else 0,cur_size_x,1):
+                        for y in range(1 if ystart>0 else 0,cur_size_y,1):
+                            for z in range(1 if zstart>0 else 0,cur_size_z,1):
+                                if x%2==0 and y%2==0 and z%2==0:
+                                    continue
+                                cur_qs.append(q_array[x][y][z])
+
+                if selection_criteria=="bitrate":
+                    loss=estimate_bitrate(cur_qs)
+                
+                loss_dict[level]["cubic"]=loss
+                if selected_algo=="none" or loss<best_loss:
                     selected_algo="cubic"
                     best_preds=np.copy(cur_array)
-                    best_absloss=absloss
+                    best_loss=loss
                     best_qs=cur_qs.copy()
                     best_us=cur_us.copy()
         
             #full multidim
             if fix_algo=="none" or fix_algo=="multidim":
-                absloss=0
+                loss=0
                 cur_qs=[]
                 cur_us=[]
                 cur_array=np.copy(array[0:last_x+1:step,0:last_y+1:step,0:last_z+1:step])#reset cur_array
+                if new_q_order:
+                    q_array=np.zeros(cur_array.shape,dtype=np.int32)
                 #center
                 if level>=min_coeff_level:
                     md_reg_xs=[]
@@ -786,10 +897,16 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                                 pred=np.dot(cur_array[x-1:x+2:2,y-1:y+2:2,z-1:z+2:2],md_coef)+md_ince
                             else:
                                 pred=np.mean(cur_array[x-1:x+2:2,y-1:y+2:2,z-1:z+2:2])
-                            absloss+=abs(orig-pred)
+                            if selection_criteria=="l1":
+                                loss+=abs(orig-pred)
+                            elif selection_criteria=="l2":
+                                loss+=(orig-pred)**2
                             q,decomp=quantize(orig,pred,cur_eb)
                 
-                            cur_qs.append(q)
+                            if new_q_order:
+                                q_array[x][y][z]=q
+                            else:
+                                cur_qs.append(q)
                             if q==0:
                                 cur_us.append(decomp)
                                 #absloss+=abs(decomp)
@@ -843,9 +960,15 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                             else:
                                 pred=(cur_array[x][y][z-1]+cur_array[x][y][z+1])/2
                             if (not random_access) or level!=0 or ((x!=cur_size_x-1 or last_x!=size_x-1) and (y!=cur_size_y-1 or last_y!=size_y-1) and (z!=cur_size_z-1 or last_z!=size_z-1)):
-                                absloss+=abs(orig-pred)
+                                if selection_criteria=="l1":
+                                    loss+=abs(orig-pred)
+                                elif selection_criteria=="l2":
+                                    loss+=(orig-pred)**2
                             q,decomp=quantize(orig,pred,cur_eb)
-                            cur_qs.append(q)
+                            if new_q_order:
+                                q_array[x][y][z]=q
+                            else:
+                                cur_qs.append(q)
                 
 
                             if q==0:
@@ -899,9 +1022,15 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                             else:
                                 pred=(cur_array[x][y][z-1]+cur_array[x][y][z+1])/2
                             if (not random_access) or level!=0 or ((x!=cur_size_x-1 or last_x!=size_x-1) and (y!=cur_size_y-1 or last_y!=size_y-1) and (z!=cur_size_z-1 or last_z!=size_z-1)):
-                                absloss+=abs(orig-pred)
+                                if selection_criteria=="l1":
+                                    loss+=abs(orig-pred)
+                                elif selection_criteria=="l2":
+                                    loss+=(orig-pred)**2
                             q,decomp=quantize(orig,pred,cur_eb)
-                            cur_qs.append(q)
+                            if new_q_order:
+                                q_array[x][y][z]=q
+                            else:
+                                cur_qs.append(q)
                 
 
                             if q==0:
@@ -909,11 +1038,35 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                    
                             cur_array[x][y][z]=decomp
 
-                loss_dict[level]["multidim"]=absloss
-                if selected_algo=="none" or absloss<best_absloss:
+                if new_q_order==1:
+                    for x in range(xstart,cur_size_x,2):
+                        for y in range(ystart,cur_size_y,2):
+                            for z in range(1,cur_size_z,2):
+                                cur_qs.append(q_array[x][y][z])
+
+                    for x in range(xstart,cur_size_x,2):
+                        for y in range(1,cur_size_y,2):
+                            for z in range(1 if zstart>0 else 0,cur_size_z,1):
+                                cur_qs.append(q_array[x][y][z])
+
+                    for x in range(1,cur_size_x,2):
+                        for y in range(1 if ystart>0 else 0,cur_size_y,1):
+                            for z in range(1 if zstart>0 else 0,cur_size_z,1):
+                                cur_qs.append(q_array[x][y][z])
+                elif new_q_order==2:
+                    for x in range(1 if xstart>0 else 0,cur_size_x,1):
+                        for y in range(1 if ystart>0 else 0,cur_size_y,1):
+                            for z in range(1 if zstart>0 else 0,cur_size_z,1):
+                                if x%2==0 and y%2==0 and z%2==0:
+                                    continue
+                                cur_qs.append(q_array[x][y][z])
+                if selection_criteria=="bitrate":
+                    loss=estimate_bitrate(cur_qs)
+                loss_dict[level]["multidim"]=loss
+                if selected_algo=="none" or loss<best_loss:
                     selected_algo="multidim"
                     best_preds=np.copy(cur_array)
-                    best_absloss=absloss
+                    best_loss=loss
                     best_qs=cur_qs.copy()
                     best_us=cur_us.copy()
 
@@ -923,7 +1076,7 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
             #zyx
             
             if fix_algo=="none" or fix_algo=="sz3_linear" or fix_algo=="sz3_linear_zyx":
-                absloss=0
+                loss=0
                 cur_qs=[]
                 cur_us=[]
                 cur_array=np.copy(array[0:last_x+1:step,0:last_y+1:step,0:last_z+1:step])#reset cur_array
@@ -964,7 +1117,10 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                             else:
                                 pred=(cur_array[x][y][z-1]+cur_array[x][y][z+1])*0.5
                             if (not random_access) or level!=0 or ((x!=cur_size_x-1 or last_x!=size_x-1) and (y!=cur_size_y-1 or last_y!=size_y-1)):
-                                absloss+=abs(orig-pred)
+                                if selection_criteria=="l1":
+                                    loss+=abs(orig-pred)
+                                elif selection_criteria=="l2":
+                                    loss+=(orig-pred)**2
                             q,decomp=quantize(orig,pred,cur_eb)
                             cur_qs.append(q)
 
@@ -1013,7 +1169,10 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                             else:
                                 pred=(cur_array[x][y-1][z]+cur_array[x][y+1][z])*0.5
                             if (not random_access) or level!=0 or ((x!=cur_size_x-1 or last_x!=size_x-1) and (z!=cur_size_z-1 or last_z!=size_z-1)):
-                                absloss+=abs(orig-pred)
+                                if selection_criteria=="l1":
+                                    loss+=abs(orig-pred)
+                                elif selection_criteria=="l2":
+                                    loss+=(orig-pred)**2
                             q,decomp=quantize(orig,pred,cur_eb)
                             cur_qs.append(q)
                 
@@ -1057,7 +1216,10 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                             else:
                                 pred=(cur_array[x-1][y][z]+cur_array[x+1][y][z])*0.5
                             if (not random_access) or level!=0 or ((y!=cur_size_y-1 or last_y!=size_y-1) and (z!=cur_size_z-1 or last_z!=size_z-1)):
-                                absloss+=abs(orig-pred)
+                                if selection_criteria=="l1":
+                                    loss+=abs(orig-pred)
+                                elif selection_criteria=="l2":
+                                    loss+=(orig-pred)**2
                             q,decomp=quantize(orig,pred,cur_eb)
                             cur_qs.append(q)
                 
@@ -1070,11 +1232,13 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                             if pred_check:
                                 cur_preded[x][y][z]=1
                             '''
-                loss_dict[level]["sz3_linear_zyx"]=absloss
-                if selected_algo=="none" or absloss<best_absloss :
+                if selection_criteria=="bitrate":
+                    loss=estimate_bitrate(cur_qs)
+                loss_dict[level]["sz3_linear_zyx"]=loss
+                if selected_algo=="none" or loss<best_loss:
                     selected_algo="sz3_linear_zyx"
                     best_preds=np.copy(cur_array)
-                    best_absloss=absloss
+                    best_loss=loss
                     '''
                     if pred_check:
                         best_preded=np.copy(cur_preded)
@@ -1085,7 +1249,7 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
 
             if fix_algo=="none" or fix_algo=="sz3_linear" or fix_algo=="sz3_linear_xyz":
                 #xyz
-                absloss=0
+                loss=0
                 cur_qs=[]
                 cur_us=[]
                 cur_array=np.copy(array[0:last_x+1:step,0:last_y+1:step,0:last_z+1:step])#reset cur_array
@@ -1113,7 +1277,10 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                             else:
                                 pred=(cur_array[x-1][y][z]+cur_array[x+1][y][z])*0.5
                             if (not random_access) or level!=0 or ((z!=cur_size_z-1 or last_z!=size_z-1) and (y!=cur_size_y-1 or last_y!=size_y-1)):
-                                absloss+=abs(orig-pred)
+                                if selection_criteria=="l1":
+                                    loss+=abs(orig-pred)
+                                elif selection_criteria=="l2":
+                                    loss+=(orig-pred)**2
                             q,decomp=quantize(orig,pred,cur_eb)
                             cur_qs.append(q)
                 
@@ -1148,7 +1315,10 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                             else:
                                 pred=(cur_array[x][y-1][z]+cur_array[x][y+1][z])*0.5
                             if (not random_access) or level!=0 or ((x!=cur_size_x-1 or last_x!=size_x-1) and (z!=cur_size_z-1 or last_z!=size_z-1)):
-                                absloss+=abs(orig-pred)
+                                if selection_criteria=="l1":
+                                    loss+=abs(orig-pred)
+                                elif selection_criteria=="l2":
+                                    loss+=(orig-pred)**2
                             q,decomp=quantize(orig,pred,cur_eb)
                             cur_qs.append(q)
                 
@@ -1181,7 +1351,10 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                             else:
                                 pred=(cur_array[x][y][z-1]+cur_array[x][y][z+1])*0.5
                             if (not random_access) or level!=0 or ((y!=cur_size_y-1 or last_y!=size_y-1) and (x!=cur_size_x-1 or last_x!=size_x-1)):
-                                absloss+=abs(orig-pred)
+                                if selection_criteria=="l1":
+                                    loss+=abs(orig-pred)
+                                elif selection_criteria=="l2":
+                                    loss+=(orig-pred)**2
                             q,decomp=quantize(orig,pred,cur_eb)
                             cur_qs.append(q)
                 
@@ -1190,18 +1363,21 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                                 cur_us.append(decomp)
                         #absloss+=abs(decomp)
                             cur_array[x][y][z]=decomp 
-                loss_dict[level]["sz3_linear_xyz"]=absloss
-                if selected_algo=="none" or absloss<best_absloss:
+                if selection_criteria=="bitrate":
+                    loss=estimate_bitrate(cur_qs)
+
+                loss_dict[level]["sz3_linear_xyz"]=loss
+                if selected_algo=="none" or loss<best_loss:
                     selected_algo="sz3_linear_xyz"
                     best_preds=np.copy(cur_array)
-                    best_absloss=absloss
+                    best_loss=loss
                     best_qs=cur_qs.copy()
                     best_us=cur_us.copy()
 
             #1D cubic
             #ZYX
             if fix_algo=="none" or fix_algo=="sz3_cubic" or fix_algo=="sz3_cubic_zyx":
-                absloss=0
+                loss=0
                 cur_qs=[]
                 cur_us=[]
                 cur_array=np.copy(array[0:last_x+1:step,0:last_y+1:step,0:last_z+1:step])#reset cur_array
@@ -1234,7 +1410,10 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                             else:
                                 pred=(cur_array[x][y][z-1]+cur_array[x][y][z+1])*0.5
                             if (not random_access) or level!=0 or ((x!=cur_size_x-1 or last_x!=size_x-1) and (y!=cur_size_y-1 or last_y!=size_y-1)):
-                                absloss+=abs(orig-pred)
+                                if selection_criteria=="l1":
+                                    loss+=abs(orig-pred)
+                                elif selection_criteria=="l2":
+                                    loss+=(orig-pred)**2
                             q,decomp=quantize(orig,pred,cur_eb)
                             cur_qs.append(q)
                 
@@ -1276,7 +1455,10 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                             else:
                                 pred=(cur_array[x][y-1][z]+cur_array[x][y+1][z])*0.5
                             if (not random_access) or level!=0 or ((x!=cur_size_x-1 or last_x!=size_x-1) and (z!=cur_size_z-1 or last_z!=size_z-1)):
-                                absloss+=abs(orig-pred)
+                                if selection_criteria=="l1":
+                                    loss+=abs(orig-pred)
+                                elif selection_criteria=="l2":
+                                    loss+=(orig-pred)**2
                             q,decomp=quantize(orig,pred,cur_eb)
                             cur_qs.append(q)
                 
@@ -1315,7 +1497,10 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                             else:
                                 pred=(cur_array[x-1][y][z]+cur_array[x+1][y][z])*0.5
                             if (not random_access) or level!=0 or ((y!=cur_size_y-1 or last_y!=size_y-1) and (z!=cur_size_z-1 or last_z!=size_z-1)):
-                                absloss+=abs(orig-pred)
+                                if selection_criteria=="l1":
+                                    loss+=abs(orig-pred)
+                                elif selection_criteria=="l2":
+                                    loss+=(orig-pred)**2
                             q,decomp=quantize(orig,pred,cur_eb)
                             cur_qs.append(q)
                 
@@ -1324,11 +1509,13 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                                 cur_us.append(decomp)
                         #absloss+=abs(decomp)
                             cur_array[x][y][z]=decomp 
-                loss_dict[level]["sz3_cubic_zyx"]=absloss
-                if selected_algo=="none" or absloss<best_absloss:
+                if selection_criteria=="bitrate":
+                    loss=estimate_bitrate(cur_qs)
+                loss_dict[level]["sz3_cubic_zyx"]=loss
+                if selected_algo=="none" or loss<best_loss:
                     selected_algo="sz3_cubic_zyx"
                     best_preds=np.copy(cur_array)
-                    best_absloss=absloss
+                    best_loss=loss
                     best_qs=cur_qs.copy()
                     best_us=cur_us.copy()
 
@@ -1336,7 +1523,7 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
 
             #xyz
             if fix_algo=="none" or fix_algo=="sz3_cubic" or fix_algo=="sz3_cubic_xyz":
-                absloss=0
+                loss=0
                 cur_qs=[]
                 cur_us=[]
                 cur_array=np.copy(array[0:last_x+1:step,0:last_y+1:step,0:last_z+1:step])#reset cur_array
@@ -1370,7 +1557,10 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                             else:
                                 pred=(cur_array[x-1][y][z]+cur_array[x+1][y][z])*0.5
                             if (not random_access) or level!=0 or ((z!=cur_size_z-1 or last_z!=size_z-1) and (y!=cur_size_y-1 or last_y!=size_y-1)):
-                                absloss+=abs(orig-pred)
+                                if selection_criteria=="l1":
+                                    loss+=abs(orig-pred)
+                                elif selection_criteria=="l2":
+                                    loss+=(orig-pred)**2
                             q,decomp=quantize(orig,pred,cur_eb)
                             cur_qs.append(q)
                 
@@ -1411,7 +1601,10 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                             else:
                                 pred=(cur_array[x][y-1][z]+cur_array[x][y+1][z])*0.5
                             if (not random_access) or level!=0 or ((x!=cur_size_x-1 or last_x!=size_x-1) and (z!=cur_size_z-1 or last_z!=size_z-1)):
-                                absloss+=abs(orig-pred)
+                                if selection_criteria=="l1":
+                                    loss+=abs(orig-pred)
+                                elif selection_criteria=="l2":
+                                    loss+=(orig-pred)**2
                             q,decomp=quantize(orig,pred,cur_eb)
                             cur_qs.append(q)
                 
@@ -1450,7 +1643,10 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                             else:
                                 pred=(cur_array[x][y][z-1]+cur_array[x][y][z+1])*0.5
                             if (not random_access) or level!=0 or ((y!=cur_size_y-1 or last_y!=size_y-1) and (x!=cur_size_x-1 or last_x!=size_x-1)):
-                                absloss+=abs(orig-pred)
+                                if selection_criteria=="l1":
+                                    loss+=abs(orig-pred)
+                                elif selection_criteria=="l2":
+                                    loss+=(orig-pred)**2
                             q,decomp=quantize(orig,pred,cur_eb)
                             cur_qs.append(q)
                 
@@ -1459,11 +1655,15 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                                 cur_us.append(decomp)
                         #absloss+=abs(decomp)
                             cur_array[x][y][z]=decomp 
-                loss_dict[level]["sz3_cubic_xyz"]=absloss
-                if selected_algo=="none" or absloss<best_absloss:
+
+                if selection_criteria=="bitrate":
+                    loss=estimate_bitrate(cur_qs)
+
+                loss_dict[level]["sz3_cubic_xyz"]=loss
+                if selected_algo=="none" or loss<best_loss:
                     selected_algo="sz3_cubic_xyz"
                     best_preds=np.copy(cur_array)
-                    best_absloss=absloss
+                    best_loss=loss
                     best_qs=cur_qs.copy()
                     best_us=cur_us.copy()
 
@@ -1475,8 +1675,8 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
 
         
         #Lorenzo fallback
-        if level<=lorenzo:
-            absloss=0
+        if level<=lorenzo:#current lorenzo fallback check does not support bitrate criteria well
+            loss=0
         #cur_qs=[]
         #cur_us=[]
         #cur_array=np.copy(array[0:last_x+1:step,0:last_y+1:step])#reset cur_array
@@ -1555,13 +1755,16 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                 
                 pred=f_000+f_011+f_101+f_110-f_001-f_010-f_100
 
-                absloss+=abs(orig-pred)
+                if selection_criteria=="l1":
+                    loss+=abs(orig-pred)
+                elif selection_criteria=="l2":
+                    loss+=(orig-pred)**2
             #print(absloss*len(total_points)/len(sampled_points))
             #print(best_absloss)
             #print(cumulated_loss)
-            if absloss*len(total_points)/len(sampled_points)<best_absloss+cumulated_loss:
+            if loss*len(total_points)/len(sampled_points)<best_loss+cumulated_loss:
                 selected_algo="lorenzo_fallback"
-                best_absloss=0
+                best_loss=0
                 best_preds=np.copy(cur_orig_array)
                 best_qs=[]
                 best_us=[]
@@ -1590,7 +1793,10 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                         
                 
         
-                            best_absloss+=abs(orig-pred)
+                            if selection_criteria=="l1":
+                                best_loss+=abs(orig-pred)
+                            elif selection_criteria=="l2":
+                                best_loss+=(orig-pred)**2
                             q,decomp=quantize(orig,pred,cur_eb)
                             best_qs.append(q)
                             if q==0:
@@ -1603,19 +1809,19 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
 
 
 
-
-        mean_l1_loss=best_absloss/len(best_qs)
+        
+        #mean_loss=best_loss/len(best_qs)
         if not fake_compression:
             array[0:last_x+1:step,0:last_y+1:step,0:last_z+1:step]=best_preds
             '''
             if pred_check:
                 preded[0:last_x+1:step,0:last_y+1:step,0:last_z+1:step]=best_preded
             '''
-        if selected_algo!="lorenzo_fallback":
-            cumulated_loss+=best_absloss
+        if selected_algo!="lorenzo_fallback":#current have problem when bitrate criteria
+            cumulated_loss+=best_loss
         
         else:
-            cumulated_loss=best_absloss
+            cumulated_loss=best_loss
         
         #print(np.max(np.abs(array[0:last_x+1:step,0:last_y+1:step]-best_preds)))
     
@@ -1707,6 +1913,7 @@ if __name__=="__main__":
     parser.add_argument('--size_z','-z',type=int,default=129)
     parser.add_argument('--fix_algo','-f',type=str,default="none")
     parser.add_argument('--autotuning','-t',type=float,default=0.0)
+    parser.add_argument('--criteria','-c',type=str,default="l1")
 #parser.add_argument('--level','-l',type=int,default=2)
 #parser.add_argument('--noise','-n',type=bool,default=False)
 #parser.add_argument('--intercept','-t',type=bool,default=False)
@@ -1782,7 +1989,7 @@ if __name__=="__main__":
                             '''
                             #print("a")
                             cur_array,cur_qs,edge_qs,cur_us,_,lsd=msc3d(cur_array,error_bound,alpha,beta,9999,max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
-                                                    sz_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo=args.fix_algo)
+                                                    sz_interp=args.sz_interp,selection_criteria=args.criteria,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo=args.fix_algo)
                             #print("b")
                             #print(len(cur_qs[max_level]))
                             #print(len(test_qs[max_level]))
@@ -1857,7 +2064,7 @@ if __name__=="__main__":
                                 '''
                                 #print("v")
                                 cur_array,cur_qs,edge_qs,cur_us,_,lsd=msc3d(cur_array,new_error_bound,alpha,beta,9999,max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
-                                                        sz_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo=args.fix_algo)
+                                                        sz_interp=args.sz_interp,selection_criteria=args.criteria,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo=args.fix_algo)
                                 #print("d")
                                 #print(len(cur_qs[max_level]))
                                 #print(len(test_qs[max_level]))
@@ -1936,7 +2143,7 @@ if __name__=="__main__":
                             cur_array=np.copy(array[x_start:x_end,y_start:y_end,z_start:z_end])
                             for predictor in pred_candidates:
                                 cur_array,cur_qs,edge_qs,cur_us,_,lsd=msc3d(cur_array,error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
-                                                                        sz_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,\
+                                                                        sz_interp=args.sz_interp,selection_criteria=args.criteria,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,\
                                                                         min_sampled_points=100,random_access=False,verbose=False,first_level=level,last_level=level,fix_algo=predictor,fake_compression=True)
                                 cur_loss=lsd[level][predictor]
                                 if predictor not in loss_dict:
