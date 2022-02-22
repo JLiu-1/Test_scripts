@@ -266,6 +266,7 @@ if __name__=="__main__":
     lorenzo_level=args.lorenzo_fallback_check
     lorenzo_sample_ratio=args.fallback_sample_ratio
     #currently no coeff and levelwise predictor selection.
+    block_size=args.block_size
     for x_start in range(0,last_x,block_size):
         for y_start in range(0,last_y,block_size):
             for z_start in range(0,last_z,block_size):
