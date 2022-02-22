@@ -110,7 +110,7 @@ fix_algo_list=None,first_level=None,last_level=0,first_order="block",fake_compre
             step=step//2
             continue
         def inlosscal(x,y):
-            return (not random_access) or level!=0 or x!=x_end-1 and y!=y_end-1
+            return (not random_access) or level!=0 or (x!=x_end-1 and y!=y_end-1)
         cur_qs=[]
         cur_us=[]
         if rate_list!=None:
