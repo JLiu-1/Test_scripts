@@ -272,13 +272,14 @@ if __name__=="__main__":
                 x_end=size_x-1 if x_start==last_x-max_step else x_start+max_step 
                 y_end=size_y-1 if y_start==last_y-max_step else y_start+max_step 
                 z_end=size_z-1 if z_start==last_z-max_step else z_start+max_step 
-                print(args.fix_algo)
-                print(np.max(array[x_start:x_end+1,y_start:y_end+1,z_start:z_end+1]),np.min(array[x_start:x_end+1,y_start:y_end+1,z_start:z_end+1]))
+                #print(args.fix_algo)
+                #print(np.max(array[x_start:x_end+1,y_start:y_end+1,z_start:z_end+1]),np.min(array[x_start:x_end+1,y_start:y_end+1,z_start:z_end+1]))
                 array[x_start:x_end+1,y_start:y_end+1,z_start:z_end+1],cur_qs,cur_lorenzo_qs,cur_us,cur_selected,lsd=\
                 msc3d(array[x_start:x_end+1,y_start:y_end+1,z_start:z_end+1],error_bound,rate,maximum_rate,min_coeff_level,max_step,anchor_rate,\
                     rate_list=rate_list,sz_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=args.lorenzo_fallback_check,\
                     sample_rate=args.fallback_sample_ratio,min_sampled_points=10,x_preded=(x_start>0),y_preded=(y_start>0),z_preded=(z_start>0),random_access=False,fix_algo=args.fix_algo)
-                print(cur_selected)
+                if np.max(array[x_start:x_end+1,y_start:y_end+1,z_start:z_end+1])!=np.min(array[x_start:x_end+1,y_start:y_end+1,z_start:z_end+1]):
+                    print(cur_selected)
                 #print(lsd[0])
                 #print([len(_) for _ in cur_qs])
                 #print(len(cur_us))
