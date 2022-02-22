@@ -90,16 +90,16 @@ fix_algo_list=None,first_level=None,last_level=0,first_order="block",fake_compre
         pass#raise error
 #print(len(qs))
 
-    last_x=((x_end-1)//max_step)*max_step#remember that x_start is divisible by max_step
-    last_y=((y_end-1)//max_step)*max_step#marking
-    global_last_x=((size_x-1)//max_step)*max_step
-    global_last_y=((size_y-1)//max_step)*max_step
+    #last_x=((x_end-1)//max_step)*max_step#remember that x_start is divisible by max_step
+    #last_y=((y_end-1)//max_step)*max_step#marking
+    #global_last_x=((size_x-1)//max_step)*max_step
+    #global_last_y=((size_y-1)//max_step)*max_step
     step=max_step//2
     if first_level==None:
         first_level=max_level-1
     level=max_level-1
-    cross_before=(not random_access) 
-    cross_after=(not random_access) and first_order=="level"
+    cross_before=(not random_access) or (max_step>0 and level==max_level-1)
+    cross_after=(not random_access and first_order=="level") or (max_step>0 and level==max_level-1)
     #maxlevel_q_start=len(qs[max_level])
     u_start=len(us)
     cumulated_loss=0.0

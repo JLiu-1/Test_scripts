@@ -86,7 +86,7 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                         f_010=array[x-max_step][y][z-max_step] if x and z else 0
                         f_000=array[x-max_step][y-max_step][z-max_step] if x and y and z else 0
                 
-                        pred=f_000+f_011+f_101+f_110-f_001-f_010-f_100
+                        pred=f_000-f_001-f_010+f_011-f_100+f_101+f_110
                 
         
                 
@@ -111,12 +111,12 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
         
 #print(len(qs))
 
-    last_x=((x_end-1)//max_step)*max_step
-    last_y=((y_end-1)//max_step)*max_step 
-    last_z=((z_end-1)//max_step)*max_step   
-    global_last_x=((size_x-1)//max_step)*max_step
-    global_last_y=((size_y-1)//max_step)*max_step
-    global_last_z=((size_z-1)//max_step)*max_step
+    #last_x=((x_end-1)//max_step)*max_step
+    #last_y=((y_end-1)//max_step)*max_step 
+    #last_z=((z_end-1)//max_step)*max_step   
+    #global_last_x=((size_x-1)//max_step)*max_step
+    #global_last_y=((size_y-1)//max_step)*max_step
+    #global_last_z=((size_z-1)//max_step)*max_step
     step=max_step//2
     level=max_level-1
     if first_level==None:
@@ -125,6 +125,8 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
     u_start=len(us)
     cumulated_loss=0.0
     loss_dict=[{} for i in range(max_level)]
+    cross_before=(not random_access) or (max_step>0 and level==max_level-1)
+    cross_after=((not random_access) and first_order=="level") or (max_step>0 and level==max_level-1)
     while level>=last_level:#step>0:
         if level>first_level:
             level-=1
@@ -136,7 +138,7 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
             cur_eb=error_bound/rate_list[level]
         else:
             cur_eb=error_bound/min(maximum_rate,(rate**level))
-        array_slice=np.copy(array[x_start:last_x+1:step,y_start:last_y+1:step,z_start:last_z+1,step])
+        array_slice=np.copy(array[x_start:x_end:step,y_start:y_end:step,z_start:z_end:step])
         #cur_array=np.copy(array[0:last_x+1:step,0:last_y+1:step,0:last_z+1:step])
         #cur_size_x,cur_size_y,cur_size_z=cur_array.shape
         '''
@@ -157,12 +159,13 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
         best_us=[]#need to copy
         doublestep=step*2
         triplestep=step*3
+        pentastep=step*5
         x_start_offset=doublestep if x_preded else 0
         y_start_offset=doublestep if y_preded else 0
         z_start_offset=doublestep if z_preded else 0
 
 
-        #modification ends here
+     
     #linear interp
         loss=0
         selected_algo="none"
@@ -172,6 +175,7 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
             if fix_algo=="none" or fix_algo=="linear":
                 if new_q_order:
                     q_array=np.zeros(cur_array.shape,dtype=np.int32)
+                '''
                 if level>=min_coeff_level:
                     reg_xs=[]
                     reg_ys=[]
@@ -183,6 +187,7 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                                 res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
                                 coef=res.coef_ 
                                 ince=res.intercept_
+                '''
             
 
                 for x in range(xstart,cur_size_x,2):
