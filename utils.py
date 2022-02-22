@@ -1,8 +1,8 @@
 import numpy as np 
-from sklearn.linear_model import LinearRegression
+#from sklearn.linear_model import LinearRegression
 import math
-import random
-
+#import random
+from collections import Counter
 def quantize(data,pred,error_bound):
     radius=32768
     
@@ -34,3 +34,15 @@ def quantize(data,pred,error_bound):
     else:
         #print("a")
         return 0,data
+
+def estimate_bitrate(quant_bins):
+    bins=Counter()
+    count=len(quant_bins)
+    for b in quant_bins:
+        bins[b]+=1
+
+    bitrate=0
+    for b in bins:
+        p=bins[b]/count
+        bitrate-=p*math.log(p,2)
+    return bitrate

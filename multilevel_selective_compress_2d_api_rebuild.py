@@ -997,7 +997,7 @@ if __name__=="__main__":
     if args.autotuning!=0:
         #pid=os.getpid()
         alpha_list=[1,1.25,1.5,1.75,2]
-        beta_list=[2,4,4,4,4]
+        beta_list=[2,4]
         rate_list=None
         block_num_x=(args.size_x-1)//args.max_step
         block_num_y=(args.size_y-1)//args.max_step
@@ -1034,12 +1034,14 @@ if __name__=="__main__":
                     #print(x_start)
                     #print(y_start)
                     #cur_array=np.copy(array[x_start:x_end,y_start:y_end])
+                    '''
                     curmax=np.max(array[x_start:x_end,y_start:y_end])
                     curmin=np.min(array[x_start:x_end,y_start:y_end])
                     if curmax>themax:
                         themax=curmax
                     if curmin<themin:
                         themin=curmin
+                    '''
                     #what about using an expanded array?
                     cur_qs,edge_qs,cur_us,_,lsd=msc2d(array,x_start,x_end,y_start,y_end,error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
                                             sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo=args.fix_algo)
@@ -1057,7 +1059,7 @@ if __name__=="__main__":
                     element_counts+=(max_step+1)**2 
             t_mse=square_error/element_counts
             #zero_mse=zero_square_error/element_counts
-            psnr=20*math.log(themax-themin,10)-10*math.log(t_mse,10)
+            psnr=20*math.log(rng,10)-10*math.log(t_mse,10)
             #zero_psnr=20*math.log(themax-themin,10)-10*math.log(zero_mse,10)
             #print(zero_psnr)
           
@@ -1106,12 +1108,14 @@ if __name__=="__main__":
                         #print(x_start)
                         #print(y_start)
                         #cur_array=np.copy(array[x_start:x_end,y_start:y_end])
+                        '''
                         curmax=np.max(array[x_start:x_end,y_start:y_end])
                         curmin=np.min(array[x_start:x_end,y_start:y_end])
                         if curmax>themax:
                             themax=curmax
                         if curmin<themin:
                             themin=curmin
+                        '''
                         cur_qs,edge_qs,cur_us,_,lsd=msc2d(array,x_start,x_end,y_start,y_end,new_error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
                                                 sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo=args.fix_algo)
                         
@@ -1128,7 +1132,7 @@ if __name__=="__main__":
                         element_counts+=(max_step+1)**2 
                 t_mse=square_error/element_counts
                 #zero_mse=zero_square_error/element_counts
-                psnr_r=20*math.log(themax-themin,10)-10*math.log(t_mse,10)
+                psnr_r=20*math.log(rng,10)-10*math.log(t_mse,10)
                 #zero_psnr=20*math.log(themax-themin,10)-10*math.log(zero_mse,10)
                 #print(zero_psnr)
               
