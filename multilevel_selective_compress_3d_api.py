@@ -529,8 +529,7 @@ fix_algo="none",fix_algo_list=None,first_level=None,last_level=0,fake_compressio
                                 if x%2==0 and y%2==0 and z%2==0:
                                     continue
                                 cur_qs.append(q_array[x][y][z])
-<<<<<<< HEAD
-=======
+
 
                 if selection_criteria=="bitrate":
                     loss=estimate_bitrate(cur_qs)
@@ -547,7 +546,7 @@ fix_algo="none",fix_algo_list=None,first_level=None,last_level=0,fake_compressio
                 '''
                 best_loss=loss
                 
->>>>>>> f5694902d0c64e2031ac65f3a3f7466efc2618a0
+
 
                 best_qs=cur_qs.copy()
                 best_us=cur_us.copy()
@@ -874,8 +873,9 @@ fix_algo="none",fix_algo_list=None,first_level=None,last_level=0,fake_compressio
                 if selected_algo=="none" or loss<best_loss:
                     selected_algo="cubic"
                     best_preds=np.copy(cur_array)
-<<<<<<< HEAD
-                    best_absloss=absloss
+                    best_loss=loss
+
+                   
                     if new_q_order==1:
                         for x in range(xstart,cur_size_x,2):
                             for y in range(ystart,cur_size_y,2):
@@ -898,9 +898,9 @@ fix_algo="none",fix_algo_list=None,first_level=None,last_level=0,fake_compressio
                                     if x%2==0 and y%2==0 and z%2==0:
                                         continue
                                     cur_qs.append(q_array[x][y][z])
-=======
-                    best_loss=loss
->>>>>>> f5694902d0c64e2031ac65f3a3f7466efc2618a0
+
+                    
+
                     best_qs=cur_qs.copy()
                     best_us=cur_us.copy()
         
