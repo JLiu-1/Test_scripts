@@ -1118,9 +1118,9 @@ fix_algo_list=None,first_level=None,last_level=0,first_order="block",fake_compre
 
         
         if fake_compression:
-            array[x_start:last_x+1:step,y_start:last_y+1:step]=array_slice
+            array[x_start:x_end:step,y_start:y_end:step]=array_slice
         else:
-            array[x_start:last_x+1:step,y_start:last_y+1:step]=best_preds
+            array[x_start:x_end:step,y_start:y_end:step]=best_preds
 
         if selected_algo!="lorenzo_fallback":
             cumulated_loss+=best_absloss
