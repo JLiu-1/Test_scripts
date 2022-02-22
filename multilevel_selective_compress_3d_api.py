@@ -1810,7 +1810,8 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,selection_criteria="l1",ran
 
 
         
-        #mean_loss=best_loss/len(best_qs)
+        mean_loss=best_loss/len(best_qs)
+
         if not fake_compression:
             array[0:last_x+1:step,0:last_y+1:step,0:last_z+1:step]=best_preds
             '''
@@ -1832,7 +1833,7 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,selection_criteria="l1",ran
         selected_algos.append(selected_algo)
         #print(len(qs))
         if verbose:
-            print ("Level %d finished. Selected algorithm: %s. Mean prediction abs loss: %f." % (level,selected_algo,mean_l1_loss))
+            print ("Level %d finished. Selected algorithm: %s. Mean prediction loss: %f." % (level,selected_algo,mean_loss))
         step=step//2
         level-=1
         #print(np.max(np.abs(orig_array-array)))
