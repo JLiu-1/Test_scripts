@@ -1167,6 +1167,7 @@ if __name__=="__main__":
 
         print("Autotuning finished. Selected alpha: %f. Selected beta: %f. Best bitrate: %f. Best PSNR: %f."\
         %(bestalpha,bestbeta,bestb,bestp) )
+        print(np.max(np.abs(array-orig_array)))
         args.rate=bestalpha
         args.maximum_rate=bestbeta
 
