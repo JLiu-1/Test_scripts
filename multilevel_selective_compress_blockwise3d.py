@@ -255,9 +255,9 @@ if __name__=="__main__":
     min_coeff_level=args.min_coeff_level
 
 
-    #last_x=((size_x-1)//max_step)*max_step
-    #last_y=((size_y-1)//max_step)*max_step
-    #last_z=((size_z-1)//max_step)*max_step   
+    last_x=((size_x-1)//max_step)*max_step
+    last_y=((size_y-1)//max_step)*max_step
+    last_z=((size_z-1)//max_step)*max_step   
 
     #il_count=0
     #ic_count=0
@@ -270,9 +270,9 @@ if __name__=="__main__":
         for y_start in range(0,last_y,block_size):
             for z_start in range(0,last_z,block_size):
                 #print(x_start,y_start,z_start)
-                x_end=size_x-1 if x_start+block_size>=size_x else x_start+block_size
-                y_end=size_y-1 if y_start+block_size>=size_y else y_start+block_size
-                z_end=size_z-1 if z_start+block_size>=size_z else z_start+block_size
+                x_end=size_x-1 if x_start+block_size>=last_x else x_start+block_size
+                y_end=size_y-1 if y_start+block_size>=last_y else y_start+block_size
+                z_end=size_z-1 if z_start+block_size>=last_z else z_start+block_size
                 #print(args.fix_algo)
                 #print(np.max(array[x_start:x_end+1,y_start:y_end+1,z_start:z_end+1]),np.min(array[x_start:x_end+1,y_start:y_end+1,z_start:z_end+1]))
                 array[x_start:x_end+1,y_start:y_end+1,z_start:z_end+1],cur_qs,cur_lorenzo_qs,cur_us,cur_selected,lsd=\
