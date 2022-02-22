@@ -283,7 +283,7 @@ if __name__=="__main__":
                     rate_list=rate_list,sz_interp=args.sz_interp,selection_criteria=args.criteria,multidim_level=args.multidim_level,lorenzo=args.lorenzo_fallback_check,\
                     sample_rate=args.fallback_sample_ratio,min_sampled_points=10,x_preded=(x_start>0),y_preded=(y_start>0),z_preded=(z_start>0),random_access=False,fix_algo=args.fix_algo)
                 #if np.max(array[x_start:x_end+1,y_start:y_end+1,z_start:z_end+1])!=np.min(array[x_start:x_end+1,y_start:y_end+1,z_start:z_end+1]):
-                    #print(cur_selected)
+                print(cur_selected)
                 #print(lsd[0])
                 #print([len(_) for _ in cur_qs])
                 #print(len(cur_us))
