@@ -251,7 +251,7 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,selection_criteria="l1",ran
                 '''
                 for x in range(x_start+x_start_offset,x_end,doublestep):
                     for y in range(y_start+step,y_end,doublestep):
-                        for z in range(z_start+z_end_offset,z_end,doublestep):
+                        for z in range(z_start+z_start_offset,z_end,doublestep):
                             #if y==cur_size_y-1:
                                 #continue
                             orig=array[x][y][z]
