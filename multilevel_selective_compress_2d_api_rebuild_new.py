@@ -10,7 +10,7 @@ import random
 from utils import *
 import time
 def msc2d(array,x_start,x_end,y_start,y_end,error_bound,rate,maximum_rate,min_coeff_level,max_step,anchor_rate,\
-    rate_list=None,x_preded=False,y_preded=False,sz3_interp=False,multidim_level=10,lorenzo=-1,\
+    rate_list=None,x_preded=False,y_preded=False,sz3_interp=False,multidim_level=-1,lorenzo=-1,\
 sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose=False,fix_algo="none",\
 fix_algo_list=None,first_level=None,last_level=0,first_order="block",fake_compression=False):#lorenzo:only check lorenzo fallback with level no larger than lorenzo level
     #x_y_start should be on the anchor grid
@@ -137,7 +137,7 @@ fix_algo_list=None,first_level=None,last_level=0,first_order="block",fake_compre
         selected_algo="none"
         if fix_algo_list!=None:
             fix_algo=fix_algo_list[level]
-        if (fix_algo=="none" and level<=multidim_level) or fix_algo in ["linear","cubic","multidim"] or not sz3_interp:
+        if (fix_algo=="none" and level>=multidim_level) or fix_algo in ["linear","cubic","multidim"] or not sz3_interp:
             if fix_algo=="none" or fix_algo=="linear":
                 #tt=time.time()
                 #all coeff part commented without further correction
@@ -1198,7 +1198,7 @@ if __name__=="__main__":
     parser.add_argument('--rlist',type=float,default=-1,nargs="+")
     parser.add_argument('--maximum_rate','-m',type=float,default=10.0)
     parser.add_argument('--cubic','-c',type=int,default=1)
-    parser.add_argument('--multidim_level','-d',type=int,default=99)
+    parser.add_argument('--multidim_level','-d',type=int,default=-1)
     parser.add_argument('--lorenzo_fallback_check','-l',type=int,default=-1)
     parser.add_argument('--fallback_sample_ratio','-p',type=float,default=0.05)
     parser.add_argument('--anchor_rate','-a',type=float,default=0.0)
@@ -1268,7 +1268,7 @@ if __name__=="__main__":
                         '''
                         #what about using an expanded array?
                         cur_qs,edge_qs,cur_us,_,lsd=msc2d(array,x_start,x_end,y_start,y_end,error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
-                                                sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo=args.fix_algo)
+                                                sz3_interp=args.sz_interp,multidim_level=10,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo=args.fix_algo)
                         
                         #print(len(cur_qs[max_level]))
                         #print(len(test_qs[max_level]))
@@ -1341,7 +1341,7 @@ if __name__=="__main__":
                                 themin=curmin
                             '''
                             cur_qs,edge_qs,cur_us,_,lsd=msc2d(array,x_start,x_end,y_start,y_end,new_error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
-                                                    sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo=args.fix_algo)
+                                                    sz3_interp=args.sz_interp,multidim_level=10,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo=args.fix_algo)
                             
                             #print(len(cur_qs[max_level]))
                             #print(len(test_qs[max_level]))
@@ -1404,7 +1404,7 @@ if __name__=="__main__":
                 pred_candidates=[]
                 if args.sz_interp:
                     pred_candidates+=["sz3_linear_xy","sz3_linear_yx","sz3_cubic_xy","sz3_cubic_yx"]
-                if level<=args.multidim_level:
+                if level>=args.multidim_level:
                     pred_candidates+=["linear","cubic","multidim"]
                 for i in range(0,block_num_x,steplength):
                     for j in range(0,block_num_y,steplength):

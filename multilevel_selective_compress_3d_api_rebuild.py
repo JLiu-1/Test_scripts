@@ -2408,7 +2408,7 @@ if __name__=="__main__":
                             '''
                             #print("a")
                             array,cur_qs,edge_qs,cur_us,_,lsd=msc3d(array,x_start,x_end,y_start,y_end,z_start,z_end,error_bound,alpha,beta,9999,max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
-                                                    sz_interp=args.sz_interp,selection_criteria=args.criteria,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo=args.fix_algo)
+                                                    sz_interp=args.sz_interp,selection_criteria=args.criteria,multidim_level=10,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo=args.fix_algo)
                             #print("b")
                             #print(len(cur_qs[max_level]))
                             #print(len(test_qs[max_level]))
@@ -2485,7 +2485,7 @@ if __name__=="__main__":
                                 '''
                                 #print("v")
                                 array,cur_qs,edge_qs,cur_us,_,lsd=msc3d(array,x_start,x_end,y_start,y_end,z_start,z_end,new_error_bound,alpha,beta,9999,max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
-                                                        sz_interp=args.sz_interp,selection_criteria=args.criteria,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo=args.fix_algo)
+                                                        sz_interp=args.sz_interp,selection_criteria=args.criteria,multidim_level=10,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo=args.fix_algo)
                                 #print("d")
                                 #print(len(cur_qs[max_level]))
                                 #print(len(test_qs[max_level]))
