@@ -132,6 +132,8 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
             level-=1
             step=step//2
             continue
+        def inlosscal(x,y,z):
+            return (not random_access) or level!=0 or (x!=x_end-1 and y!=y_end-1 and z!=z_end-1)
         cur_qs=[]
         cur_us=[]
         if rate_list!=None:
@@ -173,8 +175,8 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
             fix_algo=fix_algo_list[level]
         if (fix_algo=="none" and level<=multidim_level) or fix_algo in ["linear","cubic","multidim"] or not sz_interp:
             if fix_algo=="none" or fix_algo=="linear":
-                if new_q_order:
-                    q_array=np.zeros(cur_array.shape,dtype=np.int32)
+                if new_q_order:# all new_q_order remain unmodified
+                    q_array=np.zeros(array_slice.shape,dtype=np.int32)
                 '''
                 if level>=min_coeff_level:
                     reg_xs=[]
@@ -190,9 +192,9 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                 '''
             
 
-                for x in range(xstart,cur_size_x,2):
-                    for y in range(ystart,cur_size_y,2):
-                        for z in range(1,cur_size_z,2):
+                for x in range(x_start+x_start_offset,x_end,doublestep):
+                    for y in range(y_start+y_start_offset,y_end,doublestep):
+                        for z in range(z_start+step,z_end,doublestep):
                             #if z==cur_size_z-1:
                                 #continue
                             orig=cur_array[x][y][z]
@@ -205,8 +207,13 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                             if level>=min_coeff_level:
                                 pred= np.dot( np.array([cur_array[x][y][z-1],cur_array[x][y][z+1]]),coef )+ince 
                             else:
-                                pred=(cur_array[x][y][z-1]+cur_array[x][y][z+1])*0.5
-                            if (not random_access) or level!=0 or ((x!=cur_size_x-1 or last_x!=size_x-1) and (y!=cur_size_y-1 or last_y!=size_y-1)):
+                                if z+step<z_end or (cross_after and z+step<size_z):
+                                    pred=interp_linear(array[x][y][z-step],array[x][y][z+step])
+                                elif (z-triplestep>=z_start) or (cross_before and z-triplestep>=0):
+                                    pred=exterp_linear(array[x][y][z-triplestep],array[x][y][z-step])
+                                else:
+                                    pred=array[x][y][z-step]
+                            if inlosscal(x,y,z):
                                 if selection_criteria=="l1":
                                     loss+=abs(orig-pred)
                                 elif selection_criteria=="l2":
@@ -229,7 +236,7 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
 
 
 
-
+                '''
                 if level>=min_coeff_level:
                     reg_xs=[]
                     reg_ys=[]
@@ -241,10 +248,10 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                                 res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
                                 coef=res.coef_ 
                                 ince=res.intercept_
-
-                for x in range(xstart,cur_size_x,2):
-                    for y in range(1,cur_size_y,2):
-                        for z in range(zstart,cur_size_z,2):
+                '''
+                for x in range(x_start+x_start_offset,x_end,doublestep):
+                    for y in range(y_start+step,y_end,doublestep):
+                        for z in range(z_start+z_end_offset,z_end,doublestep):
                             #if y==cur_size_y-1:
                                 #continue
                             orig=cur_array[x][y][z]
@@ -257,8 +264,13 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                             if level>=min_coeff_level:
                                 pred= np.dot( np.array([cur_array[x][y-1][z],cur_array[x][y+1][z]]),coef )+ince 
                             else:
-                                pred=(cur_array[x][y-1][z]+cur_array[x][y+1][z])*0.5
-                            if (not random_access) or level!=0 or ((x!=cur_size_x-1 or last_x!=size_x-1) and (z!=cur_size_z-1 or last_z!=size_z-1)):
+                                if y+step<y_end or (cross_after and y+step<size_y):
+                                    pred=interp_linear(array[x][y-step][z],array[x][y+step][z])
+                                elif (y-triplestep>=y_start) or (cross_before and y-triplestep>=0):
+                                    pred=exterp_linear(array[x][y-triplestep][z],array[x][y-step][z])
+                                else:
+                                    pred=array[x][y-step][z]
+                            if inlosscal(x,y,z):
                                 if selection_criteria=="l1":
                                     loss+=abs(orig-pred)
                                 elif selection_criteria=="l2":
@@ -278,7 +290,7 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                             if pred_check:
                                 cur_preded[x][y][z]=1
                             '''
-
+                '''
                 if level>=min_coeff_level:
                     reg_xs=[]
                     reg_ys=[]
@@ -290,10 +302,10 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                                 res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
                                 coef=res.coef_ 
                                 ince=res.intercept_
-
-                for x in range(1,cur_size_x,2):
-                    for y in range(ystart,cur_size_y,2):
-                        for z in range(zstart,cur_size_z,2):
+                '''
+                for x in range(x_start+step,x_end,doublestep):
+                    for y in range(y_start+y_end_offset,y_end,doublestep):
+                        for z in range(z_start+z_end_offset,z_end,doublestep):
                             #if x==cur_size_x-1:
                                 #continue
                             orig=cur_array[x][y][z]
@@ -306,8 +318,15 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                             if level>=min_coeff_level:
                                 pred= np.dot( np.array([cur_array[x-1][y][z],cur_array[x+1][y][z]]),coef )+ince 
                             else:
-                                pred=(cur_array[x-1][y][z]+cur_array[x+1][y][z])*0.5
-                            if (not random_access) or level!=0 or ((y!=cur_size_y-1 or last_y!=size_y-1) and (z!=cur_size_z-1 or last_z!=size_z-1)):
+                                if x+step<x_end or (cross_after and x+step<size_x):
+                                    pred=interp_linear(array[x-step][y][z],array[x+step][y][z])
+                                elif (x-triplestep>=x_start) or (cross_before and x-triplestep>=0):
+                                    pred=exterp_linear(array[x-triplestep][y][z],array[x-step][y][z])
+                                else:
+                                    pred=array[x-step][y][z]
+
+
+                            if inlosscal(x,y,z):
                                 if selection_criteria=="l1":
                                     loss+=abs(orig-pred)
                                 elif selection_criteria=="l2":
@@ -327,7 +346,7 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                             if pred_check:
                                 cur_preded[x][y][z]=1  
                             '''
-
+                '''
                 if level>=min_coeff_level:
                     md_reg_xs=[]
                     md_reg_ys=[]
@@ -339,11 +358,11 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                                 md_res=LinearRegression(fit_intercept=True).fit(md_reg_xs, md_reg_ys)
                                 md_coef=md_res.coef_ 
                                 md_ince=md_res.intercept_
-
+                '''
         
-                for x in range(1,cur_size_x,2):
-                    for y in range(1,cur_size_y,2):
-                        for z in range(zstart,cur_size_z,2):
+                for x in range(x_start+step,x_end,doublestep):
+                    for y in range(y_start+step,y_end,doublestep):
+                        for z in range(z_start+z_end_offset,z_end,doublestep):
                     
                             orig=cur_array[x][y][z]
                             '''
@@ -355,9 +374,18 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                             if level>=min_coeff_level:
                                 pred=np.dot(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y-1][z],cur_array[x][y+1][z]]),md_coef)+md_ince
                             else:
-                                pred=(cur_array[x-1][y][z]+cur_array[x+1][y][z]+cur_array[x][y-1][z]+cur_array[x][y+1][z])*0.25
+                                x_wise=x+step<x_end or (cross_after and x+step<size_x)
+                                y_wise=y+step<y_end or (cross_after and y+step<size_y)
+                                if x_wise and y_wise:
+                                    pred=interp_2d(array[x-step][y][z],array[x+step][y][z],array[x][y-step][z],array[x][y+step][z])
+                                elif x_wise:
+                                    pred=interp_linear(array[x-step][y][z],array[x+step][y][z])
+                                elif y_wise:
+                                    pred=interp_linear(array[x][y-step][z],array[x][y+step][z])
+                                else:
+                                    pred=lor_2d(array[x-step][y-step][z],array[x-step][y][z],array[x][y-step][z])
 
-                            if (not random_access) or level!=0 or z!=cur_size_z-1 or last_z!=size_z-1:
+                            if inlosscal(x,y,z):
                                 if selection_criteria=="l1":
                                     loss+=abs(orig-pred)
                                 elif selection_criteria=="l2":
@@ -376,7 +404,7 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                             if pred_check:
                                 cur_preded[x][y][z]=1  
                             '''
-
+                '''
                 if level>=min_coeff_level:
                     md_reg_xs=[]
                     md_reg_ys=[]
@@ -389,11 +417,11 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                                 md_res=LinearRegression(fit_intercept=True).fit(md_reg_xs, md_reg_ys)
                                 md_coef=md_res.coef_ 
                                 md_ince=md_res.intercept_
-
+                '''
         
-                for x in range(1,cur_size_x,2):
-                    for y in range(ystart,cur_size_y,2):
-                        for z in range(1,cur_size_z,2):
+                for x in range(x_start+step,x_end,doublestep):
+                    for y in range(y_start+y_end_offset,y_end,doublestep):
+                        for z in range(z_start+step,z_end,doublestep):
                     
                             orig=cur_array[x][y][z]
                             '''
@@ -405,8 +433,18 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                             if level>=min_coeff_level:
                                 pred=np.dot(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y][z-1],cur_array[x][y][z+1]]),md_coef)+md_ince
                             else:
-                                pred=(cur_array[x-1][y][z]+cur_array[x+1][y][z]+cur_array[x][y][z-1]+cur_array[x][y][z+1])*0.25
-                            if (not random_access) or level!=0 or y!=cur_size_y-1 or last_y!=size_y-1:
+                                x_wise=x+step<x_end or (cross_after and x+step<size_x)
+                                z_wise=z+step<z_end or (cross_after and z+step<size_z)
+                                if x_wise and z_wise:
+                                    pred=interp_2d(array[x-step][y][z],array[x+step][y][z],array[x][y][z-step],array[x][y][z+step])
+                                elif x_wise:
+                                    pred=interp_linear(array[x-step][y][z],array[x+step][y][z])
+                                elif z_wise:
+                                    pred=interp_linear(array[x][y][z-step],array[x][y][z+step])
+                                else:
+                                    pred=lor_2d(array[x-step][y][z-step],array[x-step][y][z],array[x][y][z-step])
+
+                            if inlosscal(x,y,z):
                                 if selection_criteria=="l1":
                                     loss+=abs(orig-pred)
                                 elif selection_criteria=="l2":
@@ -425,7 +463,7 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                             if pred_check:
                                 cur_preded[x][y][z]=1  
                             '''
-
+                '''
                 if level>=min_coeff_level:
                     md_reg_xs=[]
                     md_reg_ys=[]
@@ -437,10 +475,11 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                                 md_res=LinearRegression(fit_intercept=True).fit(md_reg_xs, md_reg_ys)
                                 md_coef=md_res.coef_ 
                                 md_ince=md_res.intercept_
+                '''
 
-                for x in range(xstart,cur_size_x,2):
-                    for y in range(1,cur_size_y,2):
-                        for z in range(1,cur_size_z,2):
+                for x in range(x_start+x_end_offset,x_end,doublestep):
+                    for y in range(y_start+step,y_end,doublestep):
+                        for z in range(z_start+step,z_end,doublestep):
                     
                             orig=cur_array[x][y][z]
                             '''
@@ -452,8 +491,18 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                             if level>=min_coeff_level:
                                 pred=np.dot(np.array([cur_array[x][y-1][z],cur_array[x][y+1][z],cur_array[x][y][z-1],cur_array[x][y][z+1]]),md_coef)+md_ince
                             else:
-                                pred=(cur_array[x][y-1][z]+cur_array[x][y+1][z]+cur_array[x][y][z-1]+cur_array[x][y][z+1])*0.25
-                            if (not random_access) or level!=0 or x!=cur_size_x-1 or last_x!=size_x-1:
+                                y_wise=y+step<y_end or (cross_after and y+step<size_y)
+                                z_wise=z+step<z_end or (cross_after and z+step<size_z)
+                                if y_wise and z_wise:
+                                    pred=interp_2d(array[x][y-step][z],array[x][y+ste][z],array[x][y][z-step],array[x][y][z+step])
+                                elif y_wise:
+                                    pred=interp_linear(array[x][y-step][z],array[x][y+step][z])
+                                elif z_wise:
+                                    pred=interp_linear(array[x][y][z-step],array[x][y][z+step])
+                                else:
+                                    pred=lor_2d(array[x][y-step][z-step],array[x][y-step][z],array[x][y][z-step])
+
+                            if inlosscal(x,y,z):
                                 if selection_criteria=="l1":
                                     loss+=abs(orig-pred)
                                 elif selection_criteria=="l2":
@@ -473,7 +522,7 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
 
                                 cur_preded[x][y][z]=1  
                             '''
-            
+                '''
                 if level>=min_coeff_level:
                     md_reg_xs=[]
                     md_reg_ys=[]
@@ -485,10 +534,12 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                                 md_res=LinearRegression(fit_intercept=True).fit(md_reg_xs, md_reg_ys)
                                 md_coef=md_res.coef_ 
                                 md_ince=md_res.intercept_
+                '''
 
-                for x in range(1,cur_size_x,2):
-                    for y in range(1,cur_size_y,2):
-                        for z in range(1,cur_size_z,2):
+                for x in range(x_start+step,x_end,doublestep):
+                    for y in range(y_start+step,y_end,doublestep):
+                        for z in range(z_start+step,z_end,doublestep):
+                    
                     
                             orig=cur_array[x][y][z]
                             '''
@@ -500,11 +551,30 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                             if level>=min_coeff_level:
                                 pred=np.dot(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y-1][z],cur_array[x][y+1][z],cur_array[x][y][z-1],cur_array[x][y][z+1] ]),md_coef)+md_ince
                             else:
-                                pred=(cur_array[x-1][y][z]+cur_array[x+1][y][z]+cur_array[x][y-1][z]+cur_array[x][y+1][z]+cur_array[x][y][z-1]+cur_array[x][y][z+1])/6
-                            if selection_criteria=="l1":
-                                loss+=abs(orig-pred)
-                            elif selection_criteria=="l2":
-                                loss+=(orig-pred)**2
+                                x_wise=x+step<x_end or (cross_after and x+step<size_x)
+                                y_wise=y+step<y_end or (cross_after and y+step<size_y)
+                                z_wise=z+step<z_end or (cross_after and z+step<size_z)
+                                if x_wise and y_wise and z_wise:
+                                    pred=interp_3d(cur_array[x-step][y][z],cur_array[x+step][y][z],cur_array[x][y-step][z],cur_array[x][y+step][z],cur_array[x][y][z-step],cur_array[x][y][z+step])
+                                elif x_wise and y_wise:
+                                    pred=interp_2d(array[x-step][y][z],array[x+step][y][z],array[x][y-step][z],array[x][y+step][z])
+                                elif x_wise and z_wise:
+                                    pred=interp_2d(array[x-step][y][z],array[x+step][y][z],array[x][y][z-step],array[x][y][z+step])
+                                elif y_wise and z_wise:
+                                    pred=interp_2d(array[x][y-step][z],array[x][y+step][z],array[x][y][z-step],array[x][y][z+step])
+                                elif x_wise:
+                                    pred=interp_linear(cur_array[x-step][y][z],cur_array[x+step][y][z])
+                                elif y_wise:
+                                    pred=interp_linear(array[x][y-step][z],array[x][y+step][z])
+                                elif z_wise:
+                                    pred=interp_linear(array[x][y][z-step],array[x][y][z+step])
+                                else:
+                                    pred=lor_3d(array[x-step][y-step][z-step],array[x-step][y-step][z],array[x-step][y][z-step],array[x-step][y][z],array[x][y-step][z-step],array[x][y-step][z],array[x][y][z-step])
+                            if inlosscal(x,y,z):
+                                if selection_criteria=="l1":
+                                    loss+=abs(orig-pred)
+                                elif selection_criteria=="l2":
+                                    loss+=(orig-pred)**2
                             q,decomp=quantize(orig,pred,cur_eb)
                 
                             if new_q_order:
@@ -576,9 +646,11 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                 loss=0
                 cur_qs=[]
                 cur_us=[]
-                cur_array=np.copy(array[0:last_x+1:step,0:last_y+1:step,0:last_z+1:step])#reset cur_array
+                if selected_algo!="none":
+                    array[x_start:x_end:step,y_start:y_end:step,z_start:z_end:step]=array_slice#reset cur_array
                 if new_q_order:
-                    q_array=np.zeros(cur_array.shape,dtype=np.int32)
+                    q_array=np.zeros(array_slice.shape,dtype=np.int32)
+                '''
                 if level>=min_coeff_level:
                     reg_xs=[]
                     reg_ys=[]
@@ -592,19 +664,38 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                                 res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
                                 coef=res.coef_ 
                                 ince=res.intercept_
-                for x in range(xstart,cur_size_x,2):
-                    for y in range(ystart,cur_size_y,2):
-                        for z in range(1,cur_size_z,2):
+                '''
+                for x in range(x_start+x_start_offset,x_end,doublestep):
+                    for y in range(y_start+y_start_offset,y_end,doublestep):
+                        for z in range(z_start+step,z_end,doublestep):
                     
                             orig=cur_array[x][y][z]
-                            if z>=3 and z+3<cur_size_z:
-                                if level>=min_coeff_level:
-                                    pred=np.dot(coef,np.array([cur_array[x][y][z-3],cur_array[x][y][z-1],cur_array[x][y][z+1],cur_array[x][y][z+3]]) )+ince
-                                else:
-                                    pred=(-cur_array[x][y][z-3]+9*cur_array[x][y][z-1]+9*cur_array[x][y][z+1]-cur_array[x][y][z+3])*0.0625
+                            if level>=min_coeff_level:
+                                pred=np.dot(coef,np.array([cur_array[x][y][z-3],cur_array[x][y][z-1],cur_array[x][y][z+1],cur_array[x][y][z+3]]) )+ince
                             else:
-                                pred=(cur_array[x][y][z-1]+cur_array[x][y][z+1])*0.5
-                            if (not random_access) or level!=0 or ((x!=cur_size_x-1 or last_x!=size_x-1) and (y!=cur_size_y-1 or last_y!=size_y-1)):
+                                minusthree= z-triplestep>=z_start or (cross_before and z>=triplestep)
+                                plusthree= z+triplestep<z_end or (cross_after and z+triplestep<size_z)
+                                plusone= plusthree or z+step<z_end or (cross_after and z+step<size_z)
+                                if minusthree and plusthree and plusone:
+
+                                    pred=interp_cubic(array[x][y][z-triplestep],array[x][y][z-step],array[x][y][z+step],array[x][y][z+triplestep])
+                                elif plusone and plusthree:
+                                    pred=interp_quad(array[x][y][z-step],array[x][y][z+step],array[x][y][z+triplestep])
+                                elif minusthree and plusone:
+                                    pred=interp_quad2(array[x][y][z-triplestep],array[x][y][z-step],array[x][y][z+step])
+                                elif plusone:
+                                    pred=interp_linear(array[x][y][z-step],array[x][y][z+step])
+                                else:#exterp
+                                    if minusthree:
+                                        minusfive= z-pentastep>=z_start or (cross_before and z>=pentastep)
+                                        if minusfive:
+                                            pred=exterp_quad(array[x][y][z-pentastep],array[x][y][z-triplestep],array[x][y][z-step])
+                                        else:
+                                            pred=exterp_linear(array[x][y][z-triplestep],array[x][y][z-step])
+                                    else:
+                                        pred=array[x][y][z-step]
+
+                            if inlosscal(x,y,z):
                                 if selection_criteria=="l1":
                                     loss+=abs(orig-pred)
                                 elif selection_criteria=="l2":
@@ -620,7 +711,7 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                                 #absloss+=abs(decomp)
                             cur_array[x][y][z]=decomp     
 
-
+                '''
                 if level>=min_coeff_level:
                     reg_xs=[]
                     reg_ys=[]
@@ -634,19 +725,38 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                                 res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
                                 coef=res.coef_ 
                                 ince=res.intercept_
-                for x in range(xstart,cur_size_x,2):
-                    for y in range(1,cur_size_y,2):
-                        for z in range(zstart,cur_size_z,2):
+                '''
+                for x in range(x_start+x_start_offset,x_end,doublestep):
+                    for y in range(y_start+step,y_end,doublestep):
+                        for z in range(z_start+z_start_offset,z_end,doublestep):
                     
                             orig=cur_array[x][y][z]
-                            if y>=3 and y+3<cur_size_y:
-                                if level>=min_coeff_level:
-                                    pred=np.dot(coef,np.array([cur_array[x][y-3][z],cur_array[x][y-1][z],cur_array[x][y+1][z],cur_array[x][y+3][z]]) )+ince
-                                else:
-                                    pred=(-cur_array[x][y-3][z]+9*cur_array[x][y-1][z]+9*cur_array[x][y+1][z]-cur_array[x][y+3][z])*0.0625
+                            if level>=min_coeff_level:
+                                pred=np.dot(coef,np.array([cur_array[x][y][z-3],cur_array[x][y][z-1],cur_array[x][y][z+1],cur_array[x][y][z+3]]) )+ince
                             else:
-                                pred=(cur_array[x][y-1][z]+cur_array[x][y+1][z])*0.5
-                            if (not random_access) or level!=0 or ((x!=cur_size_x-1 or last_x!=size_x-1) and (z!=cur_size_z-1 or last_z!=size_z-1)):
+                                minusthree= y-triplestep>=y_start or (cross_before and y>=triplestep)
+                                plusthree= y+triplestep<y_end or (cross_after and y+triplestep<size_y)
+                                plusone= plusthree or y+step<y_end or (cross_after and y+step<size_y)
+                                if minusthree and plusthree and plusone:
+
+                                    pred=interp_cubic(array[x][y-triplestep][z],array[x][y-step][z],array[x][y+step][z],array[x][y+triplestep][z])
+                                elif plusone and plusthree:
+                                    pred=interp_quad(array[x][y-step][z],array[x][y+step][z],array[x][y+triplestep][z])
+                                elif minusthree and plusone:
+                                    pred=interp_quad2(array[x][y-triplestep][z],array[x][y-step][z],array[x][y+step][z])
+                                elif plusone:
+                                    pred=interp_linear(array[x][y-step][z],array[x][y+step][z])
+                                else:#exterp
+                                    if minusthree:
+                                        minusfive= y-pentastep>=y_start or (cross_before and y>=pentastep)
+                                        if minusfive:
+                                            pred=exterp_quad(array[x][y-pentastep][z],array[x][y-triplestep][z],array[x][y-step][z])
+                                        else:
+                                            pred=exterp_linear(array[x][y-triplestep][z],array[x][y-step][z])
+                                    else:
+                                        pred=array[x][y-step][z]
+
+                            if inlosscal(x,y,z):
                                 if selection_criteria=="l1":
                                     loss+=abs(orig-pred)
                                 elif selection_criteria=="l2":
@@ -660,8 +770,8 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                             if q==0:
                                 cur_us.append(decomp)
                                 #absloss+=abs(decomp)
-                            cur_array[x][y][z]=decomp
-
+                            cur_array[x][y][z]=decomp 
+                '''
                 if level>=min_coeff_level:
                     reg_xs=[]
                     reg_ys=[]
@@ -675,19 +785,39 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                                 res=LinearRegression(fit_intercept=True).fit(reg_xs, reg_ys)
                                 coef=res.coef_ 
                                 ince=res.intercept_
-                for x in range(1,cur_size_x,2):
-                    for y in range(ystart,cur_size_y,2):
-                        for z in range(zstart,cur_size_z,2):
+                '''
+
+                for x in range(x_start+step,x_end,doublestep):
+                    for y in range(y_start+y_start_offset,y_end,doublestep):
+                        for z in range(z_start+z_start_offset,z_end,doublestep):
                     
                             orig=cur_array[x][y][z]
-                            if x>=3 and x+3<cur_size_x:
-                                if level>=min_coeff_level:
-                                    pred=np.dot(coef,np.array([cur_array[x-3][y][z],cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x+3][y][z]]) )+ince
-                                else:
-                                    pred=(-cur_array[x-3][y][z]+9*cur_array[x-1][y][z]+9*cur_array[x+1][y][z]-cur_array[x+3][y][z])*0.0625
+                            if level>=min_coeff_level:
+                                pred=np.dot(coef,np.array([cur_array[x][y][z-3],cur_array[x][y][z-1],cur_array[x][y][z+1],cur_array[x][y][z+3]]) )+ince
                             else:
-                                pred=(cur_array[x-1][y][z]+cur_array[x+1][y][z])*0.5
-                            if (not random_access) or level!=0 or ( (y!=cur_size_y-1 or last_y!=size_y-1) and (z!=cur_size_z-1 or last_z!=size_z-1)):
+                                minusthree= x-triplestep>=x_start or (cross_before and x>=triplestep)
+                                plusthree= x+triplestep<x_end or (cross_after and x+triplestep<size_x)
+                                plusone= plusthree or x+step<x_end or (cross_after and x+step<size_x)
+                                if minusthree and plusthree and plusone:
+
+                                    pred=interp_cubic(array[x-triplestep][y][z],array[x-step][y][z],array[x+step][y][z],array[x+triplestep][y][z])
+                                elif plusone and plusthree:
+                                    pred=interp_quad(array[x-step][y][z],array[x+step][y][z],array[x+triplestep][y][z])
+                                elif minusthree and plusone:
+                                    pred=interp_quad2(array[x-triplestep][y][z],array[x-step][y][z],array[x+step][y][z])
+                                elif plusone:
+                                    pred=interp_linear(array[x-step][y][z],array[x+step][y][z])
+                                else:#exterp
+                                    if minusthree:
+                                        minusfive= x-pentastep>=x_start or (cross_before and x>=pentastep)
+                                        if minusfive:
+                                            pred=exterp_quad(array[x-pentastep][y][z],array[x-triplestep][y][z],array[x-step][y][z])
+                                        else:
+                                            pred=exterp_linear(array[x-triplestep][y][z],array[x-step][y][z])
+                                    else:
+                                        pred=array[x-step][y][z]
+
+                            if inlosscal(x,y,z):
                                 if selection_criteria=="l1":
                                     loss+=abs(orig-pred)
                                 elif selection_criteria=="l2":
@@ -701,10 +831,10 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                             if q==0:
                                 cur_us.append(decomp)
                                 #absloss+=abs(decomp)
-                            cur_array[x][y][z]=decomp  
+                            cur_array[x][y][z]=decomp 
 
-
-
+    
+                '''
                 if level>=min_coeff_level:
                     md_reg_xs=[]
                     md_reg_ys=[]
@@ -717,18 +847,33 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                                 md_coef=md_res.coef_ 
                                 md_ince=md_res.intercept_
 
-        
-                for x in range(1,cur_size_x,2):
-                    for y in range(1,cur_size_y,2):
-                        for z in range(zstart,cur_size_z,2):
+                '''
+                for x in range(x_start+step,x_end,doublestep):
+                    for y in range(y_start+step,y_end,doublestep):
+                        for z in range(z_start+z_end_offset,z_end,doublestep):
                     
                             orig=cur_array[x][y][z]
+                            '''
+                            if pred_check:
+                                if cur_preded[x-1][y][z]==0 or cur_preded[x+1][y][z]==0 or cur_preded[x][y-1][z]==0 or cur_preded[x][y+1][z]==0:
+                                    print("error4")
+                                    return
+                            '''
                             if level>=min_coeff_level:
                                 pred=np.dot(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y-1][z],cur_array[x][y+1][z]]),md_coef)+md_ince
                             else:
-                                pred=(cur_array[x-1][y][z]+cur_array[x+1][y][z]+cur_array[x][y-1][z]+cur_array[x][y+1][z])*0.25
-        
-                            if (not random_access) or level!=0 or z!=cur_size_z-1 or last_z!=size_z-1:
+                                x_wise=x+step<x_end or (cross_after and x+step<size_x)
+                                y_wise=y+step<y_end or (cross_after and y+step<size_y)
+                                if x_wise and y_wise:
+                                    pred=interp_2d(array[x-step][y][z],array[x+step][y][z],array[x][y-step][z],array[x][y+step][z])
+                                elif x_wise:
+                                    pred=interp_linear(array[x-step][y][z],array[x+step][y][z])
+                                elif y_wise:
+                                    pred=interp_linear(array[x][y-step][z],array[x][y+step][z])
+                                else:
+                                    pred=lor_2d(array[x-step][y-step][z],array[x-step][y][z],array[x][y-step][z])
+
+                            if inlosscal(x,y,z):
                                 if selection_criteria=="l1":
                                     loss+=abs(orig-pred)
                                 elif selection_criteria=="l2":
@@ -741,47 +886,72 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                                 cur_qs.append(q)
                             if q==0:
                                 cur_us.append(decomp)
-                        #absloss+=abs(decomp)
+                    #absloss+=abs(decomp)
                             cur_array[x][y][z]=decomp
-
+                            '''
+                            if pred_check:
+                                cur_preded[x][y][z]=1  
+                            '''
+                '''
                 if level>=min_coeff_level:
                     md_reg_xs=[]
                     md_reg_ys=[]
                     for x in range(1,cur_size_x,2):
                         for y in range(ystart,cur_size_y,2):
                             for z in range(1,cur_size_z,2):
+
                                 md_reg_xs.append(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y][z-1],cur_array[x][y][z+1]],dtype=np.float64))
                                 md_reg_ys.append(cur_array[x][y][z])
                                 md_res=LinearRegression(fit_intercept=True).fit(md_reg_xs, md_reg_ys)
                                 md_coef=md_res.coef_ 
                                 md_ince=md_res.intercept_
-
+                '''
         
-                for x in range(1,cur_size_x,2):
-                    for y in range(ystart,cur_size_y,2):
-                        for z in range(1,cur_size_z,2):
-                        
+                for x in range(x_start+step,x_end,doublestep):
+                    for y in range(y_start+y_end_offset,y_end,doublestep):
+                        for z in range(z_start+step,z_end,doublestep):
+                    
                             orig=cur_array[x][y][z]
+                            '''
+                            if pred_check:
+                                if cur_preded[x-1][y][z]==0 or cur_preded[x+1][y][z]==0 or cur_preded[x][y][z-1]==0 or cur_preded[x][y][z+1]==0:
+                                    print("error5")
+                                    return
+                            '''
                             if level>=min_coeff_level:
                                 pred=np.dot(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y][z-1],cur_array[x][y][z+1]]),md_coef)+md_ince
                             else:
-                                pred=(cur_array[x-1][y][z]+cur_array[x+1][y][z]+cur_array[x][y][z-1]+cur_array[x][y][z+1])*0.25
-                            if (not random_access) or level!=0 or y!=cur_size_y-1 or last_y!=size_y-1:
+                                x_wise=x+step<x_end or (cross_after and x+step<size_x)
+                                z_wise=z+step<z_end or (cross_after and z+step<size_z)
+                                if x_wise and z_wise:
+                                    pred=interp_2d(array[x-step][y][z],array[x+step][y][z],array[x][y][z-step],array[x][y][z+step])
+                                elif x_wise:
+                                    pred=interp_linear(array[x-step][y][z],array[x+step][y][z])
+                                elif z_wise:
+                                    pred=interp_linear(array[x][y][z-step],array[x][y][z+step])
+                                else:
+                                    pred=lor_2d(array[x-step][y][z-step],array[x-step][y][z],array[x][y][z-step])
+
+                            if inlosscal(x,y,z):
                                 if selection_criteria=="l1":
                                     loss+=abs(orig-pred)
                                 elif selection_criteria=="l2":
                                     loss+=(orig-pred)**2
                             q,decomp=quantize(orig,pred,cur_eb)
-                    
+                
                             if new_q_order:
                                 q_array[x][y][z]=q
                             else:
                                 cur_qs.append(q)
                             if q==0:
                                 cur_us.append(decomp)
-                        #absloss+=abs(decomp)
+                    
                             cur_array[x][y][z]=decomp
-
+                            '''
+                            if pred_check:
+                                cur_preded[x][y][z]=1  
+                            '''
+                '''
                 if level>=min_coeff_level:
                     md_reg_xs=[]
                     md_reg_ys=[]
@@ -793,32 +963,54 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                                 md_res=LinearRegression(fit_intercept=True).fit(md_reg_xs, md_reg_ys)
                                 md_coef=md_res.coef_ 
                                 md_ince=md_res.intercept_
+                '''
 
-                for x in range(xstart,cur_size_x,2):
-                    for y in range(1,cur_size_y,2):
-                        for z in range(1,cur_size_z,2):
-                        
+                for x in range(x_start+x_end_offset,x_end,doublestep):
+                    for y in range(y_start+step,y_end,doublestep):
+                        for z in range(z_start+step,z_end,doublestep):
+                    
                             orig=cur_array[x][y][z]
+                            '''
+                            if pred_check:
+                                if cur_preded[x][y-1][z]==0 or cur_preded[x][y+1][z]==0 or cur_preded[x][y][z-1]==0 or cur_preded[x][y][z+1]==0:
+                                    print("error6")
+                                    return
+                            '''
                             if level>=min_coeff_level:
                                 pred=np.dot(np.array([cur_array[x][y-1][z],cur_array[x][y+1][z],cur_array[x][y][z-1],cur_array[x][y][z+1]]),md_coef)+md_ince
                             else:
-                                pred=(cur_array[x][y-1][z]+cur_array[x][y+1][z]+cur_array[x][y][z-1]+cur_array[x][y][z+1])*0.25
-                            if (not random_access) or level!=0 or (x!=cur_size_x-1 or last_x!=size_x-1) :
+                                y_wise=y+step<y_end or (cross_after and y+step<size_y)
+                                z_wise=z+step<z_end or (cross_after and z+step<size_z)
+                                if y_wise and z_wise:
+                                    pred=interp_2d(array[x][y-step][z],array[x][y+ste][z],array[x][y][z-step],array[x][y][z+step])
+                                elif y_wise:
+                                    pred=interp_linear(array[x][y-step][z],array[x][y+step][z])
+                                elif z_wise:
+                                    pred=interp_linear(array[x][y][z-step],array[x][y][z+step])
+                                else:
+                                    pred=lor_2d(array[x][y-step][z-step],array[x][y-step][z],array[x][y][z-step])
+
+                            if inlosscal(x,y,z):
                                 if selection_criteria=="l1":
                                     loss+=abs(orig-pred)
                                 elif selection_criteria=="l2":
                                     loss+=(orig-pred)**2
                             q,decomp=quantize(orig,pred,cur_eb)
-                    
+                
                             if new_q_order:
                                 q_array[x][y][z]=q
                             else:
                                 cur_qs.append(q)
                             if q==0:
                                 cur_us.append(decomp)
-                        #absloss+=abs(decomp)
+                    #absloss+=abs(decomp)
                             cur_array[x][y][z]=decomp
-                
+                            '''
+                            if pred_check:
+
+                                cur_preded[x][y][z]=1  
+                            '''
+                '''
                 if level>=min_coeff_level:
                     md_reg_xs=[]
                     md_reg_ys=[]
@@ -830,29 +1022,56 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                                 md_res=LinearRegression(fit_intercept=True).fit(md_reg_xs, md_reg_ys)
                                 md_coef=md_res.coef_ 
                                 md_ince=md_res.intercept_
+                '''
 
-                for x in range(1,cur_size_x,2):
-                    for y in range(1,cur_size_y,2):
-                        for z in range(1,cur_size_z,2):
-                        
+                for x in range(x_start+step,x_end,doublestep):
+                    for y in range(y_start+step,y_end,doublestep):
+                        for z in range(z_start+step,z_end,doublestep):
+                    
+                    
                             orig=cur_array[x][y][z]
+                            '''
+                            if pred_check:
+                                if cur_preded[x-1][y][z]==0 or cur_preded[x+1][y][z]==0 or cur_preded[x][y-1][z]==0 or cur_preded[x][y+1][z]==0 or cur_preded[x][y][z-1]==0 or cur_preded[x][y][z+1]==0:
+                                    print("error7")
+                                    return
+                            '''
                             if level>=min_coeff_level:
                                 pred=np.dot(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y-1][z],cur_array[x][y+1][z],cur_array[x][y][z-1],cur_array[x][y][z+1] ]),md_coef)+md_ince
                             else:
-                                pred=(cur_array[x-1][y][z]+cur_array[x+1][y][z]+cur_array[x][y-1][z]+cur_array[x][y+1][z]+cur_array[x][y][z-1]+cur_array[x][y][z+1])/6
-                            if selection_criteria=="l1":
-                                loss+=abs(orig-pred)
-                            elif selection_criteria=="l2":
-                                loss+=(orig-pred)**2
+                                x_wise=x+step<x_end or (cross_after and x+step<size_x)
+                                y_wise=y+step<y_end or (cross_after and y+step<size_y)
+                                z_wise=z+step<z_end or (cross_after and z+step<size_z)
+                                if x_wise and y_wise and z_wise:
+                                    pred=interp_3d(cur_array[x-step][y][z],cur_array[x+step][y][z],cur_array[x][y-step][z],cur_array[x][y+step][z],cur_array[x][y][z-step],cur_array[x][y][z+step])
+                                elif x_wise and y_wise:
+                                    pred=interp_2d(array[x-step][y][z],array[x+step][y][z],array[x][y-step][z],array[x][y+step][z])
+                                elif x_wise and z_wise:
+                                    pred=interp_2d(array[x-step][y][z],array[x+step][y][z],array[x][y][z-step],array[x][y][z+step])
+                                elif y_wise and z_wise:
+                                    pred=interp_2d(array[x][y-step][z],array[x][y+step][z],array[x][y][z-step],array[x][y][z+step])
+                                elif x_wise:
+                                    pred=interp_linear(cur_array[x-step][y][z],cur_array[x+step][y][z])
+                                elif y_wise:
+                                    pred=interp_linear(array[x][y-step][z],array[x][y+step][z])
+                                elif z_wise:
+                                    pred=interp_linear(array[x][y][z-step],array[x][y][z+step])
+                                else:
+                                    pred=lor_3d(array[x-step][y-step][z-step],array[x-step][y-step][z],array[x-step][y][z-step],array[x-step][y][z],array[x][y-step][z-step],array[x][y-step][z],array[x][y][z-step])
+                            if inlosscal(x,y,z):
+                                if selection_criteria=="l1":
+                                    loss+=abs(orig-pred)
+                                elif selection_criteria=="l2":
+                                    loss+=(orig-pred)**2
                             q,decomp=quantize(orig,pred,cur_eb)
-                    
+                
                             if new_q_order:
                                 q_array[x][y][z]=q
                             else:
                                 cur_qs.append(q)
                             if q==0:
                                 cur_us.append(decomp)
-                        #absloss+=abs(decomp)
+                    
                             cur_array[x][y][z]=decomp
 
 
@@ -895,7 +1114,7 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
 
                     best_qs=cur_qs.copy()
                     best_us=cur_us.copy()
-        
+            #modification ends here
             #full multidim
             if fix_algo=="none" or fix_algo=="multidim":
                 loss=0
