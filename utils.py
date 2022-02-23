@@ -67,7 +67,11 @@ def interp_cubic(a,b,c,d):#-3,-1,1,3
 
 def lor_2d(a,b,c):
     return b+c-a
+def lor_3d(a,b,c,d,e,f,g):
 
+    return a-b-c+d-e+f+g  
+
+    
 def interp_2d(a,b,c,d):
     return (a+b+c+d)*0.25
 
