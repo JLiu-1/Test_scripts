@@ -7,7 +7,7 @@ import argparse
 from sklearn.linear_model import LinearRegression
 import math
 import random
-from multilevel_selective_compress_2d_api_rebuild import msc2d
+from multilevel_selective_compress_2d_api_rebuild_new import msc2d
 def quantize(data,pred,error_bound):
     radius=32768
     
@@ -53,7 +53,8 @@ parser.add_argument('--rate','-r',type=float,default=1.0)
 parser.add_argument('--rlist',type=float,default=-1,nargs="+")
 parser.add_argument('--maximum_rate','-m',type=float,default=10.0)
 #parser.add_argument('--cubic','-c',type=int,default=1)
-parser.add_argument('--multidim_level','-d',type=int,default=99)
+parser.add_argument('--multidim_level','-d',type=int,default=-1)
+parser.add_argument('--block_size','-b',type=int,default=64)
 parser.add_argument('--lorenzo_fallback_check','-l',type=int,default=0)
 parser.add_argument('--fallback_sample_ratio','-p',type=float,default=0.05)
 parser.add_argument('--anchor_rate','-a',type=float,default=0.0)
@@ -61,7 +62,8 @@ parser.add_argument('--anchor_rate','-a',type=float,default=0.0)
 parser.add_argument('--size_x','-x',type=int,default=1800)
 parser.add_argument('--size_y','-y',type=int,default=3600)
 parser.add_argument('--sz_interp','-n',type=int,default=0)
-parser.add_argument('--fix','-f',type=str,default="none")
+parser.add_argument('--autotuning','-t',type=float,default=0.0)
+parser.add_argument('--fix_algo','-f',type=str,default="none")
 parser.add_argument('--order',type=str,default="block")
 args = parser.parse_args()
 
@@ -168,7 +170,7 @@ if args.order=="block":
             cur_qs,cur_lorenzo_qs,cur_us,cur_selected=\
             msc2d(array,x_start,x_end+1,y_start,y_end+1,error_bound,rate,maximum_rate,min_coeff_level,max_step,anchor_rate,\
                 rate_list=rate_list,sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=args.lorenzo_fallback_check,\
-                sample_rate=args.fallback_sample_ratio,min_sampled_points=10,x_preded=(x_start>0),y_preded=(y_start>0),random_access=False,fix_algo=args.fix)
+                sample_rate=args.fallback_sample_ratio,min_sampled_points=10,x_preded=(x_start>0),y_preded=(y_start>0),random_access=False,fix_algo=args.fix_algo)
         
      
         #pr=False

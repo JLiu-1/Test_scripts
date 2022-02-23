@@ -129,20 +129,13 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,grid_mode=0,selection_crite
      
     
     #cross_after=((not random_access) and first_order=="level") or (max_step>0 and level==max_level-1)
-    def cross_after(x,y,z):
-        if random_access:
-            return False
-        if (x%max_step==0 and y%max_step==0 and z%max_step==0) or (grid_mode and (x%max_step==0 or y%max_step==0 or z%max_step==0)):
-            return True
-        if first_order=="block":
-            return False
-        else:
-            return (x%doublestep==0 and y%doublestep==0 and z%doublestep==0)
+    
     while level>=last_level:#step>0:
         if level>first_level:
             level-=1
             step=step//2
             continue
+
         def inlosscal(x,y,z):
             return (not random_access) or level!=0 or (x!=x_end-1 and y!=y_end-1 and z!=z_end-1)
         cur_qs=[]
@@ -176,6 +169,15 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,grid_mode=0,selection_crite
         x_start_offset=doublestep if x_preded else 0
         y_start_offset=doublestep if y_preded else 0
         z_start_offset=doublestep if z_preded else 0
+        def cross_after(x,y,z):
+            if random_access:
+                return False
+            if (x%max_step==0 and y%max_step==0 and z%max_step==0) or (grid_mode and (x%max_step==0 or y%max_step==0 or z%max_step==0)):
+                return True
+            if first_order=="block":
+                return False
+            else:
+                return (x%doublestep==0 and y%doublestep==0 and z%doublestep==0)
 
 
      
