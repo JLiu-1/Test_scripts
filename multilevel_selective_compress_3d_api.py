@@ -2148,7 +2148,7 @@ if __name__=="__main__":
                 pred_candidates=[]
                 if args.sz_interp:
                     pred_candidates+=["sz3_linear_xyz","sz3_linear_zyx","sz3_cubic_xyz","sz3_cubic_zyx"]
-                if level<=args.multidim_level:
+                if level>=args.multidim_level:
                     pred_candidates+=["linear","cubic","multidim"]
                 for i in range(0,block_num_x,steplength):
                     for j in range(0,block_num_y,steplength):
