@@ -1831,7 +1831,7 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,selection_criteria="l1",ran
                                 ince=res.intercept_
                 '''
 
-                for x in range(x_start+x_start_offset,x_end,doublestep):
+                for x in range(x_start+step,x_end,doublestep):
                     for y in range(y_start+( step if y_start_offset else 0),y_end,step):
                         for z in range(z_start+( step if z_start_offset else 0),z_end,step):
                             
@@ -1854,7 +1854,7 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,selection_criteria="l1",ran
                                 elif plusone:
                                     pred=interp_linear(array[x-step][y][z],array[x+step][y][z])
                                 else:#exterp
-                                    print(x,y,z,step)
+                                    #print(x,y,z,step)
                                     if minusthree:
                                         minusfive= x-pentastep>=x_start or (cross_before and x>=pentastep)
                                         if minusfive:
