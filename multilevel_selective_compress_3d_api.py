@@ -1833,12 +1833,12 @@ fix_algo="none",fix_algo_list=None,first_level=None,last_level=0,fake_compressio
         
         mean_loss=best_loss/len(best_qs)
 
-        if fake_compression:
-            array[x_start:x_end:step,y_start:y_end:step,z_start:z_end:step]=array_slice
-        else:
-            array[x_start:x_end:step,y_start:y_end:step,z_start:z_end:step]=best_preds
-
-
+        if not fake_compression:
+            array[0:last_x+1:step,0:last_y+1:step,0:last_z+1:step]=best_preds
+            '''
+            if pred_check:
+                preded[0:last_x+1:step,0:last_y+1:step,0:last_z+1:step]=best_preded
+            '''
         if selected_algo!="lorenzo_fallback":#current have problem when bitrate criteria
             cumulated_loss+=best_loss
         
