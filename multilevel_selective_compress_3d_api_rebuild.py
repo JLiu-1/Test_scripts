@@ -1382,9 +1382,8 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                                     loss+=(orig-pred)**2
                             q,decomp=quantize(orig,pred,cur_eb)
                             
-                            q_array[x][y][z]=q
-                            else:
-                                cur_qs.append(q)
+                            
+                            cur_qs.append(q)
                 
 
                             if q==0:
