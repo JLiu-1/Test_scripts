@@ -304,8 +304,8 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,selection_criteria="l1",ran
                                 ince=res.intercept_
                 '''
                 for x in range(x_start+step,x_end,doublestep):
-                    for y in range(y_start+y_end_offset,y_end,doublestep):
-                        for z in range(z_start+z_end_offset,z_end,doublestep):
+                    for y in range(y_start+y_start_offset,y_end,doublestep):
+                        for z in range(z_start+z_start_offset,z_end,doublestep):
                             #if x==cur_size_x-1:
                                 #continue
                             orig=array[x][y][z]
@@ -362,7 +362,7 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,selection_criteria="l1",ran
         
                 for x in range(x_start+step,x_end,doublestep):
                     for y in range(y_start+step,y_end,doublestep):
-                        for z in range(z_start+z_end_offset,z_end,doublestep):
+                        for z in range(z_start+z_start_offset,z_end,doublestep):
                     
                             orig=array[x][y][z]
                             '''
@@ -420,7 +420,7 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,selection_criteria="l1",ran
                 '''
         
                 for x in range(x_start+step,x_end,doublestep):
-                    for y in range(y_start+y_end_offset,y_end,doublestep):
+                    for y in range(y_start+y_start_offset,y_end,doublestep):
                         for z in range(z_start+step,z_end,doublestep):
                     
                             orig=array[x][y][z]
@@ -477,7 +477,7 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,selection_criteria="l1",ran
                                 md_ince=md_res.intercept_
                 '''
 
-                for x in range(x_start+x_end_offset,x_end,doublestep):
+                for x in range(x_start+x_start_offset,x_end,doublestep):
                     for y in range(y_start+step,y_end,doublestep):
                         for z in range(z_start+step,z_end,doublestep):
                     
@@ -850,7 +850,7 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,selection_criteria="l1",ran
                 '''
                 for x in range(x_start+step,x_end,doublestep):
                     for y in range(y_start+step,y_end,doublestep):
-                        for z in range(z_start+z_end_offset,z_end,doublestep):
+                        for z in range(z_start+z_start_offset,z_end,doublestep):
                     
                             orig=array[x][y][z]
                             '''
@@ -908,7 +908,7 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,selection_criteria="l1",ran
                 '''
         
                 for x in range(x_start+step,x_end,doublestep):
-                    for y in range(y_start+y_end_offset,y_end,doublestep):
+                    for y in range(y_start+y_start_offset,y_end,doublestep):
                         for z in range(z_start+step,z_end,doublestep):
                     
                             orig=array[x][y][z]
@@ -965,7 +965,7 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,selection_criteria="l1",ran
                                 md_ince=md_res.intercept_
                 '''
 
-                for x in range(x_start+x_end_offset,x_end,doublestep):
+                for x in range(x_start+x_start_offset,x_end,doublestep):
                     for y in range(y_start+step,y_end,doublestep):
                         for z in range(z_start+step,z_end,doublestep):
                     
@@ -2388,7 +2388,7 @@ if __name__=="__main__":
                             z_end=z_start+max_step+1
                             #print(x_start)
                             #print(y_start)
-                            #cur_array=np.copy(array[x_start:x_end,y_start:y_end,z_start:z_end])
+                            cur_array=np.copy(array[x_start:x_end,y_start:y_end,z_start:z_end])
                             '''
                             curmax=np.max(cur_array)
                             curmin=np.min(cur_array)
@@ -2398,7 +2398,7 @@ if __name__=="__main__":
                                 themin=curmin
                             '''
                             #print("a")
-                            array,cur_qs,edge_qs,cur_us,_,lsd=msc3d(array,x_start,x_end,y_start,y_end,z_start,z_end,error_bound,alpha,beta,9999,max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
+                            cur_array,cur_qs,edge_qs,cur_us,_,lsd=msc3d(cur_array,0,max_step+1,0,max_step+1,0,max_step+1,error_bound,alpha,beta,9999,max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
                                                     sz_interp=args.sz_interp,selection_criteria=args.criteria,multidim_level=10,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo=args.fix_algo)
                             #print("b")
                             #print(len(cur_qs[max_level]))
@@ -2408,10 +2408,10 @@ if __name__=="__main__":
                                 test_qs[level]+=cur_qs[level]
                             #test_us+=cur_us
                             #zero_square_error=np.sum((array[x_start:x_end,y_start:y_end]-themean*np.ones((max_step+1,max_step+1)) )**2)
-                            square_error+=np.sum((array[x_start:x_end,y_start:y_end,z_start:z_end]-orig_array[x_start:x_end,y_start:y_end,z_start:z_end])**2)
+                            square_error+=np.sum((array[x_start:x_end,y_start:y_end,z_start:z_end]-cur_array)**2)
                             
                             element_counts+=(max_step+1)**3 
-                            array[x_start:x_end,y_start:y_end,z_start:z_end]=orig_array[x_start:x_end,y_start:y_end,z_start:z_end]
+                            #array[x_start:x_end,y_start:y_end,z_start:z_end]=orig_array[x_start:x_end,y_start:y_end,z_start:z_end]
 
                 t_mse=square_error/element_counts
                 #zero_mse=zero_square_error/element_counts
@@ -2465,7 +2465,7 @@ if __name__=="__main__":
                                 z_end=z_start+max_step+1
                                 #print(x_start)
                                 #print(y_start)
-                                #cur_array=np.copy(array[x_start:x_end,y_start:y_end,z_start:z_end])
+                                cur_array=np.copy(array[x_start:x_end,y_start:y_end,z_start:z_end])
                                 '''
                                 curmax=np.max(cur_array)
                                 curmin=np.min(cur_array)
@@ -2475,7 +2475,7 @@ if __name__=="__main__":
                                     themin=curmin
                                 '''
                                 #print("v")
-                                array,cur_qs,edge_qs,cur_us,_,lsd=msc3d(array,x_start,x_end,y_start,y_end,z_start,z_end,new_error_bound,alpha,beta,9999,max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
+                                cur_array,cur_qs,edge_qs,cur_us,_,lsd=msc3d(cur_array,0,max_step+1,0,max_step+1,0,max_step+1,new_error_bound,alpha,beta,9999,max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
                                                         sz_interp=args.sz_interp,selection_criteria=args.criteria,multidim_level=10,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo=args.fix_algo)
                                 #print("d")
                                 #print(len(cur_qs[max_level]))
@@ -2485,10 +2485,10 @@ if __name__=="__main__":
                                     test_qs[level]+=cur_qs[level]
                                 #test_us+=cur_us
                                 #zero_square_error=np.sum((array[x_start:x_end,y_start:y_end]-themean*np.ones((max_step+1,max_step+1)) )**2)
-                                square_error+=np.sum((array[x_start:x_end,y_start:y_end,z_start:z_end]-orig_array[x_start:x_end,y_start:y_end,z_start:z_end])**2)
+                                square_error+=np.sum((array[x_start:x_end,y_start:y_end,z_start:z_end]-cur_array)**2)
                             
                                 element_counts+=(max_step+1)**3 
-                                array[x_start:x_end,y_start:y_end,z_start:z_end]=orig_array[x_start:x_end,y_start:y_end,z_start:z_end]
+                                #array[x_start:x_end,y_start:y_end,z_start:z_end]=orig_array[x_start:x_end,y_start:y_end,z_start:z_end]
                     t_mse=square_error/element_counts
                     #zero_mse=zero_square_error/element_counts
                     psnr_r=20*math.log(rng,10)-10*math.log(t_mse,10)
