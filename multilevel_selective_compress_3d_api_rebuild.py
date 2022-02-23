@@ -2226,10 +2226,10 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,selection_criteria="l1",ran
             array[x_start:x_end:step,y_start:y_end:step,z_start:z_end:step]=best_preds
 
         if selected_algo!="lorenzo_fallback":
-            cumulated_loss+=best_absloss
+            cumulated_loss+=best_loss
 
         else:
-            cumulated_loss=best_absloss
+            cumulated_loss=best_loss
         
         #print(np.max(np.abs(array[0:last_x+1:step,0:last_y+1:step]-best_preds)))
     
