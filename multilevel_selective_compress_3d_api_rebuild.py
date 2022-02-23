@@ -1728,7 +1728,7 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,selection_criteria="l1",ran
                                 elif plusone:
                                     pred=interp_linear(array[x][y][z-step],array[x][y][z+step])
                                 else:#exterp
-                                    print("bb")
+                                    print(x,y,z,step)
                                     if minusthree:
                                         minusfive= z-pentastep>=z_start or (cross_before and z>=pentastep)
                                         if minusfive:
@@ -1792,7 +1792,7 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,selection_criteria="l1",ran
                                 elif plusone:
                                     pred=interp_linear(array[x][y-step][z],array[x][y+step][z])
                                 else:#exterp
-                                    print("bb")
+                                    print(x,y,z,step)
                                     if minusthree:
                                         minusfive= y-pentastep>=y_start or (cross_before and y>=pentastep)
                                         if minusfive:
@@ -1854,7 +1854,7 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,selection_criteria="l1",ran
                                 elif plusone:
                                     pred=interp_linear(array[x-step][y][z],array[x+step][y][z])
                                 else:#exterp
-                                    print("bb")
+                                    print(x,y,z,step)
                                     if minusthree:
                                         minusfive= x-pentastep>=x_start or (cross_before and x>=pentastep)
                                         if minusfive:
