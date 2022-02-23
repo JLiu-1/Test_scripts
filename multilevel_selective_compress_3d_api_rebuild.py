@@ -982,7 +982,7 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,selection_criteria="l1",ran
                                 y_wise=y+step<y_end or (cross_after and y+step<size_y)
                                 z_wise=z+step<z_end or (cross_after and z+step<size_z)
                                 if y_wise and z_wise:
-                                    pred=interp_2d(array[x][y-step][z],array[x][y+ste][z],array[x][y][z-step],array[x][y][z+step])
+                                    pred=interp_2d(array[x][y-step][z],array[x][y+step][z],array[x][y][z-step],array[x][y][z+step])
                                 elif y_wise:
                                     pred=interp_linear(array[x][y-step][z],array[x][y+step][z])
                                 elif z_wise:
