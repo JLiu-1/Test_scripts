@@ -1119,7 +1119,7 @@ fix_algo_list=None,first_level=None,last_level=0,first_order="block",fake_compre
         
         if fake_compression:
             array[x_start:x_end:step,y_start:y_end:step]=array_slice
-        else:
+        elif selected_algo!="lorenzo_fallback":
             array[x_start:x_end:step,y_start:y_end:step]=best_preds
 
         if selected_algo!="lorenzo_fallback":

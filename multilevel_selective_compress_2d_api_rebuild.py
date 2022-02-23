@@ -865,8 +865,8 @@ fix_algo_list=None,first_level=None,last_level=0,first_order="block",fake_compre
                 for i in range(max_level-1,level,-1):
                     qs[i]=[]
                 us=us[:u_start]
-                for x in range(x_start+x_start_offset*step,last_x+1-x_end_offset*step,step):
-                    for y in range(y_start+y_start_offset*step,last_y+1-y_end_offset*step,step):
+                for x in range(x_start+x_start_offset,last_x+1-x_end_offset*step,step):
+                    for y in range(y_start+y_start_offset,last_y+1-y_end_offset*step,step):
                     
                         if max_step>0 and x%max_step==0 and y%max_step==0:
                             #print(x,y)
@@ -903,9 +903,9 @@ fix_algo_list=None,first_level=None,last_level=0,first_order="block",fake_compre
             
             
         if fake_compression:
-            array[x_start:last_x+1:step,y_start:last_y+1:step]=array_slice
-        else:
-            array[x_start:last_x+1:step,y_start:last_y+1:step]=best_preds
+            array[x_start:x_end:step,y_start:y_end:step]=array_slice
+        elif selected_algo!="lorenzo_fallback":
+            array[x_start:x_end:step,y_start:y_end:step]=best_preds
 
         if selected_algo!="lorenzo_fallback":
             cumulated_loss+=best_absloss
