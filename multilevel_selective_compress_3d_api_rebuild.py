@@ -2090,13 +2090,13 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
         #cur_qs=[]
         #cur_us=[]
         #cur_array=np.copy(array[0:last_x+1:step,0:last_y+1:step])#reset cur_array
-            xstart=1 if x_preded else 0
-            ystart=1 if y_preded else 0
-            zstart=1 if z_preded else 0 
-            cur_orig_array=orig_array[0:last_x+1:step,0:last_y+1:step,0:last_z+1:step]
-            x_end_offset=1 if (random_access and last_x==size_x-1 and level==0) else 0
-            y_end_offset=1 if (random_access and last_y==size_y-1 and level==0) else 0
-            z_end_offset=1 if (random_access and last_z==size_z-1 and level==0) else 0
+            x_start_offset=step if x_preded else 0
+            y_start_offset=step if y_preded else 0
+            z_start_offset=step if z_preded else 0
+            cur_orig_array=orig_array[x_start:x_end:step,y_start:y_end:step,z_start:z_end:step]
+            x_end_offset=1 if (random_access and level==0 and x_end!=size_x) else 0
+            y_end_offset=1 if (random_access and level==0 and y_end!=size_y) else 0
+            z_end_offset=1 if (random_access and level==0 and z_end!=size_z) else 0
             total_points=[(x,y,z) for x in range(cur_orig_array.shape[0]-1) for y in range(cur_orig_array.shape[1]-1) for z in range(cur_orig_array.shape[2]-1) if (max_step<=0 or ((x*step)%max_step!=0 and (y*step)%max_step!=0 and (z*step)%max_step!=0 ))  ]
             if len(total_points)<min_sampled_points:
                 num_sumples=len(total_points)
@@ -2175,7 +2175,7 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
             if loss*len(total_points)/len(sampled_points)<best_loss+cumulated_loss:
                 selected_algo="lorenzo_fallback"
                 best_loss=0
-                best_preds=np.copy(cur_orig_array)
+                array[x_start:x_end:step,y_start:y_end:step,z_start:z_end:step]=orig_array[x_start:x_end:step,y_start:y_end:step,z_start:z_end:step]#reset array
                 best_qs=[]
                 best_us=[]
            
@@ -2183,21 +2183,21 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                 for i in range(max_level-1,level,-1):
                     qs[i]=[]
                 us=us[:u_start]
-                for x in range(xstart,cur_size_x-x_end_offset):
-                    for y in range(ystart,cur_size_y-y_end_offset):
-                        for z in range(zstart,cur_size_z-z_end_offset):
+                for x in range(x_start+x_start_offset,x_end-x_end_offset*step,step):
+                    for y in range(y_start+y_start_offset,y_end-y_end_offset*step,step):
+                        for z in range(z_start+z_start_offset,y_end-y_end_offset*step,step):
                     
-                            if max_step>0 and (x*step)%max_step==0 and (y*step)%max_step==0 and (z*step)%max_step==0:
+                            if max_step>0 and x%max_step==0 and y%max_step==0 and z%max_step==0:
                             #print(x,y)
                                 continue
-                            orig=best_preds[x][y][z]
-                            f_011=best_preds[x-1][y][z] if x else 0
-                            f_101=best_preds[x][y-1][z] if y else 0
-                            f_110=best_preds[x][y][z-1] if z else 0
-                            f_001=best_preds[x-1][y-1][z] if x and y else 0
-                            f_100=best_preds[x][y-1][z-1] if y and z else 0
-                            f_010=best_preds[x-1][y][z-1] if x and z else 0
-                            f_000=best_preds[x-1][y-1][z-1] if x and y and z else 0
+                            orig=array[x][y][z]
+                            f_011=array[x-step][y][z] if x-step>=x_start or (x-step>=0 and cross_before) else 0
+                            f_101=array[x][y-step][z] if y-step>=y_start or (y-step>=0 and cross_before) else 0
+                            f_110=array[x][y][z-step] if z-step>=z_start or (z-step>=0 and cross_before) else 0
+                            f_001=array[x-step][y-step][z] if (x-step>=x_start or (x-step>=0 and cross_before)) and (y-step>=y_start or (y-step>=0 and cross_before)) else 0
+                            f_100=array[x][y-step][z-step] if (y-step>=y_start or (y-step>=0 and cross_before)) and (z-step>=z_start or (z-step>=0 and cross_before)) else 0
+                            f_010=array[x-step][y][z-step] if (x-step>=x_start or (x-step>=0 and cross_before)) and (z-step>=z_start or (z-step>=0 and cross_before)) else 0
+                            f_000=array[x-step][y-step][z-step] if (x-step>=x_start or (x-step>=0 and cross_before)) and (y-step>=y_start or (y-step>=0 and cross_before)) and (z-step>=z_start or (z-step>=0 and cross_before)) else 0
                 
                             pred=f_000+f_011+f_101+f_110-f_001-f_010-f_100
                         
@@ -2212,7 +2212,7 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                             if q==0:
                                 best_us.append(decomp)
                 #absloss+=abs(decomp)
-                            best_preds[x][y][z]=decomp
+                            array[x][y][z]=decomp
             
 
         #print(len(best_qs))
@@ -2227,12 +2227,18 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
             '''
             if pred_check:
                 preded[0:last_x+1:step,0:last_y+1:step,0:last_z+1:step]=best_preded
+
             '''
-        if selected_algo!="lorenzo_fallback":#current have problem when bitrate criteria
-            cumulated_loss+=best_loss
-        
+        if fake_compression:
+            array[x_start:x_end:step,y_start:y_end:step,z_start:z_end:step]=array_slice
+        elif selected_algo!="lorenzo_fallback":
+            array[x_start:x_end:step,y_start:y_end:step,z_start:z_end:step]=best_preds
+
+        if selected_algo!="lorenzo_fallback":
+            cumulated_loss+=best_absloss
+
         else:
-            cumulated_loss=best_loss
+            cumulated_loss=best_absloss
         
         #print(np.max(np.abs(array[0:last_x+1:step,0:last_y+1:step]-best_preds)))
     
@@ -2280,6 +2286,7 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
                     if q==0:
                         us.append(decomp)
                     array[x][y][z]=decomp
+    '''
     offset_x1=1 if x_preded else 0
     offset_y1=1 if y_preded else 0
     offset_z1=1 if z_preded else 0
@@ -2287,6 +2294,7 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose
     offset_y2=1 if random_access else 0
     offset_z2=1 if random_access else 0
     lorenzo_3d(array,offset_x1,size_x-offset_x2,offset_y1,size_y-offset_y2,offset_z1,size_z-offset_z2)
+    '''
     #print(np.max(np.abs(orig_array-array)))
     #lorenzo_2d(array,last_x+1,,offset_y1,size_y-offset_y2)
     return array,qs,edge_qs,us,selected_algos,loss_dict
@@ -2389,7 +2397,7 @@ if __name__=="__main__":
                             z_end=z_start+max_step+1
                             #print(x_start)
                             #print(y_start)
-                            cur_array=np.copy(array[x_start:x_end,y_start:y_end,z_start:z_end])
+                            #cur_array=np.copy(array[x_start:x_end,y_start:y_end,z_start:z_end])
                             '''
                             curmax=np.max(cur_array)
                             curmin=np.min(cur_array)
@@ -2399,7 +2407,7 @@ if __name__=="__main__":
                                 themin=curmin
                             '''
                             #print("a")
-                            cur_array,cur_qs,edge_qs,cur_us,_,lsd=msc3d(cur_array,error_bound,alpha,beta,9999,max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
+                            array,cur_qs,edge_qs,cur_us,_,lsd=msc3d(array,x_start,x_end,y_start,y_end,z_start,z_end,error_bound,alpha,beta,9999,max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
                                                     sz_interp=args.sz_interp,selection_criteria=args.criteria,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo=args.fix_algo)
                             #print("b")
                             #print(len(cur_qs[max_level]))
@@ -2409,9 +2417,11 @@ if __name__=="__main__":
                                 test_qs[level]+=cur_qs[level]
                             #test_us+=cur_us
                             #zero_square_error=np.sum((array[x_start:x_end,y_start:y_end]-themean*np.ones((max_step+1,max_step+1)) )**2)
-                            square_error+=np.sum((array[x_start:x_end,y_start:y_end,z_start:z_end]-cur_array)**2)
+                            square_error+=np.sum((array[x_start:x_end,y_start:y_end,z_start:z_end]-orig_array[x_start:x_end,y_start:y_end,z_start:z_end])**2)
                             
                             element_counts+=(max_step+1)**3 
+                            array[x_start:x_end,y_start:y_end,z_start:z_end]=orig_array[x_start:x_end,y_start:y_end,z_start:z_end]
+
                 t_mse=square_error/element_counts
                 #zero_mse=zero_square_error/element_counts
                 psnr=20*math.log(rng,10)-10*math.log(t_mse,10)
@@ -2464,7 +2474,7 @@ if __name__=="__main__":
                                 z_end=z_start+max_step+1
                                 #print(x_start)
                                 #print(y_start)
-                                cur_array=np.copy(array[x_start:x_end,y_start:y_end,z_start:z_end])
+                                #cur_array=np.copy(array[x_start:x_end,y_start:y_end,z_start:z_end])
                                 '''
                                 curmax=np.max(cur_array)
                                 curmin=np.min(cur_array)
@@ -2474,7 +2484,7 @@ if __name__=="__main__":
                                     themin=curmin
                                 '''
                                 #print("v")
-                                cur_array,cur_qs,edge_qs,cur_us,_,lsd=msc3d(cur_array,new_error_bound,alpha,beta,9999,max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
+                                array,cur_qs,edge_qs,cur_us,_,lsd=msc3d(array,x_start,x_end,y_start,y_end,z_start,z_end,new_error_bound,alpha,beta,9999,max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
                                                         sz_interp=args.sz_interp,selection_criteria=args.criteria,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo=args.fix_algo)
                                 #print("d")
                                 #print(len(cur_qs[max_level]))
@@ -2484,9 +2494,10 @@ if __name__=="__main__":
                                     test_qs[level]+=cur_qs[level]
                                 #test_us+=cur_us
                                 #zero_square_error=np.sum((array[x_start:x_end,y_start:y_end]-themean*np.ones((max_step+1,max_step+1)) )**2)
-                                square_error+=np.sum((array[x_start:x_end,y_start:y_end,z_start:z_end]-cur_array)**2)
-                                
-                                element_counts+=(max_step+1)**3
+                                square_error+=np.sum((array[x_start:x_end,y_start:y_end,z_start:z_end]-orig_array[x_start:x_end,y_start:y_end,z_start:z_end])**2)
+                            
+                                element_counts+=(max_step+1)**3 
+                                array[x_start:x_end,y_start:y_end,z_start:z_end]=orig_array[x_start:x_end,y_start:y_end,z_start:z_end]
                     t_mse=square_error/element_counts
                     #zero_mse=zero_square_error/element_counts
                     psnr_r=20*math.log(rng,10)-10*math.log(t_mse,10)
@@ -2553,7 +2564,7 @@ if __name__=="__main__":
                             #print(y_start)
                             cur_array=np.copy(array[x_start:x_end,y_start:y_end,z_start:z_end])
                             for predictor in pred_candidates:
-                                cur_array,cur_qs,edge_qs,cur_us,_,lsd=msc3d(cur_array,error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
+                                cur_array,cur_qs,edge_qs,cur_us,_,lsd=msc3d(cur_array,0,max_step+1,0,max_step+1,0,max_step+1,error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
                                                                         sz_interp=args.sz_interp,selection_criteria=args.criteria,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,\
                                                                         min_sampled_points=100,random_access=False,verbose=False,first_level=level,last_level=level,fix_algo=predictor,fake_compression=True)
                                 cur_loss=lsd[level][predictor]
@@ -2571,7 +2582,7 @@ if __name__=="__main__":
 
                 print("Level %d tuned. Best predictor: %s." % (level,best_predictor))
                 fix_algo_list.append(best_predictor)
-                #'''
+                '''
                 for i in range(0,block_num_x,steplength):
                     for j in range(0,block_num_y,steplength):
                         for k in range(0,block_num_z,steplength):
@@ -2589,11 +2600,11 @@ if __name__=="__main__":
                             array[x_start:x_end,y_start:y_end,z_start:z_end],cur_qs,edge_qs,cur_us,_,lsd=msc3d(array[x_start:x_end,y_start:y_end,z_start:z_end],error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
                                                                     sz_interp=args.sz_interp,selection_criteria=args.criteria,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,\
                                                                     min_sampled_points=100,random_access=False,verbose=False,first_level=level,last_level=level,fix_algo=best_predictor,fake_compression=False)
-                #'''
+                '''
 
             fix_algo_list.reverse()
             print(fix_algo_list)
-            #'''
+            '''
             for i in range(0,block_num_x,steplength):
                     for j in range(0,block_num_y,steplength):
                         for k in range(0,block_num_z,steplength):
@@ -2605,7 +2616,7 @@ if __name__=="__main__":
                             y_end=y_start+max_step+1
                             z_end=z_start+max_step+1
                             array[x_start:x_end,y_start:y_end,z_start:z_end]=orig_array[x_start:x_end,y_start:y_end,z_start:z_end]
-            #'''
+            '''
             
         else:
             fix_algo_list=None
@@ -2626,7 +2637,7 @@ if __name__=="__main__":
             rate_list=None
 
     #print(rate_list)
-    array,qs,edge_qs,us,_,lsd=msc3d(array,error_bound,args.rate,args.maximum_rate,args.min_coeff_level,args.max_step,args.anchor_rate,rate_list=rate_list,x_preded=False,y_preded=False,z_preded=False,\
+    array,qs,edge_qs,us,_,lsd=msc3d(array,0,args.size_x,0,args.size_y,0,args.size_z,error_bound,args.rate,args.maximum_rate,args.min_coeff_level,args.max_step,args.anchor_rate,rate_list=rate_list,x_preded=False,y_preded=False,z_preded=False,\
         sz_interp=args.sz_interp,selection_criteria=args.criteria,multidim_level=args.multidim_level,lorenzo=args.lorenzo_fallback_check,sample_rate=args.fallback_sample_ratio,min_sampled_points=100,random_access=False,verbose=True,fix_algo=args.fix_algo,fix_algo_list=fix_algo_list)
     print(len(edge_qs))
     quants=np.concatenate( (np.array(edge_qs,dtype=np.int32),np.array(sum(qs,[]),dtype=np.int32) ) )
