@@ -38,6 +38,7 @@ if __name__=="__main__":
     parser.add_argument('--fix_algo','-f',type=str,default="none")
     parser.add_argument('--autotuning','-t',type=float,default=0.0)
     parser.add_argument('--criteria','-c',type=str,default="l1")
+    parser.add_argument('--order',type=str,default="block")
     args = parser.parse_args()
 
     size_x=args.size_x
@@ -268,33 +269,65 @@ if __name__=="__main__":
     lorenzo_sample_ratio=args.fallback_sample_ratio
     #currently no coeff and levelwise predictor selection.
     block_size=args.block_size
-    for x_start in range(0,last_x,block_size):
-        for y_start in range(0,last_y,block_size):
-            for z_start in range(0,last_z,block_size):
-                #print(x_start,y_start,z_start)
-                x_end=size_x if x_start+block_size>=last_x else x_start+block_size+1
-                y_end=size_y if y_start+block_size>=last_y else y_start+block_size+1
-                z_end=size_z if z_start+block_size>=last_z else z_start+block_size+1
-                #print(x_start,x_end,y_start,y_end,z_start,z_end)
-                #print(args.fix_algo)
-                #print(np.max(array[x_start:x_end+1,y_start:y_end+1,z_start:z_end+1]),np.min(array[x_start:x_end+1,y_start:y_end+1,z_start:z_end+1]))
-                array,cur_qs,cur_lorenzo_qs,cur_us,cur_selected,lsd=\
-                msc3d(array,x_start,x_end,y_start,y_end,z_start,z_end,error_bound,args.rate,args.maximum_rate,min_coeff_level,max_step,anchor_rate,\
-                    rate_list=rate_list,sz_interp=args.sz_interp,selection_criteria=args.criteria,multidim_level=args.multidim_level,lorenzo=args.lorenzo_fallback_check,\
-                    sample_rate=args.fallback_sample_ratio,min_sampled_points=10,x_preded=(x_start>0),y_preded=(y_start>0),z_preded=(z_start>0),random_access=False,fix_algo=args.fix_algo)
-                #if np.max(array[x_start:x_end+1,y_start:y_end+1,z_start:z_end+1])!=np.min(array[x_start:x_end+1,y_start:y_end+1,z_start:z_end+1]):
-                #print(cur_selected)
-                #print(lsd[0])
-                #print([len(_) for _ in cur_qs])
-                #print(len(cur_us))
-                for i in range(max_level+1):
-                    #print(len(cur_qs[i]))
-                    qs[i]+=cur_qs[i]
+    if args.order=="block":
+        for x_start in range(0,last_x,block_size):
+            for y_start in range(0,last_y,block_size):
+                for z_start in range(0,last_z,block_size):
+                    #print(x_start,y_start,z_start)
+                    x_end=size_x if x_start+block_size>=last_x else x_start+block_size+1
+                    y_end=size_y if y_start+block_size>=last_y else y_start+block_size+1
+                    z_end=size_z if z_start+block_size>=last_z else z_start+block_size+1
+                    #print(x_start,x_end,y_start,y_end,z_start,z_end)
+                    #print(args.fix_algo)
+                    #print(np.max(array[x_start:x_end+1,y_start:y_end+1,z_start:z_end+1]),np.min(array[x_start:x_end+1,y_start:y_end+1,z_start:z_end+1]))
+                    array,cur_qs,cur_lorenzo_qs,cur_us,cur_selected,lsd=\
+                    msc3d(array,x_start,x_end,y_start,y_end,z_start,z_end,error_bound,args.rate,args.maximum_rate,min_coeff_level,max_step,anchor_rate,\
+                        rate_list=rate_list,sz_interp=args.sz_interp,selection_criteria=args.criteria,multidim_level=args.multidim_level,lorenzo=args.lorenzo_fallback_check,\
+                        sample_rate=args.fallback_sample_ratio,min_sampled_points=10,x_preded=(x_start>0),y_preded=(y_start>0),z_preded=(z_start>0),random_access=False,fix_algo=args.fix_algo)
+                    #if np.max(array[x_start:x_end+1,y_start:y_end+1,z_start:z_end+1])!=np.min(array[x_start:x_end+1,y_start:y_end+1,z_start:z_end+1]):
+                    #print(cur_selected)
+                    #print(lsd[0])
+                    #print([len(_) for _ in cur_qs])
+                    #print(len(cur_us))
+                    for i in range(max_level+1):
+                        #print(len(cur_qs[i]))
+                        qs[i]+=cur_qs[i]
 
-                us+=cur_us
-                lorenzo_qs+=cur_lorenzo_qs
-                #if "lorenzo" in cur_selected[-1]:
-                    #print(x_start,y_start)
+                    us+=cur_us
+                    lorenzo_qs+=cur_lorenzo_qs
+                    #if "lorenzo" in cur_selected[-1]:
+                        #print(x_start,y_start)
+    else:
+        for level in range(max_level-1,-1,-1):
+            for x_start in range(0,last_x,block_size):
+                for y_start in range(0,last_y,block_size):
+                    for z_start in range(0,last_z,block_size):
+                        #print(x_start,y_start,z_start)
+                        x_end=size_x if x_start+block_size>=last_x else x_start+block_size+1
+                        y_end=size_y if y_start+block_size>=last_y else y_start+block_size+1
+                        z_end=size_z if z_start+block_size>=last_z else z_start+block_size+1
+                        #print(x_start,x_end,y_start,y_end,z_start,z_end)
+                        #print(args.fix_algo)
+                        #print(np.max(array[x_start:x_end+1,y_start:y_end+1,z_start:z_end+1]),np.min(array[x_start:x_end+1,y_start:y_end+1,z_start:z_end+1]))
+                        array,cur_qs,cur_lorenzo_qs,cur_us,cur_selected,lsd=\
+                        msc3d(array,x_start,x_end,y_start,y_end,z_start,z_end,error_bound,args.rate,args.maximum_rate,min_coeff_level,max_step,anchor_rate,\
+                            rate_list=rate_list,sz_interp=args.sz_interp,selection_criteria=args.criteria,multidim_level=args.multidim_level,lorenzo=args.lorenzo_fallback_check,\
+                            sample_rate=args.fallback_sample_ratio,min_sampled_points=10,x_preded=(x_start>0),y_preded=(y_start>0),z_preded=(z_start>0),、
+                            random_access=False,fix_algo=args.fix_algo,first_level=level,last_level=level,first_order=="level")
+                        #if np.max(array[x_start:x_end+1,y_start:y_end+1,z_start:z_end+1])!=np.min(array[x_start:x_end+1,y_start:y_end+1,z_start:z_end+1]):
+                        #print(cur_selected)
+                        #print(lsd[0])
+                        #print([len(_) for _ in cur_qs])
+                        #print(len(cur_us))
+                        if level==max_level-1:
+                            qs[max_level]+=cur_qs[max_level]
+                        
+                        qs[level]+=cur_qs[level]
+                        us+=cur_us
+                        lorenzo_qs+=cur_lorenzo_qs
+                        #if "lorenzo" in cur_selected[-1]:
+                            #print(x_start,y_start)
+
 
 
 
