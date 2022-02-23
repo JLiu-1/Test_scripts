@@ -742,12 +742,12 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,selection_criteria="l1",ran
                                 if minusthree and plusthree and plusone:
 
                                     pred=interp_cubic(array[x][y-triplestep][z],array[x][y-step][z],array[x][y+step][z],array[x][y+triplestep][z])
-                                '''
-                                elif plusone and plusthree:
-                                    pred=interp_quad(array[x][y-step][z],array[x][y+step][z],array[x][y+triplestep][z])
-                                elif minusthree and plusone:
-                                    pred=interp_quad2(array[x][y-triplestep][z],array[x][y-step][z],array[x][y+step][z])
-                                '''
+                                #'''
+                                #elif plusone and plusthree:
+                                #    pred=interp_quad(array[x][y-step][z],array[x][y+step][z],array[x][y+triplestep][z])
+                                #elif minusthree and plusone:
+                                #    pred=interp_quad2(array[x][y-triplestep][z],array[x][y-step][z],array[x][y+step][z])
+                                #'''
                                 elif plusone:
                                     pred=interp_linear(array[x][y-step][z],array[x][y+step][z])
                                 else:#exterp
@@ -805,12 +805,12 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,selection_criteria="l1",ran
                                 if minusthree and plusthree and plusone:
 
                                     pred=interp_cubic(array[x-triplestep][y][z],array[x-step][y][z],array[x+step][y][z],array[x+triplestep][y][z])
-                                '''
-                                elif plusone and plusthree:
-                                    pred=interp_quad(array[x-step][y][z],array[x+step][y][z],array[x+triplestep][y][z])
-                                elif minusthree and plusone:
-                                    pred=interp_quad2(array[x-triplestep][y][z],array[x-step][y][z],array[x+step][y][z])
-                                '''
+                                #'''
+                                #elif plusone and plusthree:
+                                #    pred=interp_quad(array[x-step][y][z],array[x+step][y][z],array[x+triplestep][y][z])
+                                #elif minusthree and plusone:
+                                #    pred=interp_quad2(array[x-triplestep][y][z],array[x-step][y][z],array[x+step][y][z])
+                                #'''
                                 elif plusone:
                                     pred=interp_linear(array[x-step][y][z],array[x+step][y][z])
                                 else:#exterp
@@ -1719,12 +1719,12 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,selection_criteria="l1",ran
                                 if minusthree and plusthree and plusone:
 
                                     pred=interp_cubic(array[x][y][z-triplestep],array[x][y][z-step],array[x][y][z+step],array[x][y][z+triplestep])
-                                '''
-                                elif plusone and plusthree:
-                                    pred=interp_quad(array[x][y][z-step],array[x][y][z+step],array[x][y][z+triplestep])
-                                elif minusthree and plusone:
-                                    pred=interp_quad2(array[x][y][z-triplestep],array[x][y][z-step],array[x][y][z+step])
-                                '''
+                                #'''
+                                #elif plusone and plusthree:
+                                #    pred=interp_quad(array[x][y][z-step],array[x][y][z+step],array[x][y][z+triplestep])
+                                #elif minusthree and plusone:
+                                #    pred=interp_quad2(array[x][y][z-triplestep],array[x][y][z-step],array[x][y][z+step])
+                                #'''
                                 elif plusone:
                                     pred=interp_linear(array[x][y][z-step],array[x][y][z+step])
                                 else:#exterp
@@ -1782,12 +1782,12 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,selection_criteria="l1",ran
                                 if minusthree and plusthree and plusone:
 
                                     pred=interp_cubic(array[x][y-triplestep][z],array[x][y-step][z],array[x][y+step][z],array[x][y+triplestep][z])
-                                '''
-                                elif plusone and plusthree:
-                                    pred=interp_quad(array[x][y-step][z],array[x][y+step][z],array[x][y+triplestep][z])
-                                elif minusthree and plusone:
-                                    pred=interp_quad2(array[x][y-triplestep][z],array[x][y-step][z],array[x][y+step][z])
-                                '''
+                                #'''
+                                #elif plusone and plusthree:
+                                #    pred=interp_quad(array[x][y-step][z],array[x][y+step][z],array[x][y+triplestep][z])
+                                #elif minusthree and plusone:
+                                #    pred=interp_quad2(array[x][y-triplestep][z],array[x][y-step][z],array[x][y+step][z])
+                                #'''
                                 elif plusone:
                                     pred=interp_linear(array[x][y-step][z],array[x][y+step][z])
                                 else:#exterp
@@ -1843,12 +1843,12 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,selection_criteria="l1",ran
                                 if minusthree and plusthree and plusone:
 
                                     pred=interp_cubic(array[x-triplestep][y][z],array[x-step][y][z],array[x+step][y][z],array[x+triplestep][y][z])
-                                '''
-                                elif plusone and plusthree:
-                                    pred=interp_quad(array[x-step][y][z],array[x+step][y][z],array[x+triplestep][y][z])
-                                elif minusthree and plusone:
-                                    pred=interp_quad2(array[x-triplestep][y][z],array[x-step][y][z],array[x+step][y][z])
-                                '''
+                                #'''
+                                #elif plusone and plusthree:
+                                #    pred=interp_quad(array[x-step][y][z],array[x+step][y][z],array[x+triplestep][y][z])
+                                #elif minusthree and plusone:
+                                #    pred=interp_quad2(array[x-triplestep][y][z],array[x-step][y][z],array[x+step][y][z])
+                                #'''
                                 elif plusone:
                                     pred=interp_linear(array[x-step][y][z],array[x+step][y][z])
                                 else:#exterp
@@ -1926,12 +1926,12 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,selection_criteria="l1",ran
                                 if minusthree and plusthree and plusone:
 
                                     pred=interp_cubic(array[x-triplestep][y][z],array[x-step][y][z],array[x+step][y][z],array[x+triplestep][y][z])
-                                '''
-                                elif plusone and plusthree:
-                                    pred=interp_quad(array[x-step][y][z],array[x+step][y][z],array[x+triplestep][y][z])
-                                elif minusthree and plusone:
-                                    pred=interp_quad2(array[x-triplestep][y][z],array[x-step][y][z],array[x+step][y][z])
-                                '''
+                                #'''
+                                #elif plusone and plusthree:
+                                #    pred=interp_quad(array[x-step][y][z],array[x+step][y][z],array[x+triplestep][y][z])
+                                #elif minusthree and plusone:
+                                #    pred=interp_quad2(array[x-triplestep][y][z],array[x-step][y][z],array[x+step][y][z])
+                                #'''
                                 elif plusone:
                                     pred=interp_linear(array[x-step][y][z],array[x+step][y][z])
                                 else:#exterp
@@ -1989,12 +1989,12 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,selection_criteria="l1",ran
                                 if minusthree and plusthree and plusone:
 
                                     pred=interp_cubic(array[x][y-triplestep][z],array[x][y-step][z],array[x][y+step][z],array[x][y+triplestep][z])
-                                '''
-                                elif plusone and plusthree:
-                                    pred=interp_quad(array[x][y-step][z],array[x][y+step][z],array[x][y+triplestep][z])
-                                elif minusthree and plusone:
-                                    pred=interp_quad2(array[x][y-triplestep][z],array[x][y-step][z],array[x][y+step][z])
-                                '''
+                                #'''
+                                #elif plusone and plusthree:
+                                #    pred=interp_quad(array[x][y-step][z],array[x][y+step][z],array[x][y+triplestep][z])
+                                #elif minusthree and plusone:
+                                #    pred=interp_quad2(array[x][y-triplestep][z],array[x][y-step][z],array[x][y+step][z])
+                                #'''
                                 elif plusone:
                                     pred=interp_linear(array[x][y-step][z],array[x][y+step][z])
                                 else:#exterp
@@ -2050,12 +2050,12 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,selection_criteria="l1",ran
                                 if minusthree and plusthree and plusone:
 
                                     pred=interp_cubic(array[x][y][z-triplestep],array[x][y][z-step],array[x][y][z+step],array[x][y][z+triplestep])
-                                '''
-                                elif plusone and plusthree:
-                                    pred=interp_quad(array[x][y][z-step],array[x][y][z+step],array[x][y][z+triplestep])
-                                elif minusthree and plusone:
-                                    pred=interp_quad2(array[x][y][z-triplestep],array[x][y][z-step],array[x][y][z+step])
-                                '''
+                                #'''
+                                #elif plusone and plusthree:
+                                #    pred=interp_quad(array[x][y][z-step],array[x][y][z+step],array[x][y][z+triplestep])
+                                #elif minusthree and plusone:
+                                #    pred=interp_quad2(array[x][y][z-triplestep],array[x][y][z-step],array[x][y][z+step])
+                                #'''
                                 elif plusone:
                                     pred=interp_linear(array[x][y][z-step],array[x][y][z+step])
                                 else:#exterp
