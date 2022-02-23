@@ -11,7 +11,7 @@ from utils import *
 
 
 def msc3d(array,error_bound,rate,maximum_rate,min_coeff_level,max_step,anchor_rate,rate_list=None,x_preded=False,\
-    y_preded=False,z_preded=False,multidim_level=10,selection_criteria='l1',sz_interp=False,lorenzo=-1,\
+    y_preded=False,z_preded=False,multidim_level=-1,selection_criteria='l1',sz_interp=False,lorenzo=-1,\
 sample_rate=0.05,min_sampled_points=10,new_q_order=0,random_access=False,verbose=False,pred_check=False,\
 fix_algo="none",fix_algo_list=None,first_level=None,last_level=0,fake_compression=False):#lorenzo:only check lorenzo fallback with level no larger than lorenzo level
 
@@ -160,7 +160,7 @@ fix_algo="none",fix_algo_list=None,first_level=None,last_level=0,fake_compressio
         selected_algo="none"
         if fix_algo_list!=None:
             fix_algo=fix_algo_list[level]
-        if (fix_algo=="none" and level<=multidim_level) or fix_algo in ["linear","cubic","multidim"] or not sz_interp:
+        if (fix_algo=="none" and level>=multidim_level) or fix_algo in ["linear","cubic","multidim"] or not sz_interp:
             if fix_algo=="none" or fix_algo=="linear":
                 if new_q_order:
                     q_array=np.zeros(cur_array.shape,dtype=np.int32)
@@ -1922,7 +1922,7 @@ if __name__=="__main__":
     parser.add_argument('--rlist',type=float,default=-1,nargs="+")
     parser.add_argument('--maximum_rate','-m',type=float,default=10.0)
     #parser.add_argument('--cubic','-c',type=int,default=1)
-    parser.add_argument('--multidim_level','-d',type=int,default=99)
+    parser.add_argument('--multidim_level','-d',type=int,default=-1)
     parser.add_argument('--lorenzo_fallback_check','-l',type=int,default=-1)
     parser.add_argument('--fallback_sample_ratio','-p',type=float,default=0.05)
 #parser.add_argument('--level_rate','-lr',type=float,default=1.0)
