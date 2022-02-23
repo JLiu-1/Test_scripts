@@ -1638,7 +1638,7 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,selection_criteria="l1",ran
                         for z in range(z_start+step,z_end,doublestep):
                             #if x==cur_size_x-1:
                                 #continue
-                            oorig=array[x][y][z]
+                            orig=array[x][y][z]
                             '''
                             if pred_check:
                                 if cur_preded[x][y][z-1]==0 or cur_preded[x][y][z+1]==0:
@@ -1728,7 +1728,7 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,selection_criteria="l1",ran
                                 elif plusone:
                                     pred=interp_linear(array[x][y][z-step],array[x][y][z+step])
                                 else:#exterp
-                                    print(x,y,z,step)
+                                    #print(x,y,z,step)
                                     if minusthree:
                                         minusfive= z-pentastep>=z_start or (cross_before and z>=pentastep)
                                         if minusfive:
@@ -1792,7 +1792,7 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,selection_criteria="l1",ran
                                 elif plusone:
                                     pred=interp_linear(array[x][y-step][z],array[x][y+step][z])
                                 else:#exterp
-                                    #print(x,y,z,step)
+                                    print(x,y,z,step)
                                     if minusthree:
                                         minusfive= y-pentastep>=y_start or (cross_before and y>=pentastep)
                                         if minusfive:
