@@ -280,7 +280,7 @@ if __name__=="__main__":
                 msc2d(array,x_start,x_end,y_start,y_end,error_bound,rate,maximum_rate,min_coeff_level,max_step,anchor_rate,\
                     rate_list=rate_list,sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=args.lorenzo_fallback_check,\
                     sample_rate=args.fallback_sample_ratio,min_sampled_points=10,x_preded=(x_start>0),y_preded=(y_start>0),\
-                    random_access=args.random_access,fix_algo=args.fix_algo,fix_algo_list=fix_algo_list,verbose=True )
+                    random_access=args.random_access,fix_algo=args.fix_algo,fix_algo_list=fix_algo_list,verbose=False )
                 idx+=1
          
             #pr=False
