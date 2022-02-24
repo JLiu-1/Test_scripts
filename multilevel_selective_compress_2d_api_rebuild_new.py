@@ -1266,7 +1266,7 @@ if __name__=="__main__":
                         y_end=y_start+max_step+1
                         #print(x_start)
                         #print(y_start)
-                        #cur_array=np.copy(array[x_start:x_end,y_start:y_end])
+                        cur_array=np.copy(array[x_start:x_end,y_start:y_end])
                         '''
                         curmax=np.max(array[x_start:x_end,y_start:y_end])
                         curmin=np.min(array[x_start:x_end,y_start:y_end])
@@ -1276,7 +1276,7 @@ if __name__=="__main__":
                             themin=curmin
                         '''
                         #what about using an expanded array?
-                        cur_qs,edge_qs,cur_us,_,lsd=msc2d(array,x_start,x_end,y_start,y_end,error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
+                        cur_qs,edge_qs,cur_us,_,lsd=msc2d(cur_array,0,max_step+1,0,max_step+1,error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
                                                 sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo=args.fix_algo)
                         
                         #print(len(cur_qs[max_level]))
@@ -1286,8 +1286,8 @@ if __name__=="__main__":
                             test_qs[level]+=cur_qs[level]
                         test_us+=cur_us
                         #zero_square_error=np.sum((array[x_start:x_end,y_start:y_end]-themean*np.ones((max_step+1,max_step+1)) )**2)
-                        square_error+=np.sum((array[x_start:x_end,y_start:y_end]-orig_array[x_start:x_end,y_start:y_end])**2)
-                        array[x_start:x_end,y_start:y_end]=orig_array[x_start:x_end,y_start:y_end]
+                        square_error+=np.sum((array[x_start:x_end,y_start:y_end]-cur_array)**2)
+                        #array[x_start:x_end,y_start:y_end]=orig_array[x_start:x_end,y_start:y_end]
                         
                         element_counts+=(max_step+1)**2 
                 t_mse=square_error/element_counts
@@ -1340,7 +1340,7 @@ if __name__=="__main__":
                             y_end=y_start+max_step+1
                             #print(x_start)
                             #print(y_start)
-                            #cur_array=np.copy(array[x_start:x_end,y_start:y_end])
+                            cur_array=np.copy(array[x_start:x_end,y_start:y_end])
                             '''
                             curmax=np.max(array[x_start:x_end,y_start:y_end])
                             curmin=np.min(array[x_start:x_end,y_start:y_end])
@@ -1349,7 +1349,7 @@ if __name__=="__main__":
                             if curmin<themin:
                                 themin=curmin
                             '''
-                            cur_qs,edge_qs,cur_us,_,lsd=msc2d(array,x_start,x_end,y_start,y_end,new_error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
+                            cur_qs,edge_qs,cur_us,_,lsd=msc2d(cur_array,0,max_step+1,0,max_step+1,new_error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
                                                     sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo=args.fix_algo)
                             
                             #print(len(cur_qs[max_level]))
@@ -1359,8 +1359,8 @@ if __name__=="__main__":
                                 test_qs[level]+=cur_qs[level]
                             test_us+=cur_us
                             #zero_square_error=np.sum((array[x_start:x_end,y_start:y_end]-themean*np.ones((max_step+1,max_step+1)) )**2)
-                            square_error+=np.sum((array[x_start:x_end,y_start:y_end]-orig_array[x_start:x_end,y_start:y_end])**2)
-                            array[x_start:x_end,y_start:y_end]=orig_array[x_start:x_end,y_start:y_end]
+                            square_error+=np.sum((array[x_start:x_end,y_start:y_end]-cur_array)**2)
+                            #array[x_start:x_end,y_start:y_end]=orig_array[x_start:x_end,y_start:y_end]
                             
                             element_counts+=(max_step+1)**2 
                     t_mse=square_error/element_counts
