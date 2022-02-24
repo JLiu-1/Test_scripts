@@ -285,8 +285,8 @@ if __name__=="__main__":
                     #print(x_start,y_start)
                     cur_array,cur_qs,cur_lorenzo_qs,cur_us,cur_selected,lsd=\
                     msc3d(cur_array,0,max_step+1,0,max_step+1,0,max_step+1,error_bound,args.rate,args.maximum_rate,min_coeff_level,max_step,anchor_rate,\
-                        rate_list=rate_list,sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=args.lorenzo_fallback_check,\
-                        sample_rate=args.fallback_sample_ratio,min_sampled_points=10,x_preded=False,y_preded=False,random_access=False,fix_algo=args.fix_algo,fix_algo_list=None)
+                        rate_list=rate_list,sz_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=args.lorenzo_fallback_check,\
+                        sample_rate=args.fallback_sample_ratio,min_sampled_points=10,x_preded=False,y_preded=False,z_preded=False,random_access=False,fix_algo=args.fix_algo,fix_algo_list=None)
                     cur_selected.reverse()
                     fix_algo_lists.append(cur_selected)
 
