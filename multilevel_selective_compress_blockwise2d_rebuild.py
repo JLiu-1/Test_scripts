@@ -102,7 +102,7 @@ if __name__=="__main__":
                             #left question: The predictor selection is separated on each block, which does not follow the real compression
                             #What about fix the prediction on SZ3_cubic?
                         cur_qs,edge_qs,cur_us,_,lsd=msc2d(cur_array,0,max_step+1,0,max_step+1,error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
-                                                sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=True,fix_algo=args.fix_algo,fix_algo_list=None)
+                                                sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo=args.fix_algo,fix_algo_list=None)
                             #print(len(cur_qs[max_level]))
                             #print(len(test_qs[max_level]))
                         for level in range(max_level+1):
@@ -217,6 +217,7 @@ if __name__=="__main__":
         args.rate=bestalpha
         args.maximum_rate=bestbeta
 
+
     else:       
         
         if ((isinstance(rate_list,int) or isinstance(rate_list,float)) and  rate_list>0) or (isinstance(rate_list,list ) and rate_list[0]>0):
@@ -263,7 +264,7 @@ if __name__=="__main__":
                     sample_rate=args.fallback_sample_ratio,min_sampled_points=10,x_preded=False,y_preded=False,random_access=False,fix_algo=args.fix_algo,fix_algo_list=None)
                 cur_selected.reverse()
                 fix_algo_lists.append(cur_selected)
-
+    print(np.max(np.abs(orig_array-array)))
     if args.order=="block":
         idx=0
         for x_start in range(0,last_x,block_size):
