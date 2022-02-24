@@ -2352,7 +2352,7 @@ if __name__=="__main__":
     parser.add_argument('--sz_interp','-n',type=int,default=0)
 
     parser.add_argument('--size_x','-x',type=int,default=129)
-    parser.add_argument('--double','-b',type=int,default=0)
+    #parser.add_argument('--double','-b',type=int,default=0)
     parser.add_argument('--size_y','-y',type=int,default=129)
     parser.add_argument('--size_z','-z',type=int,default=129)
     parser.add_argument('--fix_algo','-f',type=str,default="none")
@@ -2364,7 +2364,7 @@ if __name__=="__main__":
     
     args = parser.parse_args()
     print(args)
-    if args.double:
+    if 0:#if args.double:
         dtype=np.double
     else:
         dtype=np.float32
