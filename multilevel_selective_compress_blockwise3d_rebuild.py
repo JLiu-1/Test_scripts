@@ -330,6 +330,7 @@ if __name__=="__main__":
             for x_start in range(0,last_x,block_size):
                 for y_start in range(0,last_y,block_size):
                     for z_start in range(0,last_z,block_size):
+                        print("level")
                         if blockwise_tuning:
                             fix_algo_list=fix_algo_lists[idx]
                         else:
