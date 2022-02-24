@@ -816,7 +816,7 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,grid_mode=0,selection_crite
                                 pred=np.dot(coef,np.array([cur_array[x][y][z-3],cur_array[x][y][z-1],cur_array[x][y][z+1],cur_array[x][y][z+3]]) )+ince
                             else:
                                 minusthree= x-triplestep>=x_start or (cross_before and x>=triplestep)
-                                plusthree= x+triplestep<x_end or (x+triplestep<size_x and cross_after(x+triplestep,y,z) and )
+                                plusthree= x+triplestep<x_end or (x+triplestep<size_x and cross_after(x+triplestep,y,z) )
                                 plusone= plusthree or x+step<x_end or (x+step<size_x and cross_after(x+step,y,z)  )
                                 if minusthree and plusthree and plusone:
 
