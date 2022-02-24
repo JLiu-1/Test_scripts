@@ -1277,7 +1277,7 @@ if __name__=="__main__":
                         '''
                         #what about using an expanded array?
                         cur_qs,edge_qs,cur_us,_,lsd=msc2d(array,x_start,x_end,y_start,y_end,error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
-                                                sz3_interp=args.sz_interp,multidim_level=10,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo=args.fix_algo)
+                                                sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo=args.fix_algo)
                         
                         #print(len(cur_qs[max_level]))
                         #print(len(test_qs[max_level]))
@@ -1350,7 +1350,7 @@ if __name__=="__main__":
                                 themin=curmin
                             '''
                             cur_qs,edge_qs,cur_us,_,lsd=msc2d(array,x_start,x_end,y_start,y_end,new_error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
-                                                    sz3_interp=args.sz_interp,multidim_level=10,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo=args.fix_algo)
+                                                    sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo=args.fix_algo)
                             
                             #print(len(cur_qs[max_level]))
                             #print(len(test_qs[max_level]))
