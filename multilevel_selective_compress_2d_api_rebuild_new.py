@@ -288,7 +288,7 @@ fix_algo_list=None,first_level=None,last_level=0,first_order="block",fake_compre
                 absloss=0
                 cur_qs=[]
                 cur_us=[]
-                if selected_algo!=None:
+                if selected_algo!="none":
                     array[x_start:x_end:step,y_start:y_end:step]=array_slice#reset array
                 '''
                 if level>=min_coeff_level:
@@ -458,7 +458,7 @@ fix_algo_list=None,first_level=None,last_level=0,first_order="block",fake_compre
                 absloss=0
                 cur_qs=[]
                 cur_us=[]
-                if selected_algo!=None:
+                if selected_algo!="none":
                     array[x_start:x_end:step,y_start:y_end:step]=array_slice#reset array
                 '''
                 if level>=min_coeff_level:
@@ -570,7 +570,7 @@ fix_algo_list=None,first_level=None,last_level=0,first_order="block",fake_compre
                 absloss=0
                 cur_qs=[]
                 cur_us=[]
-                if selected_algo!=None:
+                if selected_algo!="none":
                     array[x_start:x_end:step,y_start:y_end:step]=array_slice#reset array
                 '''
                 if level>=min_coeff_level:
@@ -762,7 +762,7 @@ fix_algo_list=None,first_level=None,last_level=0,first_order="block",fake_compre
                 absloss=0
                 cur_qs=[]
                 cur_us=[]
-                if selected_algo!=None:
+                if selected_algo!="none":
                     array[x_start:x_end:step,y_start:y_end:step]=array_slice#reset array
 
                 '''
