@@ -40,6 +40,7 @@ if __name__=="__main__":
     parser.add_argument('--criteria','-c',type=str,default="l1")
     parser.add_argument('--order',type=str,default="block")
     parser.add_argument('--random_access',type=int,default=0)
+    parser.add_argument('--blockwise_tuning','-w',type=int,default=0)
     args = parser.parse_args()
 
     size_x=args.size_x
@@ -271,10 +272,33 @@ if __name__=="__main__":
     lorenzo_sample_ratio=args.fallback_sample_ratio
     #currently no coeff and levelwise predictor selection.
     block_size=args.block_size
-    if args.order=="block":
+    blockwise_tuning= args.fix_algo=="none" and args.blockwise_tuning and block_size>=2*max_step
+    if blockwise_tuning:
+        fix_algo_lists=[]
         for x_start in range(0,last_x,block_size):
             for y_start in range(0,last_y,block_size):
                 for z_start in range(0,last_z,block_size):
+                    x_end=x_start+max_step+1
+                    y_end=y_start+max_step+1
+                    z_end=z_start+max_step+1
+                    cur_array=np.copy(array[x_start:x_end,y_start:y_end,z_start:z_end])
+                    #print(x_start,y_start)
+                    cur_array,cur_qs,cur_lorenzo_qs,cur_us,cur_selected,lsd=\
+                    msc3d(cur_array,0,max_step+1,0,max_step+1,0,max_step+1,error_bound,args.rate,args.maximum_rate,min_coeff_level,max_step,anchor_rate,\
+                        rate_list=rate_list,sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=args.lorenzo_fallback_check,\
+                        sample_rate=args.fallback_sample_ratio,min_sampled_points=10,x_preded=False,y_preded=False,random_access=False,fix_algo=args.fix_algo,fix_algo_list=None)
+                    cur_selected.reverse()
+                    fix_algo_lists.append(cur_selected)
+
+    if args.order=="block":
+        idx=0
+        for x_start in range(0,last_x,block_size):
+            for y_start in range(0,last_y,block_size):
+                for z_start in range(0,last_z,block_size):
+                    if blockwise_tuning:
+                        fix_algo_list=fix_algo_lists[idx]
+                    else:
+                        fix_algo_list=None
                     #print(x_start,y_start,z_start)
                     x_end=size_x if x_start+block_size>=last_x else x_start+block_size+1
                     y_end=size_y if y_start+block_size>=last_y else y_start+block_size+1
@@ -299,11 +323,17 @@ if __name__=="__main__":
                     lorenzo_qs+=cur_lorenzo_qs
                     #if "lorenzo" in cur_selected[-1]:
                         #print(x_start,y_start)
+                    idx+=1
     else:
+        idx=0
         for level in range(max_level-1,-1,-1):
             for x_start in range(0,last_x,block_size):
                 for y_start in range(0,last_y,block_size):
                     for z_start in range(0,last_z,block_size):
+                        if blockwise_tuning:
+                            fix_algo_list=fix_algo_lists[idx]
+                        else:
+                            fix_algo_list=None
                         #print(x_start,y_start,z_start)
                         x_end=size_x if x_start+block_size>=last_x else x_start+block_size+1
                         y_end=size_y if y_start+block_size>=last_y else y_start+block_size+1
@@ -327,6 +357,8 @@ if __name__=="__main__":
                         qs[level]+=cur_qs[level]
                         us+=cur_us
                         lorenzo_qs+=cur_lorenzo_qs
+
+                        idx+=1
                         #if "lorenzo" in cur_selected[-1]:
                             #print(x_start,y_start)
 
