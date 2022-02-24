@@ -280,7 +280,7 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,grid_mode=0,selection_crite
                             if level>=min_coeff_level:
                                 pred= np.dot( np.array([cur_array[x][y-1][z],cur_array[x][y+1][z]]),coef )+ince 
                             else:
-                                if y+step<y_end or (y+step<size_y cross_after(x,y+step,z) ):
+                                if y+step<y_end or (y+step<size_y and cross_after(x,y+step,z) ):
                                     pred=interp_linear(array[x][y-step][z],array[x][y+step][z])
                                 elif (y-triplestep>=y_start) or (cross_before and y-triplestep>=0):
                                     pred=exterp_linear(array[x][y-triplestep][z],array[x][y-step][z])
