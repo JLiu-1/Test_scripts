@@ -1795,7 +1795,7 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,grid_mode=0,selection_crite
                             else:
                                 minusthree= y-triplestep>=y_start or (cross_before and y>=triplestep)
                                 plusthree= y+triplestep<y_end or (y+triplestep<size_y and cross_after(x,y+triplestep,z) )
-                                plusone= plusthree or y+step<y_end or (y+step<size_y cross_after(x,y+step,z)  )
+                                plusone= plusthree or y+step<y_end or (y+step<size_y and cross_after(x,y+step,z)  )
                                 if minusthree and plusthree and plusone:
 
                                     pred=interp_cubic(array[x][y-triplestep][z],array[x][y-step][z],array[x][y+step][z],array[x][y+triplestep][z])
