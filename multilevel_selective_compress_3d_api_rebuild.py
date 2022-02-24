@@ -176,7 +176,10 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,grid_mode=0,selection_crite
                 return True
             if first_order=="block":
                 return False
+
             else:
+                #print("woshinidebaba")
+                #print()
                 return (x%doublestep==0 and y%doublestep==0 and z%doublestep==0)
 
 
@@ -220,7 +223,7 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,grid_mode=0,selection_crite
                             if level>=min_coeff_level:
                                 pred= np.dot( np.array([cur_array[x][y][z-1],cur_array[x][y][z+1]]),coef )+ince 
                             else:
-                                if z+step<z_end or (cross_after(x,y,z) and z+step<size_z):
+                                if z+step<z_end or (z+step<size_z and cross_after(x,y,z+step) ):
                                     pred=interp_linear(array[x][y][z-step],array[x][y][z+step])
                                 elif (z-triplestep>=z_start) or (cross_before and z-triplestep>=0):
                                     pred=exterp_linear(array[x][y][z-triplestep],array[x][y][z-step])
@@ -277,7 +280,7 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,grid_mode=0,selection_crite
                             if level>=min_coeff_level:
                                 pred= np.dot( np.array([cur_array[x][y-1][z],cur_array[x][y+1][z]]),coef )+ince 
                             else:
-                                if y+step<y_end or (cross_after(x,y,z) and y+step<size_y):
+                                if y+step<y_end or (y+step<size_y cross_after(x,y+step,z) ):
                                     pred=interp_linear(array[x][y-step][z],array[x][y+step][z])
                                 elif (y-triplestep>=y_start) or (cross_before and y-triplestep>=0):
                                     pred=exterp_linear(array[x][y-triplestep][z],array[x][y-step][z])
@@ -331,7 +334,7 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,grid_mode=0,selection_crite
                             if level>=min_coeff_level:
                                 pred= np.dot( np.array([cur_array[x-1][y][z],cur_array[x+1][y][z]]),coef )+ince 
                             else:
-                                if x+step<x_end or (cross_after(x,y,z) and x+step<size_x):
+                                if x+step<x_end or (x+step<size_x and cross_after(x+step,y,z)):
                                     pred=interp_linear(array[x-step][y][z],array[x+step][y][z])
                                 elif (x-triplestep>=x_start) or (cross_before and x-triplestep>=0):
                                     pred=exterp_linear(array[x-triplestep][y][z],array[x-step][y][z])
@@ -387,8 +390,8 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,grid_mode=0,selection_crite
                             if level>=min_coeff_level:
                                 pred=np.dot(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y-1][z],cur_array[x][y+1][z]]),md_coef)+md_ince
                             else:
-                                x_wise=x+step<x_end or (cross_after(x,y,z) and x+step<size_x)
-                                y_wise=y+step<y_end or (cross_after(x,y,z) and y+step<size_y)
+                                x_wise=x+step<x_end or (x+step<size_x and cross_after(x+step,y,z) )
+                                y_wise=y+step<y_end or (y+step<size_y cross_after(x,y+step,z) )
                                 if x_wise and y_wise:
                                     pred=interp_2d(array[x-step][y][z],array[x+step][y][z],array[x][y-step][z],array[x][y+step][z])
                                 elif x_wise:
@@ -446,8 +449,8 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,grid_mode=0,selection_crite
                             if level>=min_coeff_level:
                                 pred=np.dot(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y][z-1],cur_array[x][y][z+1]]),md_coef)+md_ince
                             else:
-                                x_wise=x+step<x_end or (cross_after(x,y,z) and x+step<size_x)
-                                z_wise=z+step<z_end or (cross_after(x,y,z) and z+step<size_z)
+                                x_wise=x+step<x_end or (x+step<size_x and cross_after(x+step,y,z) )
+                                z_wise=z+step<z_end or (z+step<size_z and cross_after(x,y,z+step) )
                                 if x_wise and z_wise:
                                     pred=interp_2d(array[x-step][y][z],array[x+step][y][z],array[x][y][z-step],array[x][y][z+step])
                                 elif x_wise:
@@ -504,8 +507,8 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,grid_mode=0,selection_crite
                             if level>=min_coeff_level:
                                 pred=np.dot(np.array([cur_array[x][y-1][z],cur_array[x][y+1][z],cur_array[x][y][z-1],cur_array[x][y][z+1]]),md_coef)+md_ince
                             else:
-                                y_wise=y+step<y_end or (cross_after(x,y,z) and y+step<size_y)
-                                z_wise=z+step<z_end or (cross_after(x,y,z) and z+step<size_z)
+                                y_wise=y+step<y_end or (y+step<size_y and cross_after(x,y+step,z) )
+                                z_wise=z+step<z_end or (z+step<size_z and cross_after(x,y,z+step) )
                                 if y_wise and z_wise:
                                     pred=interp_2d(array[x][y-step][z],array[x][y+step][z],array[x][y][z-step],array[x][y][z+step])
                                 elif y_wise:
@@ -564,9 +567,9 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,grid_mode=0,selection_crite
                             if level>=min_coeff_level:
                                 pred=np.dot(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y-1][z],cur_array[x][y+1][z],cur_array[x][y][z-1],cur_array[x][y][z+1] ]),md_coef)+md_ince
                             else:
-                                x_wise=x+step<x_end or (cross_after(x,y,z) and x+step<size_x)
-                                y_wise=y+step<y_end or (cross_after(x,y,z) and y+step<size_y)
-                                z_wise=z+step<z_end or (cross_after(x,y,z) and z+step<size_z)
+                                x_wise=x+step<x_end or (x+step<size_x cross_after(x+step,y,z) )
+                                y_wise=y+step<y_end or (y+step<size_y cross_after(x,y+step,z) )
+                                z_wise=z+step<z_end or (z+step<size_z cross_after(x,y,z+step) )
                                 if x_wise and y_wise and z_wise:
                                     pred=interp_3d(array[x-step][y][z],array[x+step][y][z],array[x][y-step][z],array[x][y+step][z],array[x][y][z-step],array[x][y][z+step])
                                 elif x_wise and y_wise:
@@ -687,8 +690,8 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,grid_mode=0,selection_crite
                                 pred=np.dot(coef,np.array([cur_array[x][y][z-3],cur_array[x][y][z-1],cur_array[x][y][z+1],cur_array[x][y][z+3]]) )+ince
                             else:
                                 minusthree= z-triplestep>=z_start or (cross_before and z>=triplestep)
-                                plusthree= z+triplestep<z_end or (cross_after(x,y,z) and z+triplestep<size_z)
-                                plusone= plusthree or z+step<z_end or (cross_after(x,y,z) and z+step<size_z)
+                                plusthree= z+triplestep<z_end or (z+triplestep<size_z and cross_after(x,y,z+triplestep) )
+                                plusone= plusthree or z+step<z_end or (z+step<size_z and cross_after(x,y,z+step) )
                                 if minusthree and plusthree and plusone:
 
                                     pred=interp_cubic(array[x][y][z-triplestep],array[x][y][z-step],array[x][y][z+step],array[x][y][z+triplestep])
@@ -750,8 +753,8 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,grid_mode=0,selection_crite
                                 pred=np.dot(coef,np.array([cur_array[x][y][z-3],cur_array[x][y][z-1],cur_array[x][y][z+1],cur_array[x][y][z+3]]) )+ince
                             else:
                                 minusthree= y-triplestep>=y_start or (cross_before and y>=triplestep)
-                                plusthree= y+triplestep<y_end or (cross_after(x,y,z) and y+triplestep<size_y)
-                                plusone= plusthree or y+step<y_end or (cross_after(x,y,z) and y+step<size_y)
+                                plusthree= y+triplestep<y_end or (y+triplestep<size_y and cross_after(x,y+triplestep,z) )
+                                plusone= plusthree or y+step<y_end or (y+step<size_y and cross_after(x,y+step,z)  )
                                 if minusthree and plusthree and plusone:
 
                                     pred=interp_cubic(array[x][y-triplestep][z],array[x][y-step][z],array[x][y+step][z],array[x][y+triplestep][z])
@@ -813,8 +816,8 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,grid_mode=0,selection_crite
                                 pred=np.dot(coef,np.array([cur_array[x][y][z-3],cur_array[x][y][z-1],cur_array[x][y][z+1],cur_array[x][y][z+3]]) )+ince
                             else:
                                 minusthree= x-triplestep>=x_start or (cross_before and x>=triplestep)
-                                plusthree= x+triplestep<x_end or (cross_after(x,y,z) and x+triplestep<size_x)
-                                plusone= plusthree or x+step<x_end or (cross_after(x,y,z) and x+step<size_x)
+                                plusthree= x+triplestep<x_end or (x+triplestep<size_x and cross_after(x+triplestep,y,z) and )
+                                plusone= plusthree or x+step<x_end or (x+step<size_x and cross_after(x+step,y,z)  )
                                 if minusthree and plusthree and plusone:
 
                                     pred=interp_cubic(array[x-triplestep][y][z],array[x-step][y][z],array[x+step][y][z],array[x+triplestep][y][z])
@@ -881,8 +884,8 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,grid_mode=0,selection_crite
                             if level>=min_coeff_level:
                                 pred=np.dot(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y-1][z],cur_array[x][y+1][z]]),md_coef)+md_ince
                             else:
-                                x_wise=x+step<x_end or (cross_after(x,y,z) and x+step<size_x)
-                                y_wise=y+step<y_end or (cross_after(x,y,z) and y+step<size_y)
+                                x_wise=x+step<x_end or (x+step<size_x and cross_after(x+step,y,z)  )
+                                y_wise=y+step<y_end or (y+step<size_y and cross_after(x,y+step,z)  )
                                 if x_wise and y_wise:
                                     pred=interp_2d(array[x-step][y][z],array[x+step][y][z],array[x][y-step][z],array[x][y+step][z])
                                 elif x_wise:
@@ -940,8 +943,8 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,grid_mode=0,selection_crite
                             if level>=min_coeff_level:
                                 pred=np.dot(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y][z-1],cur_array[x][y][z+1]]),md_coef)+md_ince
                             else:
-                                x_wise=x+step<x_end or (cross_after(x,y,z) and x+step<size_x)
-                                z_wise=z+step<z_end or (cross_after(x,y,z) and z+step<size_z)
+                                x_wise=x+step<x_end or (x+step<size_x and cross_after(x+step,y,z)  )
+                                z_wise=z+step<z_end or (z+step<size_z and cross_after(x,y,z+step) )
                                 if x_wise and z_wise:
                                     pred=interp_2d(array[x-step][y][z],array[x+step][y][z],array[x][y][z-step],array[x][y][z+step])
                                 elif x_wise:
@@ -998,8 +1001,8 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,grid_mode=0,selection_crite
                             if level>=min_coeff_level:
                                 pred=np.dot(np.array([cur_array[x][y-1][z],cur_array[x][y+1][z],cur_array[x][y][z-1],cur_array[x][y][z+1]]),md_coef)+md_ince
                             else:
-                                y_wise=y+step<y_end or (cross_after(x,y,z) and y+step<size_y)
-                                z_wise=z+step<z_end or (cross_after(x,y,z) and z+step<size_z)
+                                y_wise=y+step<y_end or (y+step<size_y and cross_after(x,y+step,z) )
+                                z_wise=z+step<z_end or (z+step<size_z and cross_after(x,y,z+step) )
                                 if y_wise and z_wise:
                                     pred=interp_2d(array[x][y-step][z],array[x][y+step][z],array[x][y][z-step],array[x][y][z+step])
                                 elif y_wise:
@@ -1058,9 +1061,9 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,grid_mode=0,selection_crite
                             if level>=min_coeff_level:
                                 pred=np.dot(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y-1][z],cur_array[x][y+1][z],cur_array[x][y][z-1],cur_array[x][y][z+1] ]),md_coef)+md_ince
                             else:
-                                x_wise=x+step<x_end or (cross_after(x,y,z) and x+step<size_x)
-                                y_wise=y+step<y_end or (cross_after(x,y,z) and y+step<size_y)
-                                z_wise=z+step<z_end or (cross_after(x,y,z) and z+step<size_z)
+                                x_wise=x+step<x_end or (x+step<size_x and cross_after(x+step,y,z)  )
+                                y_wise=y+step<y_end or (y+step<size_y and cross_after(x,y+step,z) )
+                                z_wise=z+step<z_end or (z+step<size_z and cross_after(x,y,z+step) )
                                 if x_wise and y_wise and z_wise:
                                     pred=interp_3d(array[x-step][y][z],array[x+step][y][z],array[x][y-step][z],array[x][y+step][z],array[x][y][z-step],array[x][y][z+step])
                                 elif x_wise and y_wise:
@@ -1388,7 +1391,7 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,grid_mode=0,selection_crite
                             if level>=min_coeff_level:
                                 pred= np.dot( np.array([cur_array[x][y][z-1],cur_array[x][y][z+1]]),coef )+ince 
                             else:
-                                if z+step<z_end or (cross_after(x,y,z) and z+step<size_z):
+                                if z+step<z_end or (z+step<size_z and cross_after(x,y,z+step) ):
                                     pred=interp_linear(array[x][y][z-step],array[x][y][z+step])
                                 elif (z-triplestep>=z_start) or (cross_before and z-triplestep>=0):
                                     pred=exterp_linear(array[x][y][z-triplestep],array[x][y][z-step])
@@ -1444,7 +1447,7 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,grid_mode=0,selection_crite
                             if level>=min_coeff_level:
                                 pred= np.dot( np.array([cur_array[x][y-1][z],cur_array[x][y+1][z]]),coef )+ince 
                             else:
-                                if y+step<y_end or (cross_after(x,y,z) and y+step<size_y):
+                                if y+step<y_end or (y+step<size_y and cross_after(x,y+step,z)  ):
                                     pred=interp_linear(array[x][y-step][z],array[x][y+step][z])
                                 elif (y-triplestep>=y_start) or (cross_before and y-triplestep>=0):
                                     pred=exterp_linear(array[x][y-triplestep][z],array[x][y-step][z])
@@ -1496,7 +1499,7 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,grid_mode=0,selection_crite
                             if level>=min_coeff_level:
                                 pred= np.dot( np.array([cur_array[x-1][y][z],cur_array[x+1][y][z]]),coef )+ince 
                             else:
-                                if x+step<x_end or (cross_after(x,y,z) and x+step<size_x):
+                                if x+step<x_end or (x+step<size_x and cross_after(x+step,y,z)  ):
                                     pred=interp_linear(array[x-step][y][z],array[x+step][y][z])
                                 elif (x-triplestep>=x_start) or (cross_before and x-triplestep>=0):
                                     pred=exterp_linear(array[x-triplestep][y][z],array[x-step][y][z])
@@ -1566,7 +1569,7 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,grid_mode=0,selection_crite
                             if level>=min_coeff_level:
                                 pred= np.dot( np.array([cur_array[x-1][y][z],cur_array[x+1][y][z]]),coef )+ince 
                             else:
-                                if x+step<x_end or (cross_after(x,y,z) and x+step<size_x):
+                                if x+step<x_end or (x+step<size_x and cross_after(x+step,y,z) ):
                                     pred=interp_linear(array[x-step][y][z],array[x+step][y][z])
                                 elif (x-triplestep>=x_start) or (cross_before and x-triplestep>=0):
                                     pred=exterp_linear(array[x-triplestep][y][z],array[x-step][y][z])
@@ -1611,7 +1614,7 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,grid_mode=0,selection_crite
                             if level>=min_coeff_level:
                                 pred= np.dot( np.array([cur_array[x][y-1][z],cur_array[x][y+1][z]]),coef )+ince 
                             else:
-                                if y+step<y_end or (cross_after(x,y,z) and y+step<size_y):
+                                if y+step<y_end or (y+step<size_y and cross_after(x,y+step,z) ):
                                     pred=interp_linear(array[x][y-step][z],array[x][y+step][z])
                                 elif (y-triplestep>=y_start) or (cross_before and y-triplestep>=0):
                                     pred=exterp_linear(array[x][y-triplestep][z],array[x][y-step][z])
@@ -1661,7 +1664,7 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,grid_mode=0,selection_crite
                             if level>=min_coeff_level:
                                 pred= np.dot( np.array([cur_array[x][y][z-1],cur_array[x][y][z+1]]),coef )+ince 
                             else:
-                                if z+step<z_end or (cross_after(x,y,z) and z+step<size_z):
+                                if z+step<z_end or (z+step<size_z and cross_after(x,y,z+step)):
                                     pred=interp_linear(array[x][y][z-step],array[x][y][z+step])
                                 elif (z-triplestep>=z_start) or (cross_before and z-triplestep>=0):
                                     pred=exterp_linear(array[x][y][z-triplestep],array[x][y][z-step])
@@ -1727,8 +1730,8 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,grid_mode=0,selection_crite
                                 pred=np.dot(coef,np.array([cur_array[x][y][z-3],cur_array[x][y][z-1],cur_array[x][y][z+1],cur_array[x][y][z+3]]) )+ince
                             else:
                                 minusthree= z-triplestep>=z_start or (cross_before and z>=triplestep)
-                                plusthree= z+triplestep<z_end or (cross_after(x,y,z) and z+triplestep<size_z)
-                                plusone= plusthree or z+step<z_end or (cross_after(x,y,z) and z+step<size_z)
+                                plusthree= z+triplestep<z_end or (z+triplestep<size_z and cross_after(x,y,z+triplestep) )
+                                plusone= plusthree or z+step<z_end or (z+step<size_z and cross_after(x,y,z+step) )
                                 if minusthree and plusthree and plusone:
 
                                     pred=interp_cubic(array[x][y][z-triplestep],array[x][y][z-step],array[x][y][z+step],array[x][y][z+triplestep])
@@ -1791,8 +1794,8 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,grid_mode=0,selection_crite
                                 pred=np.dot(coef,np.array([cur_array[x][y][z-3],cur_array[x][y][z-1],cur_array[x][y][z+1],cur_array[x][y][z+3]]) )+ince
                             else:
                                 minusthree= y-triplestep>=y_start or (cross_before and y>=triplestep)
-                                plusthree= y+triplestep<y_end or (cross_after(x,y,z) and y+triplestep<size_y)
-                                plusone= plusthree or y+step<y_end or (cross_after(x,y,z) and y+step<size_y)
+                                plusthree= y+triplestep<y_end or (y+triplestep<size_y and cross_after(x,y+triplestep,z) )
+                                plusone= plusthree or y+step<y_end or (y+step<size_y cross_after(x,y+step,z)  )
                                 if minusthree and plusthree and plusone:
 
                                     pred=interp_cubic(array[x][y-triplestep][z],array[x][y-step][z],array[x][y+step][z],array[x][y+triplestep][z])
@@ -1853,8 +1856,8 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,grid_mode=0,selection_crite
                                 pred=np.dot(coef,np.array([cur_array[x][y][z-3],cur_array[x][y][z-1],cur_array[x][y][z+1],cur_array[x][y][z+3]]) )+ince
                             else:
                                 minusthree= x-triplestep>=x_start or (cross_before and x>=triplestep)
-                                plusthree= x+triplestep<x_end or (cross_after(x,y,z) and x+triplestep<size_x)
-                                plusone= plusthree or x+step<x_end or (cross_after(x,y,z) and x+step<size_x)
+                                plusthree= x+triplestep<x_end or (x+triplestep<size_x and cross_after(x+triplestep,y,z) )
+                                plusone= plusthree or x+step<x_end or (x+step<size_x and cross_after(x+step,y,z)  )
                                 if minusthree and plusthree and plusone:
 
                                     pred=interp_cubic(array[x-triplestep][y][z],array[x-step][y][z],array[x+step][y][z],array[x+triplestep][y][z])
@@ -1937,8 +1940,8 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,grid_mode=0,selection_crite
                                 pred=np.dot(coef,np.array([cur_array[x][y][z-3],cur_array[x][y][z-1],cur_array[x][y][z+1],cur_array[x][y][z+3]]) )+ince
                             else:
                                 minusthree= x-triplestep>=x_start or (cross_before and x>=triplestep)
-                                plusthree= x+triplestep<x_end or (cross_after(x,y,z) and x+triplestep<size_x)
-                                plusone= plusthree or x+step<x_end or (cross_after(x,y,z) and x+step<size_x)
+                                plusthree= x+triplestep<x_end or (x+triplestep<size_x and cross_after(x+triplestep,y,z)  )
+                                plusone= plusthree or x+step<x_end or (x+step<size_x and cross_after(x+step,y,z) )
                                 if minusthree and plusthree and plusone:
 
                                     pred=interp_cubic(array[x-triplestep][y][z],array[x-step][y][z],array[x+step][y][z],array[x+triplestep][y][z])
@@ -2000,8 +2003,8 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,grid_mode=0,selection_crite
                                 pred=np.dot(coef,np.array([cur_array[x][y][z-3],cur_array[x][y][z-1],cur_array[x][y][z+1],cur_array[x][y][z+3]]) )+ince
                             else:
                                 minusthree= y-triplestep>=y_start or (cross_before and y>=triplestep)
-                                plusthree= y+triplestep<y_end or (cross_after(x,y,z) and y+triplestep<size_y)
-                                plusone= plusthree or y+step<y_end or (cross_after(x,y,z) and y+step<size_y)
+                                plusthree= y+triplestep<y_end or (y+triplestep<size_y and cross_after(x,y+triplestep,z)  )
+                                plusone= plusthree or y+step<y_end or (y+step<size_y and cross_after(x,y+step,z) )
                                 if minusthree and plusthree and plusone:
 
                                     pred=interp_cubic(array[x][y-triplestep][z],array[x][y-step][z],array[x][y+step][z],array[x][y+triplestep][z])
@@ -2061,8 +2064,8 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,grid_mode=0,selection_crite
                                 pred=np.dot(coef,np.array([cur_array[x][y][z-3],cur_array[x][y][z-1],cur_array[x][y][z+1],cur_array[x][y][z+3]]) )+ince
                             else:
                                 minusthree= z-triplestep>=z_start or (cross_before and z>=triplestep)
-                                plusthree= z+triplestep<z_end or (cross_after(x,y,z) and z+triplestep<size_z)
-                                plusone= plusthree or z+step<z_end or (cross_after(x,y,z) and z+step<size_z)
+                                plusthree= z+triplestep<z_end or (z+triplestep<size_z and cross_after(x,y,z+triplestep)  )
+                                plusone= plusthree or z+step<z_end or (z+step<size_z and cross_after(x,y,z+step))
                                 if minusthree and plusthree and plusone:
 
                                     pred=interp_cubic(array[x][y][z-triplestep],array[x][y][z-step],array[x][y][z+step],array[x][y][z+triplestep])

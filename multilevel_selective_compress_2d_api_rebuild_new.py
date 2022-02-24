@@ -170,7 +170,7 @@ fix_algo_list=None,first_level=None,last_level=0,first_order="block",fake_compre
                         if level>=min_coeff_level:
                             pred= np.dot( np.array([array[x][y-step],array[x][y+step]]),coef )+ince 
                         else:
-                            if y+step<y_end or (cross_after(x,y) and y+step<size_y):
+                            if y+step<y_end or (y+step<size_y and cross_after(x,y+step)  ):
                                 pred=interp_linear(array[x][y-step],array[x][y+step])
                             elif  (y-triplestep>=y_start) or (cross_before and y-triplestep>=0):
                                 pred=exterp_linear(array[x][y-triplestep],array[x][y-step])
@@ -211,7 +211,7 @@ fix_algo_list=None,first_level=None,last_level=0,first_order="block",fake_compre
                         if level>=min_coeff_level:
                             pred= np.dot( np.array([array[x-step][y],array[x+step][y]]),coef )+ince 
                         else:
-                            if x+step<x_end or (cross_after(x,y) and x+step<size_x):
+                            if x+step<x_end or (x+step<size_x and cross_after(x+step,y)  ):
                                 pred=interp_linear(array[x-step][y],array[x+step][y])
                             elif  (x-triplestep>=x_start) or (cross_before and x-triplestep>=0):
                                 pred=exterp_linear(array[x-triplestep][y],array[x-step][y])
@@ -247,8 +247,8 @@ fix_algo_list=None,first_level=None,last_level=0,first_order="block",fake_compre
                         if level>=min_coeff_level:
                             pred=np.dot(np.array([array[x-step][y],array[x+step][y],array[x][y-step],array[x][y+step]]),md_coef)+md_ince
                         else:
-                            x_wise=x+step<x_end or (cross_after(x,y) and x+step<size_x)
-                            y_wise=y+step<y_end or (cross_after(x,y) and y+step<size_y)
+                            x_wise=x+step<x_end or (x+step<size_x and cross_after(x+step,y) )
+                            y_wise=y+step<y_end or (y+step<size_y and cross_after(x,y+step)  )
                             if x_wise and y_wise:
                                 pred=interp_2d(array[x-step][y],array[x+step][y],array[x][y-step],array[x][y+step])
                             elif x_wise:
@@ -314,8 +314,8 @@ fix_algo_list=None,first_level=None,last_level=0,first_order="block",fake_compre
                             pred=np.dot(coef,np.array([array[x][y-triplestep],array[x][y-step],array[x][y+step],array[x][y+triplestep]]) )+ince
                         else:
                             minusthree= y-triplestep>=y_start or (cross_before and y>=triplestep)
-                            plusthree= y+triplestep<y_end or (cross_after(x,y) and y+triplestep<size_y)
-                            plusone= plusthree or y+step<y_end or (cross_after(x,y) and y+step<size_y)
+                            plusthree= y+triplestep<y_end or (y+triplestep<size_y and cross_after(x,y+triplestep)  )
+                            plusone= plusthree or y+step<y_end or (y+step<size_y and cross_after(x,y+step)  )
                            
                             if minusthree and plusthree and plusone:
 
@@ -371,8 +371,8 @@ fix_algo_list=None,first_level=None,last_level=0,first_order="block",fake_compre
                             pred=np.dot(coef,np.array([array[x-triplestep][y],array[x-step][y],array[x+step][y],array[x+triplestep][y]]) )+ince
                         else:
                             minusthree= x-triplestep>=x_start or (cross_before and x>=triplestep)
-                            plusthree= x+triplestep<x_end or (cross_after(x,y) and x+triplestep<size_x)
-                            plusone= plusthree or x+step<x_end or (cross_after(x,y) and x+step<size_x)
+                            plusthree= x+triplestep<x_end or (x+triplestep<size_x and cross_after(x+triplestep,y) )
+                            plusone= plusthree or x+step<x_end or (x+step<size_x and cross_after(x+step,y)  )
                            
                             if minusthree and plusthree and plusone:
 
@@ -422,8 +422,8 @@ fix_algo_list=None,first_level=None,last_level=0,first_order="block",fake_compre
                         if level>=min_coeff_level:
                             pred=np.dot(np.array([array[x-step][y],array[x+step][y],array[x][y-step],array[x][y+step]]),md_coef)+md_ince
                         else:#in fact the following part should be cubicized, but the code will be too complicated, so todo!!
-                            x_wise=x+step<x_end or (cross_after(x,y) and x+step<size_x)
-                            y_wise=y+step<y_end or (cross_after(x,y) and y+step<size_y)
+                            x_wise=x+step<x_end or (x+step<size_x and cross_after(x+step,y)  )
+                            y_wise=y+step<y_end or (y+step<size_y and cross_after(x,y+step) )
                             if x_wise and y_wise:
                                 pred=interp_2d(array[x-step][y],array[x+step][y],array[x][y-step],array[x][y+step])
                             elif x_wise:
@@ -480,8 +480,8 @@ fix_algo_list=None,first_level=None,last_level=0,first_order="block",fake_compre
                         if level>=min_coeff_level:
                             pred=np.dot(np.array([array[x-step][y-step],array[x-step][y+step],array[x+step][y-step],array[x+step][y+step]]),md_coef)+md_ince
                         else:
-                            x_avail=x+step <x_end or (cross_after(x,y) and x+step<size_x)
-                            y_avail=y+step <y_end or (cross_after(x,y) and y+step<size_y)
+                            x_avail=x+step <x_end or ( x+step<size_x and cross_after(x+step,y-step) )
+                            y_avail=y+step <y_end or (y+step<size_y and cross_after(x-step,y+step) )
                             if x_avail and y_avail:
                                 pred=interp_2d(array[x-step][y-step],array[x-step][y+step],array[x+step][y-step],array[x+step][y+step])
                             elif x_avail:
@@ -526,8 +526,8 @@ fix_algo_list=None,first_level=None,last_level=0,first_order="block",fake_compre
                         else:
                             xl_wise=x-step>=x_start or (cross_before and x>=step)
                             yl_wise=y-step>=y_start or (cross_before and y>=step)
-                            xr_wise=x+step<x_end or (cross_after(x,y) and x+step<size_x)
-                            yr_wise=y+step<y_end or (cross_after(x,y) and y+step<size_y)
+                            xr_wise=x+step<x_end or (x+step<size_x and cross_after(x+step,y) )
+                            yr_wise=y+step<y_end or (y+step<size_y and cross_after(x,y+step)  )
                             if xl_wise and yl_wise and xr_wise and yr_wise:
                                 pred=interp_2d(array[x-step][y],array[x+step][y],array[x][y-step],array[x][y+step])
                             elif xl_wise and xr_wise:
@@ -540,6 +540,9 @@ fix_algo_list=None,first_level=None,last_level=0,first_order="block",fake_compre
                                 pred=lor_2d(array[x-step][y+step],array[x-step][y],array[x][y+step])
                             elif xr_wise and yl_wise:
                                 pred=lor_2d(array[x+step][y-step],array[x+step][y],array[x][y-step])
+                            else:
+                                print("error")
+                                return 
 
                         if inlosscal(x,y):
                             absloss+=abs(orig-pred)
@@ -593,7 +596,7 @@ fix_algo_list=None,first_level=None,last_level=0,first_order="block",fake_compre
                         if level>=min_coeff_level:
                             pred= np.dot( np.array([array[x][y-step],array[x][y+step]]),coef )+ince 
                         else:
-                            if y+step<y_end or (cross_after(x,y) and y+step<size_y):
+                            if y+step<y_end or (y+step<size_y and cross_after(x,y+step) ):
                                 pred=interp_linear(array[x][y-step],array[x][y+step])
                             elif  (y-triplestep>=y_start) or (cross_before and y-triplestep>=0):
                                 pred=exterp_linear(array[x][y-triplestep],array[x][y-step])
@@ -632,7 +635,7 @@ fix_algo_list=None,first_level=None,last_level=0,first_order="block",fake_compre
                         if level>=min_coeff_level:
                             pred= np.dot( np.array([array[x-step][y],array[x+step][y]]),coef )+ince 
                         else:
-                            if x+step<x_end or (cross_after(x,y) and x+step<size_x):
+                            if x+step<x_end or (x+step<size_x and cross_after(x+step,y) ):
                                 pred=interp_linear(array[x-step][y],array[x+step][y])
                             elif  (x-triplestep>=x_start) or (cross_before and x-triplestep>=0):
                                 pred=exterp_linear(array[x-triplestep][y],array[x-step][y])
@@ -688,7 +691,7 @@ fix_algo_list=None,first_level=None,last_level=0,first_order="block",fake_compre
                         if level>=min_coeff_level:
                             pred= np.dot( np.array([array[x-step][y],array[x+step][y]]),coef )+ince 
                         else:
-                            if x+step<x_end or (cross_after(x,y) and x+step<size_x):
+                            if x+step<x_end or ( x+step<size_x and cross_after(x+step,y) ):
                                 pred=interp_linear(array[x-step][y],array[x+step][y])
                             elif  (x-triplestep>=x_start) or (cross_before and x-triplestep>=0):
                                 pred=exterp_linear(array[x-triplestep][y],array[x-step][y])
@@ -727,7 +730,7 @@ fix_algo_list=None,first_level=None,last_level=0,first_order="block",fake_compre
                         if level>=min_coeff_level:
                             pred= np.dot( np.array([array[x][y-step],array[x][y+step]]),coef )+ince 
                         else:
-                            if y+step<y_end or (cross_after(x,y) and y+step<size_y):
+                            if y+step<y_end or (y+step<size_y and cross_after(x,y+step)  ):
                                 pred=interp_linear(array[x][y-step],array[x][y+step])
                             elif  (y-triplestep>=y_start) or (cross_before and y-triplestep>=0):
                                 pred=exterp_linear(array[x][y-triplestep],array[x][y-step])
@@ -792,8 +795,8 @@ fix_algo_list=None,first_level=None,last_level=0,first_order="block",fake_compre
                             pred=np.dot(coef,np.array([array[x][y-triplestep],array[x][y-step],array[x][y+step],array[x][y+triplestep]]) )+ince
                         else:
                             minusthree= y-triplestep>=y_start or (cross_before and y>=triplestep)
-                            plusthree= y+triplestep<y_end or (cross_after(x,y) and y+triplestep<size_y)
-                            plusone= plusthree or y+step<y_end or (cross_after(x,y) and y+step<size_y)
+                            plusthree= y+triplestep<y_end or (y+triplestep<size_y and cross_after(x,y+triplestep)  )
+                            plusone= plusthree or y+step<y_end or (y+step<size_y and cross_after(x,y+step)  )
                            
                             if minusthree and plusthree and plusone:
 
@@ -851,8 +854,8 @@ fix_algo_list=None,first_level=None,last_level=0,first_order="block",fake_compre
                             pred=np.dot(coef,np.array([array[x-triplestep][y],array[x-step][y],array[x+step][y],array[x+triplestep][y]]) )+ince
                         else:
                             minusthree= x-triplestep>=x_start or (cross_before and x>=triplestep)
-                            plusthree= x+triplestep<x_end or (cross_after(x,y) and x+triplestep<size_x)
-                            plusone= plusthree or x+step<x_end or (cross_after(x,y) and x+step<size_x)
+                            plusthree= x+triplestep<x_end or (x+triplestep<size_x and cross_after(x+triplestep,y)  )
+                            plusone= plusthree or x+step<x_end or (x+step<size_x and cross_after(x+step,y) )
                            
                             if minusthree and plusthree and plusone:
 
@@ -927,8 +930,8 @@ fix_algo_list=None,first_level=None,last_level=0,first_order="block",fake_compre
                             pred=np.dot(coef,np.array([array[x-triplestep][y],array[x-step][y],array[x+step][y],array[x+triplestep][y]]) )+ince
                         else:
                             minusthree= x-triplestep>=x_start or (cross_before and x>=triplestep)
-                            plusthree= x+triplestep<x_end or (cross_after(x,y) and x+triplestep<size_x)
-                            plusone= plusthree or x+step<x_end or (cross_after(x,y) and x+step<size_x)
+                            plusthree= x+triplestep<x_end or (x+triplestep<size_x and cross_after(x+triplestep,y)  )
+                            plusone= plusthree or x+step<x_end or (x+step<size_x and cross_after(x+step,y) )
                            
                             if minusthree and plusthree and plusone:
 
@@ -983,8 +986,8 @@ fix_algo_list=None,first_level=None,last_level=0,first_order="block",fake_compre
                             pred=np.dot(coef,np.array([array[x][y-triplestep],array[x][y-step],array[x][y+step],array[x][y+triplestep]]) )+ince
                         else:
                             minusthree= y-triplestep>=y_start or (cross_before and y>=triplestep)
-                            plusthree= y+triplestep<y_end or (cross_after(x,y) and y+triplestep<size_y)
-                            plusone= plusthree or y+step<y_end or (cross_after(x,y) and y+step<size_y)
+                            plusthree= y+triplestep<y_end or (y+triplestep<size_y and cross_after(x,y+triplestep) )
+                            plusone= plusthree or y+step<y_end or (y+step<size_y and cross_after(x,y+step)  )
                            
                             if minusthree and plusthree and plusone:
 
