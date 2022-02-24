@@ -391,7 +391,7 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,grid_mode=0,selection_crite
                                 pred=np.dot(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y-1][z],cur_array[x][y+1][z]]),md_coef)+md_ince
                             else:
                                 x_wise=x+step<x_end or (x+step<size_x and cross_after(x+step,y,z) )
-                                y_wise=y+step<y_end or (y+step<size_y cross_after(x,y+step,z) )
+                                y_wise=y+step<y_end or (y+step<size_y and cross_after(x,y+step,z) )
                                 if x_wise and y_wise:
                                     pred=interp_2d(array[x-step][y][z],array[x+step][y][z],array[x][y-step][z],array[x][y+step][z])
                                 elif x_wise:
@@ -567,9 +567,9 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,grid_mode=0,selection_crite
                             if level>=min_coeff_level:
                                 pred=np.dot(np.array([cur_array[x-1][y][z],cur_array[x+1][y][z],cur_array[x][y-1][z],cur_array[x][y+1][z],cur_array[x][y][z-1],cur_array[x][y][z+1] ]),md_coef)+md_ince
                             else:
-                                x_wise=x+step<x_end or (x+step<size_x cross_after(x+step,y,z) )
-                                y_wise=y+step<y_end or (y+step<size_y cross_after(x,y+step,z) )
-                                z_wise=z+step<z_end or (z+step<size_z cross_after(x,y,z+step) )
+                                x_wise=x+step<x_end or (x+step<size_x and cross_after(x+step,y,z) )
+                                y_wise=y+step<y_end or (y+step<size_y and cross_after(x,y+step,z) )
+                                z_wise=z+step<z_end or (z+step<size_z and cross_after(x,y,z+step) )
                                 if x_wise and y_wise and z_wise:
                                     pred=interp_3d(array[x-step][y][z],array[x+step][y][z],array[x][y-step][z],array[x][y+step][z],array[x][y][z-step],array[x][y][z+step])
                                 elif x_wise and y_wise:
