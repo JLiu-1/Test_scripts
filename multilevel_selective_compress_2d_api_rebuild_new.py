@@ -482,7 +482,7 @@ fix_algo_list=None,first_level=None,last_level=0,first_order="block",fake_compre
                         else:
                             x_avail=x+step <x_end or (cross_after(x,y) and x+step<size_x)
                             y_avail=y+step <y_end or (cross_after(x,y) and y+step<size_y)
-                            if x_avail:
+                            if x_avail and y_avail:
                                 pred=interp_2d(array[x-step][y-step],array[x-step][y+step],array[x+step][y-step],array[x+step][y+step])
                             elif x_avail:
                                 pred=lor_2d(array[x-doublestep][y],array[x-step][y-step],array[x+step][y-step])
