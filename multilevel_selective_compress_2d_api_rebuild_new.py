@@ -240,7 +240,7 @@ fix_algo_list=None,first_level=None,last_level=0,first_order="block",fake_compre
                 '''
         
                 for x in range(x_start+step,x_end,doublestep):
-                    for y in range(y_start+step,x_end,doublestep):
+                    for y in range(y_start+step,y_end,doublestep):
                         #if x==cur_size_x-1 or y==cur_size_y-1:
                             #continue
                         orig=array[x][y]
