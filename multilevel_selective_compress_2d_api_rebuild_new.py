@@ -16,7 +16,7 @@ fix_algo_list=None,first_level=None,last_level=0,first_order="block",fake_compre
     #x_y_start should be on the anchor grid
     size_x,size_y=array.shape
     #array=np.fromfile(args.input,dtype=np.float32).reshape((size_x,size_y))
-    if 1:
+    if lorenzo>=0:
         orig_array=np.copy(array)
     if random_access and lorenzo>=0:
         lorenzo=0
