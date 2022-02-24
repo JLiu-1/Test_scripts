@@ -76,10 +76,10 @@ for i,eb in enumerate(ebs):
             anchor_num=((args.size_x-1)//args.max_step+1)*((args.size_y-1)//args.max_step+1)*((args.size_z-1)//args.max_step+1)
             #anchor_ratio=1/(args.max_step**2)
             cr=ele_num/((ele_num-anchor_num)/cr+anchor_num)
-        if args.blockwise>0:
+        if args.block_size>0:
             cr=1/(1/cr+2*math.log(args.max_step,2)/( 32*(args.block_size**3)) )
         
-    if args.double:
+    if 0:#if args.double:
     	command3="compareData -d %s %s" % (args.input,dout)
     else:
     	command3="compareData -f %s %s" % (args.input,dout)
