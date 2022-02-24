@@ -23,7 +23,7 @@ parser.add_argument('--anchor_fix','-c',type=int,default=0)
 parser.add_argument('--fullbound','-u',type=int,default=0)
 parser.add_argument('--autotuning','-t',type=float,default=0.0)
 
-parser.add_argument('--block_size','-b',type=int,default=32)
+parser.add_argument('--block_size','-b',type=int,default=0)
 parser.add_argument('--order',type=str,default="block")
 #parser.add_argument('--random_access',type=int,default=0)
 parser.add_argument('--blockwise_tuning','-w',type=int,default=0)
