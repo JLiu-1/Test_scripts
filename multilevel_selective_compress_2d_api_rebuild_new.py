@@ -276,7 +276,7 @@ fix_algo_list=None,first_level=None,last_level=0,first_order="block",fake_compre
                 #print(time.time()-tt)
 
 
-        #print(len(cur_qs))
+            #print(len(cur_qs))
 
 
             #cubic interp
@@ -1266,7 +1266,7 @@ if __name__=="__main__":
                         y_end=y_start+max_step+1
                         #print(x_start)
                         #print(y_start)
-                        cur_array=np.copy(array[x_start:x_end,y_start:y_end])
+                        #cur_array=np.copy(array[x_start:x_end,y_start:y_end])
                         '''
                         curmax=np.max(array[x_start:x_end,y_start:y_end])
                         curmin=np.min(array[x_start:x_end,y_start:y_end])
@@ -1276,7 +1276,7 @@ if __name__=="__main__":
                             themin=curmin
                         '''
                         #what about using an expanded array?
-                        cur_qs,edge_qs,cur_us,_,lsd=msc2d(cur_array,x_start,x_end,y_start,y_end,error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
+                        cur_qs,edge_qs,cur_us,_,lsd=msc2d(array,x_start,x_end,y_start,y_end,error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
                                                 sz3_interp=args.sz_interp,multidim_level=10,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo=args.fix_algo)
                         
                         #print(len(cur_qs[max_level]))
