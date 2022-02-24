@@ -11,18 +11,23 @@ parser.add_argument('--min_coeff_level','-cl',type=int,default=99)
 parser.add_argument('--rate','-r',type=float,default=1.0)
 parser.add_argument('--maximum_rate','-m',type=float,default=10.0)
 parser.add_argument('--anchor_rate','-a',type=float,default=0.0)
-parser.add_argument('--multidim_level','-d',type=int,default=99)
+parser.add_argument('--multidim_level','-d',type=int,default=-1)
 parser.add_argument('--sz_interp','-n',type=int,default=0)
 parser.add_argument('--rlist',type=float,default=-1,nargs="+")
 parser.add_argument('--size_x','-x',type=int,default=129)
 parser.add_argument('--size_y','-y',type=int,default=129)
 parser.add_argument('--size_z','-z',type=int,default=129)
-parser.add_argument('--double','-b',type=int,default=0)
+#parser.add_argument('--double','-l',type=int,default=0)
 parser.add_argument('--fix','-f',type=str,default="none")
 parser.add_argument('--anchor_fix','-c',type=int,default=0)
 parser.add_argument('--fullbound','-u',type=int,default=0)
 parser.add_argument('--autotuning','-t',type=float,default=0.0)
-parser.add_argument('--rebuild','-e',type=int,default=0)
+
+parser.add_argument('--block_size','-b',type=int,default=32)
+parser.add_argument('--order',type=str,default="block")
+#parser.add_argument('--random_access',type=int,default=0)
+parser.add_argument('--blockwise_tuning','-w',type=int,default=0)
+#parser.add_argument('--rebuild','-e',type=int,default=0)
 args = parser.parse_args()
 print(args)
 pid=str(os.getpid()).strip()
@@ -44,18 +49,21 @@ else:
 data=np.zeros((len(ebs)+1,2,2),dtype=np.float32)
 
 
-if args.rebuild:
-    script_name="multilevel_selective_compress_3d_api_rebuild.py"
+if args.block_size>0:
+    script_name="multilevel_selective_compress_blockwise3d_rebuild.py"
+
 else:
-    script_name="multilevel_selective_compress_3d_api.py"
+    script_name="multilevel_selective_compress_3d_api_rebuild.py"
 
 for i in range(2):
     data[1:,0,i]=ebs
     #data[0,1:,i]=idxrange
 for i,eb in enumerate(ebs):
-    command1="python %s -i %s -o %s -q %s -u %s -s %d -r %f -m %f -x %d -y %d -z %d -e %f -cl %d -a %f -d %d -n %d --rlist %s -f %s -t %f -b %d"\
+    command1="python %s -i %s -o %s -q %s -u %s -s %d -r %f -m %f -x %d -y %d -z %d -e %f -cl %d -a %f -d %d -n %d --rlist %s -f %s -t %f"\
     % (script_name,args.input, dout,qout,uout,args.max_step,args.rate,args.maximum_rate,args.size_x,args.size_y,args.size_z,eb,args.min_coeff_level,\
-        args.anchor_rate,args.multidim_level,args.sz_interp,rlist,args.fix,args.autotuning,args.double)
+        args.anchor_rate,args.multidim_level,args.sz_interp,rlist,args.fix,args.autotuning)
+    if args.block_size>0:
+        command1+=" -b %d -w %d --order %s" % (args.block_size,args.blockwise_tuning,args.order)
     os.system(command1)
     command2="sz_backend %s %s " % (qout,uout)
     with os.popen(command2) as f:
@@ -68,8 +76,9 @@ for i,eb in enumerate(ebs):
             anchor_num=((args.size_x-1)//args.max_step+1)*((args.size_y-1)//args.max_step+1)*((args.size_z-1)//args.max_step+1)
             #anchor_ratio=1/(args.max_step**2)
             cr=ele_num/((ele_num-anchor_num)/cr+anchor_num)
-        if args.double:
-        	cr=cr*2
+        if args.blockwise>0:
+            cr=1/(1/cr+2*math.log(args.max_step,2)/( 32*(args.block_size**3)) )
+        
     if args.double:
     	command3="compareData -d %s %s" % (args.input,dout)
     else:
