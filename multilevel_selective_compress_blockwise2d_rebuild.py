@@ -26,7 +26,7 @@ if __name__=="__main__":
     #parser.add_argument('--cubic','-c',type=int,default=1)
     parser.add_argument('--multidim_level','-d',type=int,default=-1)
     
-    parser.add_argument('--lorenzo_fallback_check','-l',type=int,default=0)
+    parser.add_argument('--lorenzo_fallback_check','-l',type=int,default=-1)
     parser.add_argument('--fallback_sample_ratio','-p',type=float,default=0.05)
     parser.add_argument('--anchor_rate','-a',type=float,default=0.0)
 
@@ -330,9 +330,11 @@ if __name__=="__main__":
                     #if idx==0:
                         #print(level)
                         #print(len(cur_qs[level]))
+                    '''
                     if "lorenzo" in cur_selected[-1]:
                         blocked_qs[idx]=[ [] for i in range(max_level+1)]
                         blocked_us[idx]=[]
+                    '''
                     
                         
                     if level==max_level-1:
