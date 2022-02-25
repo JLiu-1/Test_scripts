@@ -134,6 +134,8 @@ if __name__=="__main__":
                 os.system("rm -f %s;rm -f %s" % (tq_name,tu_name))
                     #pdb=(psnr-zero_psnr)/bitrate
                 if psnr<=bestp and bitrate>=bestb:
+                    if alpha**(max_level-1)<=beta:
+                        break
                     continue
                 elif psnr>=bestp and bitrate<=bestb:
 
