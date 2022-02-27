@@ -91,8 +91,12 @@ if __name__=="__main__":
                 themin=99999999999999
                 #themean=0
                 #print(themean)
-                for i in range(0,block_num_x,steplength):
-                    for j in range(0,block_num_y,steplength):
+                idx=0
+                for i in range(0,block_num_x,1):#steplength):
+                    for j in range(0,block_num_y,1):#steplength):
+                        if idx%arg.autotuning!=0:
+                            idx+=1
+                            continue
                           
                         x_start=max_step*i
                         y_start=max_step*j
@@ -116,6 +120,7 @@ if __name__=="__main__":
                         square_error+=np.sum((array[x_start:x_end,y_start:y_end]-cur_array)**2)
                             
                         element_counts+=(max_step+1)**2 
+                        idx+=1
                 t_mse=square_error/element_counts
                     #zero_mse=zero_square_error/element_counts
                 psnr=20*math.log(rng,10)-10*math.log(t_mse,10)
@@ -159,8 +164,12 @@ if __name__=="__main__":
                     themin=99999999999999
                         #themean=0
                         #print(themean)
-                    for i in range(0,block_num_x,steplength):
-                        for j in range(0,block_num_y,steplength):
+                    idx=0
+                    for i in range(0,block_num_x,1):#steplength):
+                        for j in range(0,block_num_y,1):#steplength):
+                            if idx%arg.autotuning!=0:
+                                idx+=1
+                                continue
                               
                             x_start=max_step*i
                             y_start=max_step*j
@@ -182,6 +191,7 @@ if __name__=="__main__":
                             square_error+=np.sum((array[x_start:x_end,y_start:y_end]-cur_array)**2)
                                 
                             element_counts+=(max_step+1)**2 
+                            idx+=1
                     t_mse=square_error/element_counts
                         #zero_mse=zero_square_error/element_counts
                     psnr_r=20*math.log(rng,10)-10*math.log(t_mse,10)

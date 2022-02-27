@@ -97,9 +97,13 @@ if __name__=="__main__":
                 themin=99999999999999
                 #themean=0
                 #print(themean)
-                for i in range(0,block_num_x,steplength):
-                    for j in range(0,block_num_y,steplength):
-                        for k in range(0,block_num_z,steplength):
+                idx=0
+                for i in range(0,block_num_x,1):#steplength):
+                    for j in range(0,block_num_y,1):#steplength):
+                        for k in range(0,block_num_z,1):#steplength):
+                            if idx%arg.autotuning!=0:
+                                idx+=1
+                                continue
                             x_start=max_step*i
                             y_start=max_step*j
                             z_start=max_step*k
@@ -129,6 +133,7 @@ if __name__=="__main__":
                             square_error+=np.sum((array[x_start:x_end,y_start:y_end,z_start:z_end]-cur_array)**2)
                             
                             element_counts+=(max_step+1)**3 
+                            idx+=1
                 t_mse=square_error/element_counts
                 #zero_mse=zero_square_error/element_counts
                 psnr=20*math.log(rng,10)-10*math.log(t_mse,10)
@@ -168,13 +173,18 @@ if __name__=="__main__":
                     square_error=0
                     #zero_square_error=0
                     element_counts=0
-                    themax=-9999999999999
-                    themin=99999999999999
+                    #themax=-9999999999999
+                    #themin=99999999999999
                     #themean=0
                     #print(themean)
-                    for i in range(0,block_num_x,steplength):
-                        for j in range(0,block_num_y,steplength):
-                            for k in range(0,block_num_z,steplength):
+                    idx=0
+                    for i in range(0,block_num_x,1):#steplength):
+                        for j in range(0,block_num_y,1):#steplength):
+                            for k in range(0,block_num_z,1):#steplength):
+                                if idx%arg.autotuning!=0:
+                                    idx+=1
+                                    continue
+                        
                                 x_start=max_step*i
                                 y_start=max_step*j
                                 z_start=max_step*k
@@ -204,6 +214,7 @@ if __name__=="__main__":
                                 square_error+=np.sum((array[x_start:x_end,y_start:y_end,z_start:z_end]-cur_array)**2)
                                 
                                 element_counts+=(max_step+1)**3
+                                idx+=1
                     t_mse=square_error/element_counts
                     #zero_mse=zero_square_error/element_counts
                     psnr_r=20*math.log(rng,10)-10*math.log(t_mse,10)

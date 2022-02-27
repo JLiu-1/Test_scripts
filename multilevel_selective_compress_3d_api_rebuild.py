@@ -2414,9 +2414,14 @@ if __name__=="__main__":
                 #themin=99999999999999
                 #themean=0
                 #print(themean)
-                for i in range(0,block_num_x,steplength):
-                    for j in range(0,block_num_y,steplength):
-                        for k in range(0,block_num_z,steplength):
+                idx=0
+                for i in range(0,block_num_x,1):#steplength):
+                    for j in range(0,block_num_y,1):#steplength):
+                        for k in range(0,block_num_z,1):#steplength):
+                            if idx%arg.autotuning!=0:
+                                idx+=1
+                                continue
+                        
                             x_start=max_step*i
                             y_start=max_step*j
                             z_start=max_step*k
@@ -2448,6 +2453,7 @@ if __name__=="__main__":
                             square_error+=np.sum((array[x_start:x_end,y_start:y_end,z_start:z_end]-cur_array)**2)
                             
                             element_counts+=(max_step+1)**3 
+                            idx+=1
                             #array[x_start:x_end,y_start:y_end,z_start:z_end]=orig_array[x_start:x_end,y_start:y_end,z_start:z_end]
 
                 t_mse=square_error/element_counts
@@ -2493,9 +2499,13 @@ if __name__=="__main__":
                     themin=99999999999999
                     #themean=0
                     #print(themean)
-                    for i in range(0,block_num_x,steplength):
-                        for j in range(0,block_num_y,steplength):
-                            for k in range(0,block_num_z,steplength):
+                    idx=0
+                    for i in range(0,block_num_x,1):#steplength):
+                        for j in range(0,block_num_y,1):#steplength):
+                            for k in range(0,block_num_z,1):#steplength):
+                                if idx%arg.autotuning!=0:
+                                    idx+=1
+                                    continue
                                 x_start=max_step*i
                                 y_start=max_step*j
                                 z_start=max_step*k
@@ -2527,6 +2537,7 @@ if __name__=="__main__":
                                 square_error+=np.sum((array[x_start:x_end,y_start:y_end,z_start:z_end]-cur_array)**2)
                             
                                 element_counts+=(max_step+1)**3 
+                                idx+=1
                                 #array[x_start:x_end,y_start:y_end,z_start:z_end]=orig_array[x_start:x_end,y_start:y_end,z_start:z_end]
                     t_mse=square_error/element_counts
                     #zero_mse=zero_square_error/element_counts
@@ -2580,9 +2591,13 @@ if __name__=="__main__":
                     pred_candidates+=["sz3_linear_xyz","sz3_linear_zyx","sz3_cubic_xyz","sz3_cubic_zyx"]
                 if level>=args.multidim_level:
                     pred_candidates+=["linear","cubic"]#multidim temp depred
-                for i in range(0,block_num_x,steplength):
-                    for j in range(0,block_num_y,steplength):
-                        for k in range(0,block_num_z,steplength):
+                idx=0
+                for i in range(0,block_num_x,1):#steplength):
+                    for j in range(0,block_num_y,1):#steplength):
+                        for k in range(0,block_num_z,1):#steplength):
+                            if idx%arg.autotuning!=0:
+                                idx+=1
+                                continue
                   
                             x_start=max_step*i
                             y_start=max_step*j
@@ -2602,6 +2617,7 @@ if __name__=="__main__":
                                     loss_dict[predictor]=cur_loss
                                 else:
                                     loss_dict[predictor]+=cur_loss
+                            idx+=1
                 best_predictor="none"
                 min_loss=9e20
                 for pred in loss_dict:
@@ -2613,9 +2629,13 @@ if __name__=="__main__":
                 print("Level %d tuned. Best predictor: %s." % (level,best_predictor))
                 fix_algo_list.append(best_predictor)
                 '''
-                for i in range(0,block_num_x,steplength):
-                    for j in range(0,block_num_y,steplength):
-                        for k in range(0,block_num_z,steplength):
+                idx=0
+                for i in range(0,block_num_x,1):#steplength):
+                    for j in range(0,block_num_y,1):#steplength):
+                        for k in range(0,block_num_z,1):#steplength):
+                            if idx%arg.autotuning!=0:
+                                idx+=1
+                                continue
                   
                             x_start=max_step*i
                             y_start=max_step*j
@@ -2630,22 +2650,28 @@ if __name__=="__main__":
                             array[x_start:x_end,y_start:y_end,z_start:z_end],cur_qs,edge_qs,cur_us,_,lsd=msc3d(array[x_start:x_end,y_start:y_end,z_start:z_end],error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
                                                                     sz_interp=args.sz_interp,selection_criteria=args.criteria,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,\
                                                                     min_sampled_points=100,random_access=False,verbose=False,first_level=level,last_level=level,fix_algo=best_predictor,fake_compression=False)
+                            idx+=1
                 '''
 
             fix_algo_list.reverse()
             print(fix_algo_list)
             '''
-            for i in range(0,block_num_x,steplength):
-                    for j in range(0,block_num_y,steplength):
-                        for k in range(0,block_num_z,steplength):
+            idx=0
+            for i in range(0,block_num_x,1):#steplength):
+                for j in range(0,block_num_y,1):#steplength):
+                    for k in range(0,block_num_z,1):#steplength):
+                        if idx%arg.autotuning!=0:
+                            idx+=1
+                            continue
                   
-                            x_start=max_step*i
-                            y_start=max_step*j
-                            z_start=max_step*k
-                            x_end=x_start+max_step+1
-                            y_end=y_start+max_step+1
-                            z_end=z_start+max_step+1
-                            array[x_start:x_end,y_start:y_end,z_start:z_end]=orig_array[x_start:x_end,y_start:y_end,z_start:z_end]
+                        x_start=max_step*i
+                        y_start=max_step*j
+                        z_start=max_step*k
+                        x_end=x_start+max_step+1
+                        y_end=y_start+max_step+1
+                        z_end=z_start+max_step+1
+                        array[x_start:x_end,y_start:y_end,z_start:z_end]=orig_array[x_start:x_end,y_start:y_end,z_start:z_end]
+                        idx+=1
             '''
             
         else:
