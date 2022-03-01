@@ -47,10 +47,7 @@ fix_algo_list=None,first_level=None,last_level=0,first_order="block",fake_compre
     edge_qs=[]
 #min_coeff_level=args.min_coeff_level
 #anchor=args.anchor
-    if anchor_rate>0:
-        anchor_eb=error_bound/anchor_rate
-    else:
-        anchor_eb=0
+    
     startx=max_step if x_preded else 0
     starty=max_step if y_preded else 0
     if first_level==None or first_level<0 or first_level>max_level:
