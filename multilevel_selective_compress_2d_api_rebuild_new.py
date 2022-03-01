@@ -1482,7 +1482,7 @@ if __name__=="__main__":
                             cur_qs,edge_qs,cur_us,_,lsd=msc2d(cur_array,0,block_size+1,0,block_size+1,error_bound,args.rate,args.maximum_rate,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
                                                                     sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,\
                                                                     min_sampled_points=100,random_access=False,verbose=False,\
-                                                                    first_level=None if args.one_interpolator else level,\
+                                                                    first_level=None if args.one_interpolator  else level,\
                                                                     last_level=0 if args.one_interpolator else level,fix_algo=predictor,fake_compression=True)
                             if args.one_interpolator:
                                 cur_loss=0
@@ -1536,7 +1536,7 @@ if __name__=="__main__":
                         
                         cur_qs,edge_qs,cur_us,_,lsd=msc2d(array,x_start,x_end,y_start,y_end,error_bound,args.rate,args.maximum_rate,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
                                                                 sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,\
-                                                                min_sampled_points=100,random_access=False,verbose=False,first_level=(None if level==block_max_level-1 else level),last_level=level,fix_algo=best_predictor,fake_compression=False)
+                                                                min_sampled_points=100,random_access=False,verbose=False,first_level= level,last_level=level,fix_algo=best_predictor,fake_compression=False)
                         idx+=1
                 #'''
             if not args.one_interpolator:
