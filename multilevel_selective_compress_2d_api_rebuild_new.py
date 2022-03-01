@@ -1226,7 +1226,7 @@ if __name__=="__main__":
     parser.add_argument('--maximum_rate','-m',type=float,default=10.0)
     parser.add_argument('--cubic','-c',type=int,default=1)
     parser.add_argument('--multidim_level','-d',type=int,default=-1)
-    parser.add_argument('--block_size','-b',type=int,default=32)
+    parser.add_argument('--block_size','-b',type=int,default=64)
     parser.add_argument('--lorenzo_fallback_check','-l',type=int,default=-1)
     parser.add_argument('--fallback_sample_ratio','-p',type=float,default=0.05)
     parser.add_argument('--anchor_rate','-a',type=float,default=0.0)
@@ -1242,8 +1242,17 @@ if __name__=="__main__":
     orig_array=np.copy(array)
     rng=(np.max(array)-np.min(array))
     error_bound=args.error*rng
-    max_level=int(math.log(args.max_step,2))
+    if max_step>0:
+
+        max_level=int(math.log(max_step,2))
+        
+    else:
+
+        max_level=int(math.log(max(array.shape)-1,2))+1
+        #args.max_step=2**max_level
+        
     rate_list=args.rlist
+    block_size=args.block_size
 
     #print(rate_list)
     if args.autotuning!=0:
@@ -1251,8 +1260,9 @@ if __name__=="__main__":
         alpha_list=[1,1.25,1.5,1.75,2]
         beta_list=[2,4]
         rate_list=None
-        block_num_x=(args.size_x-1)//args.max_step
-        block_num_y=(args.size_y-1)//args.max_step
+        
+        block_num_x=(args.size_x-1)//block_size
+        block_num_y=(args.size_y-1)//block_size
         steplength=int(math.sqrt(args.autotuning))
         bestalpha=1
         bestbeta=1
@@ -1264,10 +1274,11 @@ if __name__=="__main__":
         pid=os.getpid()
         tq_name="%s_tq.dat"%pid
         tu_name="%s_tu.dat"%pid
-        max_step=args.max_step
+        block_size=args.block_size
+        block_max_level=int(math.log(args.block_size,2))
         for k,alpha in enumerate(alpha_list):
             for beta in beta_list:
-                test_qs=[[] for i in range(max_level+1)]
+                test_qs=[[] for i in range(block_max_level+1)]
                 test_us=[]
                 square_error=0
                 #zero_square_error=0
@@ -1282,10 +1293,10 @@ if __name__=="__main__":
                         if idx%arg.autotuning!=0:
                             idx+=1
                             continue
-                        x_start=max_step*i
-                        y_start=max_step*j
-                        x_end=x_start+max_step+1
-                        y_end=y_start+max_step+1
+                        x_start=block_size*i
+                        y_start=block_size*j
+                        x_end=x_start+block_size+1
+                        y_end=y_start+block_size+1
                         #print(x_start)
                         #print(y_start)
                         cur_array=np.copy(array[x_start:x_end,y_start:y_end])
@@ -1298,12 +1309,12 @@ if __name__=="__main__":
                             themin=curmin
                         '''
                         #what about using an expanded array?
-                        cur_qs,edge_qs,cur_us,_,lsd=msc2d(cur_array,0,max_step+1,0,max_step+1,error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
+                        cur_qs,edge_qs,cur_us,_,lsd=msc2d(cur_array,0,block_size+1,0,block_size+1,error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
                                                 sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo=args.fix_algo)
                         
                         #print(len(cur_qs[max_level]))
                         #print(len(test_qs[max_level]))
-                        for level in range(max_level+1):
+                        for level in range(block_max_level+1):
                             #print(level)
                             test_qs[level]+=cur_qs[level]
                         test_us+=cur_us
@@ -1311,7 +1322,7 @@ if __name__=="__main__":
                         square_error+=np.sum((array[x_start:x_end,y_start:y_end]-cur_array)**2)
                         #array[x_start:x_end,y_start:y_end]=orig_array[x_start:x_end,y_start:y_end]
                         
-                        element_counts+=(max_step+1)**2 
+                        element_counts+=(block_size+1)**2 
                         idx+=1
                 t_mse=square_error/element_counts
                 #zero_mse=zero_square_error/element_counts
@@ -1324,14 +1335,14 @@ if __name__=="__main__":
                 with os.popen("sz_backend %s %s" % (tq_name,tu_name)) as f:
                     lines=f.read().splitlines()
                     cr=eval(lines[4].split("=")[-1])
-                    if args.anchor_rate==0:
+                    if args.max_step>0 and args.anchor_rate==0:
                         anchor_ratio=1/(args.max_step**2)
                         cr=1/((1-anchor_ratio)/cr+anchor_ratio)
                     bitrate=32/cr
                 os.system("rm -f %s;rm -f %s" % (tq_name,tu_name))
                 #pdb=(psnr-zero_psnr)/bitrate
                 if psnr<=bestp and bitrate>=bestb:
-                    if alpha**(max_level-1)<=beta:
+                    if alpha**(block_max_level-1)<=beta:
                         break
                     continue
                 elif psnr>=bestp and bitrate<=bestb:
@@ -1347,7 +1358,7 @@ if __name__=="__main__":
                         new_error_bound=1.2*error_bound
                     else:
                         new_error_bound=0.8*error_bound
-                    test_qs=[[] for i in range(max_level+1)]
+                    test_qs=[[] for i in range(block_max_level+1)]
                     test_us=[]
                     square_error=0
                     #zero_square_error=0
@@ -1363,10 +1374,10 @@ if __name__=="__main__":
                                 idx+=1
                                 continue
                           
-                            x_start=max_step*i
-                            y_start=max_step*j
-                            x_end=x_start+max_step+1
-                            y_end=y_start+max_step+1
+                            x_start=block_size*i
+                            y_start=block_size*j
+                            x_end=x_start+block_size+1
+                            y_end=y_start+block_size+1
                             #print(x_start)
                             #print(y_start)
                             cur_array=np.copy(array[x_start:x_end,y_start:y_end])
@@ -1378,7 +1389,7 @@ if __name__=="__main__":
                             if curmin<themin:
                                 themin=curmin
                             '''
-                            cur_qs,edge_qs,cur_us,_,lsd=msc2d(cur_array,0,max_step+1,0,max_step+1,new_error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
+                            cur_qs,edge_qs,cur_us,_,lsd=msc2d(cur_array,0,block_size+1,0,block_size+1,new_error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
                                                     sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo=args.fix_algo)
                             
                             #print(len(cur_qs[max_level]))
@@ -1391,7 +1402,7 @@ if __name__=="__main__":
                             square_error+=np.sum((array[x_start:x_end,y_start:y_end]-cur_array)**2)
                             #array[x_start:x_end,y_start:y_end]=orig_array[x_start:x_end,y_start:y_end]
                             
-                            element_counts+=(max_step+1)**2 
+                            element_counts+=(block_size+1)**2 
                             idx+=1
                     t_mse=square_error/element_counts
                     #zero_mse=zero_square_error/element_counts
@@ -1404,7 +1415,7 @@ if __name__=="__main__":
                     with os.popen("sz_backend %s %s" % (tq_name,tu_name)) as f:
                         lines=f.read().splitlines()
                         cr=eval(lines[4].split("=")[-1])
-                        if args.anchor_rate==0:
+                        if args.max_step>0 and args.anchor_rate==0:
                             anchor_ratio=1/(args.max_step**2)
                             cr=1/((1-anchor_ratio)/cr+anchor_ratio)
                         bitrate_r=32/cr
@@ -1435,10 +1446,14 @@ if __name__=="__main__":
 
         if args.fix_algo=="none":
             print("Start predictor tuning.")
+            block_size=args.block_size
+            block_max_level=int(math.log(block_size,2))
+            block_num_x=(args.size_x-1)//block_size
+            block_num_y=(args.size_y-1)//block_size
             #test_array=np.copy(array)
             #tune predictor
             fix_algo_list=[]
-            for level in range(max_level-1,-1,-1):
+            for level in range(block_max_level-1,-1,-1):
                 loss_dict={}
                 pred_candidates=[]
                 if args.sz_interp:
@@ -1452,15 +1467,15 @@ if __name__=="__main__":
                             idx+=1
                             continue
                   
-                        x_start=max_step*i
-                        y_start=max_step*j
-                        x_end=x_start+max_step+1
-                        y_end=y_start+max_step+1
+                        x_start=block_size*i
+                        y_start=block_size*j
+                        x_end=x_start+block_size+1
+                        y_end=y_start+block_size+1
                         #print(x_start)
                         #print(y_start)
                         cur_array=np.copy(array[x_start:x_end,y_start:y_end])
                         for predictor in pred_candidates:
-                            cur_qs,edge_qs,cur_us,_,lsd=msc2d(cur_array,0,max_step+1,0,max_step+1,error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
+                            cur_qs,edge_qs,cur_us,_,lsd=msc2d(cur_array,0,block_size+1,0,block_size+1,error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
                                                                     sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,\
                                                                     min_sampled_points=100,random_access=False,verbose=False,first_level=level,last_level=level,fix_algo=predictor,fake_compression=True)
                             cur_loss=lsd[level][predictor]
