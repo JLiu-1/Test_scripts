@@ -1229,6 +1229,7 @@ if __name__=="__main__":
     parser.add_argument('--anchor_rate','-a',type=float,default=0.0)
 
     parser.add_argument('--size_x','-x',type=int,default=1800)
+    parser.add_argument('--one_interpolator',type=int,default=0)
     parser.add_argument('--size_y','-y',type=int,default=3600)
     parser.add_argument('--sz_interp','-n',type=int,default=0)
     parser.add_argument('--autotuning','-t',type=float,default=0.0)
@@ -1239,6 +1240,7 @@ if __name__=="__main__":
     orig_array=np.copy(array)
     rng=(np.max(array)-np.min(array))
     error_bound=args.error*rng
+    fix_algo_list=None
     if args.max_step>0:
 
         max_level=int(math.log(max_step,2))
@@ -1307,7 +1309,7 @@ if __name__=="__main__":
                         '''
                         #what about using an expanded array?
                         cur_qs,edge_qs,cur_us,_,lsd=msc2d(cur_array,0,block_size+1,0,block_size+1,error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
-                                                sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo=args.fix_algo)
+                                                sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo=args.fix_algo,fal=fix_algo_list)
                         
                         #print(len(cur_qs[max_level]))
                         #print(len(test_qs[max_level]))
@@ -1387,7 +1389,7 @@ if __name__=="__main__":
                                 themin=curmin
                             '''
                             cur_qs,edge_qs,cur_us,_,lsd=msc2d(cur_array,0,block_size+1,0,block_size+1,new_error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
-                                                    sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo=args.fix_algo)
+                                                    sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo=args.fix_algo,fix_algo_list=fix_algo_list)
                             
                             #print(len(cur_qs[max_level]))
                             #print(len(test_qs[max_level]))
@@ -1451,8 +1453,11 @@ if __name__=="__main__":
             #tune predictor
             fix_algo_list=[]
             for level in range(block_max_level-1,-1,-1):
+
                 loss_dict={}
                 pred_candidates=[]
+                best_predictor=None
+                best_loss=9e10
                 if args.sz_interp:
                     pred_candidates+=["sz3_linear_xy","sz3_linear_yx","sz3_cubic_xy","sz3_cubic_yx"]
                 if level>=args.multidim_level:
@@ -1474,13 +1479,33 @@ if __name__=="__main__":
                         for predictor in pred_candidates:
                             cur_qs,edge_qs,cur_us,_,lsd=msc2d(cur_array,0,block_size+1,0,block_size+1,error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
                                                                     sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,\
-                                                                    min_sampled_points=100,random_access=False,verbose=False,first_level=level,last_level=level,fix_algo=predictor,fake_compression=True)
-                            cur_loss=lsd[level][predictor]
-                            if predictor not in loss_dict:
-                                loss_dict[predictor]=cur_loss
+                                                                    min_sampled_points=100,random_access=False,verbose=False,\
+                                                                    first_level=None if args.one_interpolator else level,\
+                                                                    last_level=0 if args.one_interpolator else (None if level==block_max_level-1 else level),fix_algo=predictor,fake_compression=True)
+                            if args.one_interpolator:
+                                cur_loss=0
+                                for level in range(len(lsd)):
+                                    if predictor in lsd[level]:
+                                        cur_loss+=lsd[level][predictor]
+                                if cur_loss<best_loss:
+                                    best_loss=cur_loss
+                                    best_predictor=predictor
+
+
+
                             else:
-                                loss_dict[predictor]+=cur_loss
+                                cur_loss=lsd[level][predictor]
+                                if predictor not in loss_dict:
+                                    loss_dict[predictor]=cur_loss
+                                else:
+                                    loss_dict[predictor]+=cur_loss
                         idx+=1
+
+                if args.one_interpolator:
+                    args.fix_algo_list=None
+                    args.fix_algo=best_predictor
+                    print("Predictor tuned. Best predictor: %s." % best_predictor)
+                    break
                 best_predictor="none"
                 min_loss=9e20
                 for pred in loss_dict:
@@ -1509,7 +1534,7 @@ if __name__=="__main__":
                         
                         cur_qs,edge_qs,cur_us,_,lsd=msc2d(array,x_start,x_end,y_start,y_end,error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
                                                                 sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,\
-                                                                min_sampled_points=100,random_access=False,verbose=False,first_level=level,last_level=level,fix_algo=best_predictor,fake_compression=False)
+                                                                min_sampled_points=100,random_access=False,verbose=False,first_level=(None if level==block_max_level-1 else level),last_level=level,fix_algo=best_predictor,fake_compression=False)
                         idx+=1
                 '''
 
