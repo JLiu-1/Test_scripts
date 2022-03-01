@@ -1526,10 +1526,10 @@ if __name__=="__main__":
                             idx+=1
                             continue
                   
-                        x_start=max_step*i
-                        y_start=max_step*j
-                        x_end=x_start+max_step+1
-                        y_end=y_start+max_step+1
+                        x_start=block_size*i
+                        y_start=block_size*j
+                        x_end=x_start+block_size+1
+                        y_end=y_start+block_size+1
                         #print(x_start)
                         #print(y_start)
                         #array[x_start:x_end,y_start:y_end]
@@ -1552,10 +1552,10 @@ if __name__=="__main__":
                         idx+=1
                         continue
                   
-                    x_start=max_step*i
-                    y_start=max_step*j
-                    x_end=x_start+max_step+1
-                    y_end=y_start+max_step+1
+                    x_start=block_size*i
+                    y_start=block_size*j
+                    x_end=x_start+block_size+1
+                    y_end=y_start+block_size+1
                     array[x_start:x_end,y_start:y_end]=orig_array[x_start:x_end,y_start:y_end]
                     idx+=1
             #'''
