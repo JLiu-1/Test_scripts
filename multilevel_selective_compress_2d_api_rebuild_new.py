@@ -1502,7 +1502,7 @@ if __name__=="__main__":
                         idx+=1
 
                 if args.one_interpolator:
-                    args.fix_algo_list=None
+                    fix_algo_list=None
                     args.fix_algo=best_predictor
                     print("Predictor tuned. Best predictor: %s." % best_predictor)
                     break
