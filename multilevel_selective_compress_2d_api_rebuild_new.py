@@ -1232,7 +1232,7 @@ if __name__=="__main__":
     parser.add_argument('--one_interpolator',type=int,default=0)
     parser.add_argument('--size_y','-y',type=int,default=3600)
     parser.add_argument('--sz_interp','-n',type=int,default=0)
-    parser.add_argument('--predictor_first','-n',type=int,default=0)
+    parser.add_argument('--predictor_first',type=int,default=0)
     parser.add_argument('--autotuning','-t',type=float,default=0.0)
     parser.add_argument('--fix_algo','-f',type=str,default="none")
 
