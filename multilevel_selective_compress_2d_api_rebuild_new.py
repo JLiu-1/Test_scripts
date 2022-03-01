@@ -1481,7 +1481,7 @@ if __name__=="__main__":
                                                                     sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,\
                                                                     min_sampled_points=100,random_access=False,verbose=False,\
                                                                     first_level=None if args.one_interpolator else level,\
-                                                                    last_level=0 if args.one_interpolator else (None if level==block_max_level-1 else level),fix_algo=predictor,fake_compression=True)
+                                                                    last_level=0 if args.one_interpolator else level,fix_algo=predictor,fake_compression=True)
                             if args.one_interpolator:
                                 cur_loss=0
                                 for level in range(len(lsd)):
