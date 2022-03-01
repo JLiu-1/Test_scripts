@@ -2609,7 +2609,7 @@ if __name__=="__main__":
                             #print(y_start)
                             cur_array=np.copy(array[x_start:x_end,y_start:y_end,z_start:z_end])
                             for predictor in pred_candidates:
-                                cur_array,cur_qs,edge_qs,cur_us,_,lsd=msc3d(cur_array,0,max_step+1,0,max_step+1,0,max_step+1,error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
+                                cur_array,cur_qs,edge_qs,cur_us,_,lsd=msc3d(cur_array,0,max_step+1,0,max_step+1,0,max_step+1,error_bound,args.rate,args.maximum_rate,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
                                                                         sz_interp=args.sz_interp,selection_criteria=args.criteria,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,\
                                                                         min_sampled_points=100,random_access=False,verbose=False,first_level=level,last_level=level,fix_algo=predictor,fake_compression=True)
                                 cur_loss=lsd[level][predictor]
@@ -2647,7 +2647,7 @@ if __name__=="__main__":
                         #print(y_start)
                             #cur_array=np.copy(array[x_start:x_end,y_start:y_end,z_start:z_end])
                            
-                            array[x_start:x_end,y_start:y_end,z_start:z_end],cur_qs,edge_qs,cur_us,_,lsd=msc3d(array[x_start:x_end,y_start:y_end,z_start:z_end],error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
+                            array[x_start:x_end,y_start:y_end,z_start:z_end],cur_qs,edge_qs,cur_us,_,lsd=msc3d(array[x_start:x_end,y_start:y_end,z_start:z_end],error_bound,args.rate,args.maximum_rate,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
                                                                     sz_interp=args.sz_interp,selection_criteria=args.criteria,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,\
                                                                     min_sampled_points=100,random_access=False,verbose=False,first_level=level,last_level=level,fix_algo=best_predictor,fake_compression=False)
                             idx+=1

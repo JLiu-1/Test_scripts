@@ -1218,9 +1218,9 @@ if __name__=="__main__":
     parser.add_argument('--unpred','-u',type=str,default="ml2_u.dat")
     parser.add_argument('--max_step','-s',type=int,default=-1)
     parser.add_argument('--min_coeff_level','-cl',type=int,default=99)
-    parser.add_argument('--rate','-r',type=float,default=1.0)
+    parser.add_argument('--rate','-r',type=float,default=-1)
     parser.add_argument('--rlist',type=float,default=-1,nargs="+")
-    parser.add_argument('--maximum_rate','-m',type=float,default=10.0)
+    parser.add_argument('--maximum_rate','-m',type=float,default=-1)
     parser.add_argument('--cubic','-c',type=int,default=1)
     parser.add_argument('--multidim_level','-d',type=int,default=-1)
     parser.add_argument('--block_size','-b',type=int,default=64)
@@ -1232,8 +1232,10 @@ if __name__=="__main__":
     parser.add_argument('--one_interpolator',type=int,default=0)
     parser.add_argument('--size_y','-y',type=int,default=3600)
     parser.add_argument('--sz_interp','-n',type=int,default=0)
+    parser.add_argument('--predictor_first','-n',type=int,default=0)
     parser.add_argument('--autotuning','-t',type=float,default=0.0)
     parser.add_argument('--fix_algo','-f',type=str,default="none")
+
     args = parser.parse_args()
     print(args)
     array=np.fromfile(args.input,dtype=np.float32).reshape((args.size_x,args.size_y))
@@ -1254,7 +1256,7 @@ if __name__=="__main__":
     block_size=args.block_size
 
     #print(rate_list)
-    if args.autotuning!=0:
+    if args.autotuning!=0 and (not args.predictor_first or args.fix_algo!="none"):
         #pid=os.getpid()
         alpha_list=[1,1.25,1.5,1.75,2]
         beta_list=[2,4]
@@ -1477,7 +1479,7 @@ if __name__=="__main__":
                         #print(y_start)
                         cur_array=np.copy(array[x_start:x_end,y_start:y_end])
                         for predictor in pred_candidates:
-                            cur_qs,edge_qs,cur_us,_,lsd=msc2d(cur_array,0,block_size+1,0,block_size+1,error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
+                            cur_qs,edge_qs,cur_us,_,lsd=msc2d(cur_array,0,block_size+1,0,block_size+1,error_bound,args.rate,args.maximum_rate,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
                                                                     sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,\
                                                                     min_sampled_points=100,random_access=False,verbose=False,\
                                                                     first_level=None if args.one_interpolator else level,\
@@ -1559,7 +1561,143 @@ if __name__=="__main__":
             '''
         else:
             fix_algo_list=None
+    '''
+    elif args.predictor_first and args.fix_algo=="none" and args.autotuning>0:
+     
+        print("Start predictor tuning.")
+        block_size=args.block_size
+        block_max_level=int(math.log(block_size,2))
+        block_num_x=(args.size_x-1)//block_size
+        block_num_y=(args.size_y-1)//block_size
+        #test_array=np.copy(array)
+        #tune predictor
+        fix_algo_list=[]
+        o_alpha=args.rate
+        o_beta=args.maximum_rate
+        for level in range(block_max_level-1,-1,-1):
 
+            loss_dict={}
+            pred_candidates=[]
+            best_predictor=None
+            best_loss=9e10
+            if args.sz_interp:
+                pred_candidates+=["sz3_linear_xy","sz3_linear_yx","sz3_cubic_xy","sz3_cubic_yx"]
+            if level>=args.multidim_level:
+                pred_candidates+=["linear","cubic","multidim"]
+            idx=0
+            for i in range(0,block_num_x,1):#steplength):
+                for j in range(0,block_num_y,1):#steplength):
+                    if idx%args.autotuning!=0:
+                        idx+=1
+                        continue
+                  
+                    x_start=block_size*i
+                    y_start=block_size*j
+                    x_end=x_start+block_size+1
+                    y_end=y_start+block_size+1
+                    #print(x_start)
+                    #print(y_start)
+                    cur_array=np.copy(array[x_start:x_end,y_start:y_end])
+                    for predictor in pred_candidates:
+                        cur_qs,edge_qs,cur_us,_,lsd=msc2d(cur_array,0,block_size+1,0,block_size+1,error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
+                                                                sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,\
+                                                                min_sampled_points=100,random_access=False,verbose=False,\
+                                                                first_level=None if args.one_interpolator else level,\
+                                                                last_level=0 if args.one_interpolator else level,fix_algo=predictor,fake_compression=True)
+                        if args.one_interpolator:
+                            cur_loss=0
+                            for level in range(len(lsd)):
+                                if predictor in lsd[level]:
+                                    cur_loss+=lsd[level][predictor]
+                            if cur_loss<best_loss:
+                                best_loss=cur_loss
+                                best_predictor=predictor
+
+
+
+                        else:
+                            cur_loss=lsd[level][predictor]
+                            if predictor not in loss_dict:
+                                loss_dict[predictor]=cur_loss
+                            else:
+                                loss_dict[predictor]+=cur_loss
+                    idx+=1
+
+            if args.one_interpolator:
+                fix_algo_list=None
+                args.fix_algo=best_predictor
+                print("Predictor tuned. Best predictor: %s." % best_predictor)
+                break
+            best_predictor="none"
+            min_loss=9e20
+            for pred in loss_dict:
+                pred_loss=loss_dict[pred]
+                if pred_loss<min_loss:
+                    min_loss=pred_loss
+                    best_predictor=pred 
+
+            print("Level %d tuned. Best predictor: %s." % (level,best_predictor))
+            fix_algo_list.append(best_predictor)
+            '''
+            '''
+            idx=0
+            for i in range(0,block_num_x,1):#steplength):
+                for j in range(0,block_num_y,1):#steplength):
+                    if idx%args.autotuning!=0:
+                        idx+=1
+                        continue
+                  
+                    x_start=max_step*i
+                    y_start=max_step*j
+                    x_end=x_start+max_step+1
+                    y_end=y_start+max_step+1
+                    #print(x_start)
+                    #print(y_start)
+                    #array[x_start:x_end,y_start:y_end]
+                        
+                    cur_qs,edge_qs,cur_us,_,lsd=msc2d(array,x_start,x_end,y_start,y_end,error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
+                                                                sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,\
+                                                                min_sampled_points=100,random_access=False,verbose=False,first_level=(None if level==block_max_level-1 else level),last_level=level,fix_algo=best_predictor,fake_compression=False)
+                    idx+=1
+            '''
+            '''
+        if not args.one_interpolator:
+            fix_algo_list.reverse()
+            while len(fix_algo_list)<max_level:
+                fix_algo_list.append(fix_algo_list[-1])
+        #print(fix_algo_list)
+        '''
+        '''
+        idx=0
+        for i in range(0,block_num_x,1):#steplength):
+            for j in range(0,block_num_y,1):#steplength):
+                if idx%args.autotuning!=0:
+                    idx+=1
+                    continue
+                  
+                x_start=max_step*i
+                y_start=max_step*j
+                x_end=x_start+max_step+1
+                y_end=y_start+max_step+1
+                array[x_start:x_end,y_start:y_end]=orig_array[x_start:x_end,y_start:y_end]
+                idx+=1
+        '''
+        '''
+        
+
+
+
+
+
+
+
+
+
+
+
+        if args.rate<1 and args.rate_list==-1:
+            print("Alphabeta tuning started.")
+        '''
 
 
 
@@ -1586,7 +1724,9 @@ if __name__=="__main__":
                 rate_list.insert(0,rate_list[0])
         else:
             rate_list=None
-
+    if args.rate<1:
+        args.rate=1
+        args.maximum_rate=1
     qs,edge_qs,us,_,lsd=msc2d(array,0,args.size_x,0,args.size_y,error_bound,args.rate,args.maximum_rate,args.min_coeff_level,args.max_step,args.anchor_rate,rate_list=rate_list,x_preded=False,y_preded=False,\
         sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=args.lorenzo_fallback_check,sample_rate=args.fallback_sample_ratio,min_sampled_points=100,random_access=False,verbose=True,fix_algo=args.fix_algo,fix_algo_list=fix_algo_list)
     quants=np.concatenate( (np.array(edge_qs,dtype=np.int32),np.array(sum(qs,[]),dtype=np.int32) ) )
