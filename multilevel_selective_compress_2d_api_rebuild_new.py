@@ -1517,6 +1517,8 @@ if __name__=="__main__":
                 '''
 
             fix_algo_list.reverse()
+            while len(fix_algo_list)<max_level:
+                fix_algo_list.append(fix_algo_list[-1])
             #print(fix_algo_list)
             '''
             idx=0
