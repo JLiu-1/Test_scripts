@@ -54,7 +54,7 @@ fix_algo_list=None,first_level=None,last_level=0,first_order="block",fake_compre
     startx=max_step if x_preded else 0
     starty=max_step if y_preded else 0
     if first_level==None or first_level<0 or first_level>max_level:
-        first_level==max_level
+        first_level=max_level
 
     if max_step>0 and first_level==max_level and (anchor_eb>0 ):
     
