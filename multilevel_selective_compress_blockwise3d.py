@@ -57,7 +57,7 @@ if __name__=="__main__":
     anchor_rate=args.anchor_rate
     max_level=int(math.log(max_step,2))
     rate_list=args.rlist
-    if args.autotuning!=0:
+    if args.autotuning!=0 and args.rlist!=-1:
         #pid=os.getpid()
         alpha_list=[1,1.25,1.5,1.75,2]
         #beta_list=[2,4,4,6,6]
@@ -245,7 +245,7 @@ if __name__=="__main__":
                 rate_list=[rate_list]
 
             while len(rate_list)<max_level:
-                rate_list.insert(0,rate_list[0])
+                rate_list.append([-1])
         else:
             rate_list=None
 

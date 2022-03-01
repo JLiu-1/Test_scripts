@@ -29,10 +29,11 @@ fix_algo_list=None,first_level=None,last_level=0,first_order="block",fake_compre
         anchor_eb=0
 
     if max_step>0:
-
+        use_anchor=True
         max_level=int(math.log(max_step,2))
         
     else:
+        use_anchor=False
         max_level=int(math.log(max(array.shape)-1,2))+1
         max_step=2**max_level
         anchor_eb=error_bound/min(maximum_rate,rate**max_level)
@@ -100,7 +101,7 @@ fix_algo_list=None,first_level=None,last_level=0,first_order="block",fake_compre
                 array[x][y]=decomp
         first_level-=1
         
-    elif (first_level==None or max_level==first_level+1) and anchor_rate==0:
+    elif use_anchor and first_level==max_level :
         pass#raise error
 #print(len(qs))
 
@@ -1053,7 +1054,7 @@ fix_algo_list=None,first_level=None,last_level=0,first_order="block",fake_compre
 
 
         #Lorenzo fallback
-        if level<=lorenzo:
+        if level<=lorenzo or fix_algo=="lorenzo":
             absloss=0
         #cur_qs=[]
         #cur_us=[]
@@ -1096,7 +1097,7 @@ fix_algo_list=None,first_level=None,last_level=0,first_order="block",fake_compre
             #print(absloss*len(total_points)/len(sampled_points))
             #print(best_absloss)
             #print(cumulated_loss)
-            if absloss*len(total_points)/len(sampled_points)<best_absloss+cumulated_loss:
+            if absloss*len(total_points)/len(sampled_points)<best_absloss+cumulated_loss or fix_algo=="lorenzo":
                 selected_algo="lorenzo_fallback"
                 best_absloss=0
                 array[x_start:x_end:step,y_start:y_end:step]=orig_array[x_start:x_end:step,y_start:y_end:step]#reset array
@@ -1311,7 +1312,8 @@ if __name__=="__main__":
                         '''
                         #what about using an expanded array?
                         cur_qs,edge_qs,cur_us,_,lsd=msc2d(cur_array,0,block_size+1,0,block_size+1,error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
-                                                sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo=args.fix_algo,fix_algo_list=fix_algo_list)
+                                                sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,\
+                                                min_sampled_points=100,random_access=False,verbose=False,fix_algo=args.fix_algo,fix_algo_list=fix_algo_list)
                         
                         #print(len(cur_qs[max_level]))
                         #print(len(test_qs[max_level]))
@@ -1717,7 +1719,7 @@ if __name__=="__main__":
             print("Alphabeta tuning started.")
             alpha_list=[1,1.25,1.5,1.75,2]
             beta_list=[2,4]
-            rate_list=None
+            #rate_list=None
             
             block_num_x=(args.size_x-1)//block_size
             block_num_y=(args.size_y-1)//block_size
@@ -1925,7 +1927,7 @@ if __name__=="__main__":
             rate_list=[rate_list]
 
         while len(rate_list)<max_level:
-            rate_list.insert(0,rate_list[0])
+            rate_list.append([-1])
     else:
         rate_list=None
     if args.rate<1:
