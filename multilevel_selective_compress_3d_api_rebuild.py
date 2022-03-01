@@ -2355,7 +2355,7 @@ if __name__=="__main__":
     parser.add_argument('--unpred','-u',type=str,default="ml3_u.dat")
     parser.add_argument('--max_step','-s',type=int,default=16)
     parser.add_argument('--min_coeff_level','-cl',type=int,default=99)
-    parser.add_argument('--rate','-r',type=float,default=p-1.0)
+    parser.add_argument('--rate','-r',type=float,default=-1.0)
     parser.add_argument('--rlist',type=float,default=-1,nargs="+")
     parser.add_argument('--maximum_rate','-m',type=float,default=-1)
     #parser.add_argument('--cubic','-c',type=int,default=1)
@@ -3088,7 +3088,7 @@ if __name__=="__main__":
             rate_list.insert(0,rate_list[0])
     else:
         rate_list=None
-        
+
     if args.rate<1:
         args.rate=1
         args.maximum_rate=1
