@@ -1537,10 +1537,10 @@ if __name__=="__main__":
                                                                 min_sampled_points=100,random_access=False,verbose=False,first_level=(None if level==block_max_level-1 else level),last_level=level,fix_algo=best_predictor,fake_compression=False)
                         idx+=1
                 '''
-
-            fix_algo_list.reverse()
-            while len(fix_algo_list)<max_level:
-                fix_algo_list.append(fix_algo_list[-1])
+            if not args.one_interpolator:
+                fix_algo_list.reverse()
+                while len(fix_algo_list)<max_level:
+                    fix_algo_list.append(fix_algo_list[-1])
             #print(fix_algo_list)
             '''
             idx=0
