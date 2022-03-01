@@ -23,7 +23,21 @@ fix_algo_list=None,first_level=None,last_level=0,first_order="block",fake_compre
     #error_bound=args.error*rng
     #max_step=args.max_step
     #rate=args.rate
-    max_level=int(math.log(max_step,2))
+    if anchor_rate>0:
+        anchor_eb=error_bound/anchor_rate
+    else:
+        anchor_eb=0
+
+    if max_step>0:
+
+        max_level=int(math.log(max_step,2))
+        
+    else:
+        max_level=int(math.log(max(array.shape)-1,2))+1
+        max_step=2**max_level
+        anchor_eb=error_bound/min(maximum_rate,rate**max_level)
+
+    
     selected_algos=[]
 
 
@@ -39,8 +53,10 @@ fix_algo_list=None,first_level=None,last_level=0,first_order="block",fake_compre
         anchor_eb=0
     startx=max_step if x_preded else 0
     starty=max_step if y_preded else 0
+    if first_level==None or first_level<0 or first_level>max_level:
+        first_level==max_level
 
-    if max_step>0 and (first_level==None or max_level==first_level+1) and anchor_rate>0:
+    if max_step>0 and first_level==max_level and (anchor_eb>0 ):
     
        
         
@@ -85,6 +101,7 @@ fix_algo_list=None,first_level=None,last_level=0,first_order="block",fake_compre
                 if q==0:
                     us.append(decomp)
                 array[x][y]=decomp
+        first_level-=1
         
     elif (first_level==None or max_level==first_level+1) and anchor_rate==0:
         pass#raise error
@@ -95,8 +112,7 @@ fix_algo_list=None,first_level=None,last_level=0,first_order="block",fake_compre
     #global_last_x=((size_x-1)//max_step)*max_step
     #global_last_y=((size_y-1)//max_step)*max_step
     step=max_step//2
-    if first_level==None:
-        first_level=max_level-1
+  
     level=max_level-1
     cross_before=(not random_access) 
     #cross_after=(not random_access and first_order=="level") or (max_step>0 and level==max_level-1)
