@@ -1518,7 +1518,7 @@ if __name__=="__main__":
 
                 print("Level %d tuned. Best predictor: %s." % (level,best_predictor))
                 fix_algo_list.append(best_predictor)
-                '''
+                #'''
                 idx=0
                 for i in range(0,block_num_x,1):#steplength):
                     for j in range(0,block_num_y,1):#steplength):
@@ -1538,13 +1538,13 @@ if __name__=="__main__":
                                                                 sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,\
                                                                 min_sampled_points=100,random_access=False,verbose=False,first_level=(None if level==block_max_level-1 else level),last_level=level,fix_algo=best_predictor,fake_compression=False)
                         idx+=1
-                '''
+                #'''
             if not args.one_interpolator:
                 fix_algo_list.reverse()
                 while len(fix_algo_list)<max_level:
                     fix_algo_list.append(fix_algo_list[-1])
             #print(fix_algo_list)
-            '''
+            #'''
             idx=0
             for i in range(0,block_num_x,1):#steplength):
                 for j in range(0,block_num_y,1):#steplength):
@@ -1558,7 +1558,7 @@ if __name__=="__main__":
                     y_end=y_start+max_step+1
                     array[x_start:x_end,y_start:y_end]=orig_array[x_start:x_end,y_start:y_end]
                     idx+=1
-            '''
+            #'''
         else:
             fix_algo_list=None
     
