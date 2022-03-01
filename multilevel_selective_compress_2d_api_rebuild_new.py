@@ -1574,6 +1574,24 @@ if __name__=="__main__":
         fix_algo_list=[]
         o_alpha=args.rate
         o_beta=args.maximum_rate
+        if o_alpha<1:
+            if args.error>=0.01:
+                args.rate=2
+                args.maximum_rate=2
+            elif args.error>=0.007:
+                args.rate=1.75
+                args.maximum_rate=2
+            elif args.error>=0.004:
+                args.rate=1.5
+                args.maximum_rate=2
+            elif args.error>=0.001:
+                args.rate=1.25
+                args.maximum_rate=2
+            else:
+                args.rate=1
+                args.maximum_rate=1
+
+
         for level in range(block_max_level-1,-1,-1):
 
             loss_dict={}
@@ -1686,7 +1704,8 @@ if __name__=="__main__":
 
 
 
-
+        args.rate=o_alpha
+        args.maximum_rate=o_beta
 
 
 
@@ -1696,6 +1715,192 @@ if __name__=="__main__":
 
         if args.rate<1 and args.rate_list==-1:
             print("Alphabeta tuning started.")
+            alpha_list=[1,1.25,1.5,1.75,2]
+            beta_list=[2,4]
+            rate_list=None
+            
+            block_num_x=(args.size_x-1)//block_size
+            block_num_y=(args.size_y-1)//block_size
+            steplength=int(math.sqrt(args.autotuning))
+            bestalpha=1
+            bestbeta=1
+            #bestpdb=0
+            bestb=9999
+            #bestb_r=9999
+            bestp=0
+            #bestp_r=0
+            pid=os.getpid()
+            tq_name="%s_tq.dat"%pid
+            tu_name="%s_tu.dat"%pid
+            block_size=args.block_size
+            block_max_level=int(math.log(args.block_size,2))
+            for k,alpha in enumerate(alpha_list):
+                for beta in beta_list:
+                    test_qs=[[] for i in range(block_max_level+1)]
+                    test_us=[]
+                    square_error=0
+                    #zero_square_error=0
+                    element_counts=0
+                    themax=-9999999999999
+                    themin=99999999999999
+                    #themean=0
+                    #print(themean)
+                    idx=0
+                    for i in range(0,block_num_x,1):#steplength):
+                        for j in range(0,block_num_y,1):#steplength):
+                            if idx%args.autotuning!=0:
+                                idx+=1
+                                continue
+                            x_start=block_size*i
+                            y_start=block_size*j
+                            x_end=x_start+block_size+1
+                            y_end=y_start+block_size+1
+                            #print(x_start)
+                            #print(y_start)
+                            cur_array=np.copy(array[x_start:x_end,y_start:y_end])
+                            '''
+                            curmax=np.max(array[x_start:x_end,y_start:y_end])
+                            curmin=np.min(array[x_start:x_end,y_start:y_end])
+                            if curmax>themax:
+                                themax=curmax
+                            if curmin<themin:
+                                themin=curmin
+                            '''
+                            #what about using an expanded array?
+                            cur_qs,edge_qs,cur_us,_,lsd=msc2d(cur_array,0,block_size+1,0,block_size+1,error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
+                                                    sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo=args.fix_algo,fix_algo_list=fix_algo_list)
+                            
+                            #print(len(cur_qs[max_level]))
+                            #print(len(test_qs[max_level]))
+                            for level in range(block_max_level+1):
+                                #print(level)
+                                test_qs[level]+=cur_qs[level]
+                            test_us+=cur_us
+                            #zero_square_error=np.sum((array[x_start:x_end,y_start:y_end]-themean*np.ones((max_step+1,max_step+1)) )**2)
+                            square_error+=np.sum((array[x_start:x_end,y_start:y_end]-cur_array)**2)
+                            #array[x_start:x_end,y_start:y_end]=orig_array[x_start:x_end,y_start:y_end]
+                            
+                            element_counts+=(block_size+1)**2 
+                            idx+=1
+                    t_mse=square_error/element_counts
+                    #zero_mse=zero_square_error/element_counts
+                    psnr=20*math.log(rng,10)-10*math.log(t_mse,10)
+                    #zero_psnr=20*math.log(themax-themin,10)-10*math.log(zero_mse,10)
+                    #print(zero_psnr)
+                  
+                    np.array(sum(test_qs,[]),dtype=np.int32).tofile(tq_name)
+                    np.array(sum(test_us,[]),dtype=np.int32).tofile(tu_name)
+                    with os.popen("sz_backend %s %s" % (tq_name,tu_name)) as f:
+                        lines=f.read().splitlines()
+                        cr=eval(lines[4].split("=")[-1])
+                        if args.max_step>0 and args.anchor_rate==0:
+                            anchor_ratio=1/(args.max_step**2)
+                            cr=1/((1-anchor_ratio)/cr+anchor_ratio)
+                        bitrate=32/cr
+                    os.system("rm -f %s;rm -f %s" % (tq_name,tu_name))
+                    #pdb=(psnr-zero_psnr)/bitrate
+                    if psnr<=bestp and bitrate>=bestb:
+                        if alpha**(block_max_level-1)<=beta:
+                            break
+                        continue
+                    elif psnr>=bestp and bitrate<=bestb:
+
+                            bestalpha=alpha
+                            bestbeta=beta
+                       
+                            bestb=bitrate
+                            bestp=psnr
+                           
+                    else:
+                        if psnr>bestp:
+                            new_error_bound=1.2*error_bound
+                        else:
+                            new_error_bound=0.8*error_bound
+                        test_qs=[[] for i in range(block_max_level+1)]
+                        test_us=[]
+                        square_error=0
+                        #zero_square_error=0
+                        element_counts=0
+                        themax=-9999999999999
+                        themin=99999999999999
+                        #themean=0
+                        #print(themean)
+                        idx=0
+                        for i in range(0,block_num_x,1):#steplength):
+                            for j in range(0,block_num_y,1):#steplength):
+                                if idx%args.autotuning!=0:
+                                    idx+=1
+                                    continue
+                              
+                                x_start=block_size*i
+                                y_start=block_size*j
+                                x_end=x_start+block_size+1
+                                y_end=y_start+block_size+1
+                                #print(x_start)
+                                #print(y_start)
+                                cur_array=np.copy(array[x_start:x_end,y_start:y_end])
+                                '''
+                                curmax=np.max(array[x_start:x_end,y_start:y_end])
+                                curmin=np.min(array[x_start:x_end,y_start:y_end])
+                                if curmax>themax:
+                                    themax=curmax
+                                if curmin<themin:
+                                    themin=curmin
+                                '''
+                                cur_qs,edge_qs,cur_us,_,lsd=msc2d(cur_array,0,block_size+1,0,block_size+1,new_error_bound,alpha,beta,9999,args.max_step,args.anchor_rate,rate_list=None,x_preded=False,y_preded=False,\
+                                                        sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=-1,sample_rate=0.0,min_sampled_points=100,random_access=False,verbose=False,fix_algo=args.fix_algo,fix_algo_list=fix_algo_list)
+                                
+                                #print(len(cur_qs[max_level]))
+                                #print(len(test_qs[max_level]))
+                                for level in range(block_max_level+1):
+                                    #print(level)
+                                    test_qs[level]+=cur_qs[level]
+                                test_us+=cur_us
+                                #zero_square_error=np.sum((array[x_start:x_end,y_start:y_end]-themean*np.ones((max_step+1,max_step+1)) )**2)
+                                square_error+=np.sum((array[x_start:x_end,y_start:y_end]-cur_array)**2)
+                                #array[x_start:x_end,y_start:y_end]=orig_array[x_start:x_end,y_start:y_end]
+                                
+                                element_counts+=(block_size+1)**2 
+                                idx+=1
+                        t_mse=square_error/element_counts
+                        #zero_mse=zero_square_error/element_counts
+                        psnr_r=20*math.log(rng,10)-10*math.log(t_mse,10)
+                        #zero_psnr=20*math.log(themax-themin,10)-10*math.log(zero_mse,10)
+                        #print(zero_psnr)
+                      
+                        np.array(sum(test_qs,[]),dtype=np.int32).tofile(tq_name)
+                        np.array(sum(test_us,[]),dtype=np.int32).tofile(tu_name)
+                        with os.popen("sz_backend %s %s" % (tq_name,tu_name)) as f:
+                            lines=f.read().splitlines()
+                            cr=eval(lines[4].split("=")[-1])
+                            if args.max_step>0 and args.anchor_rate==0:
+                                anchor_ratio=1/(args.max_step**2)
+                                cr=1/((1-anchor_ratio)/cr+anchor_ratio)
+                            bitrate_r=32/cr
+                        os.system("rm -f %s;rm -f %s" % (tq_name,tu_name))
+                        a=(psnr-psnr_r)/(bitrate-bitrate_r)
+                        b=psnr-a*bitrate
+                        #print(a)
+                        #print(b)
+                        reg=a*bestb+b
+                        if reg>bestp:
+                            bestalpha=alpha
+                            bestbeta=beta
+                       
+                            bestb=bitrate
+                            bestp=psnr
+                    if alpha**(max_level-1)<=beta:
+                        break
+
+                
+                
+               
+
+
+        print("Autotuning finished. Selected alpha: %f. Selected beta: %f. Best bitrate: %f. Best PSNR: %f."\
+        %(bestalpha,bestbeta,bestb,bestp) )
+        args.rate=bestalpha
+        args.maximum_rate=bestbeta
         
 
 
