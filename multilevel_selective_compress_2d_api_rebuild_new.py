@@ -1242,7 +1242,7 @@ if __name__=="__main__":
     orig_array=np.copy(array)
     rng=(np.max(array)-np.min(array))
     error_bound=args.error*rng
-    if max_step>0:
+    if args.max_step>0:
 
         max_level=int(math.log(max_step,2))
         
