@@ -101,7 +101,7 @@ if __name__=="__main__":
                 for i in range(0,block_num_x,1):#steplength):
                     for j in range(0,block_num_y,1):#steplength):
                         for k in range(0,block_num_z,1):#steplength):
-                            if idx%arg.autotuning!=0:
+                            if idx%args.autotuning!=0:
                                 idx+=1
                                 continue
                             x_start=max_step*i
@@ -181,7 +181,7 @@ if __name__=="__main__":
                     for i in range(0,block_num_x,1):#steplength):
                         for j in range(0,block_num_y,1):#steplength):
                             for k in range(0,block_num_z,1):#steplength):
-                                if idx%arg.autotuning!=0:
+                                if idx%args.autotuning!=0:
                                     idx+=1
                                     continue
                         

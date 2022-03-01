@@ -94,7 +94,7 @@ if __name__=="__main__":
                 idx=0
                 for i in range(0,block_num_x,1):#steplength):
                     for j in range(0,block_num_y,1):#steplength):
-                        if idx%arg.autotuning!=0:
+                        if idx%args.autotuning!=0:
                             idx+=1
                             continue
                           
@@ -167,7 +167,7 @@ if __name__=="__main__":
                     idx=0
                     for i in range(0,block_num_x,1):#steplength):
                         for j in range(0,block_num_y,1):#steplength):
-                            if idx%arg.autotuning!=0:
+                            if idx%args.autotuning!=0:
                                 idx+=1
                                 continue
                               
