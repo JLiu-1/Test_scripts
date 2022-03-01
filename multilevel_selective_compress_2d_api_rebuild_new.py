@@ -1394,7 +1394,7 @@ if __name__=="__main__":
                             
                             #print(len(cur_qs[max_level]))
                             #print(len(test_qs[max_level]))
-                            for level in range(max_level+1):
+                            for level in range(block_max_level+1):
                                 #print(level)
                                 test_qs[level]+=cur_qs[level]
                             test_us+=cur_us
