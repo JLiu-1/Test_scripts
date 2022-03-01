@@ -2737,6 +2737,7 @@ if __name__=="__main__":
             block_max_level=int(math.log(block_size,2))
             block_num_x=(args.size_x-1)//block_size
             block_num_y=(args.size_y-1)//block_size
+            block_num_z=(args.size_z-1)//block_size
             o_alpha=args.rate
             o_beta=args.maximum_rate
             if o_alpha<1:
