@@ -1260,7 +1260,7 @@ if __name__=="__main__":
     if args.autotuning!=0 and (not args.predictor_first or args.fix_algo!="none"):
         #pid=os.getpid()
         alpha_list=[1,1.25,1.5,1.75,2]
-        beta_list=[2,4]
+        beta_list=[1.5,2,3,4]
         rate_list=None
         
         block_num_x=(args.size_x-1)//block_size
@@ -1280,6 +1280,8 @@ if __name__=="__main__":
         block_max_level=int(math.log(args.block_size,2))
         for k,alpha in enumerate(alpha_list):
             for beta in beta_list:
+                if alpha>beta:
+                    continue
                 test_qs=[[] for i in range(block_max_level+1)]
                 test_us=[]
                 square_error=0
@@ -1718,7 +1720,7 @@ if __name__=="__main__":
         if args.rate<1 and args.rlist==-1:
             print("Alphabeta tuning started.")
             alpha_list=[1,1.25,1.5,1.75,2]
-            beta_list=[2,4]
+            beta_list=[1.5,2,3,4]
             #rate_list=None
             
             block_num_x=(args.size_x-1)//block_size
@@ -1738,6 +1740,8 @@ if __name__=="__main__":
             block_max_level=int(math.log(args.block_size,2))
             for k,alpha in enumerate(alpha_list):
                 for beta in beta_list:
+                    if alpha>beta:
+                        continue
                     test_qs=[[] for i in range(block_max_level+1)]
                     test_us=[]
                     square_error=0

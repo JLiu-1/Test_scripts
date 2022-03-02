@@ -66,7 +66,7 @@ if __name__=="__main__":
         alpha_list=[1,1.25,1.5,1.75,2]
         #beta_list=[2,4,4,6,6]
         #beta_list=[2,3,4]
-        beta_list=[2,4]
+        beta_list=[1.5,2,3,4]
         rate_list=None
         block_num_x=(args.size_x-1)//args.max_step
         block_num_y=(args.size_y-1)//args.max_step
@@ -86,6 +86,8 @@ if __name__=="__main__":
         max_level=int(math.log(max_step,2))
         for m,alpha in enumerate(alpha_list):
             for beta in beta_list:
+                if alpha>beta:
+                    continue
                 #maybe some pruning
                 #print(alpha,beta)
                 test_qs=[[] for i in range(max_level+1)]
