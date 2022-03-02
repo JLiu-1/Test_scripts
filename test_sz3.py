@@ -13,7 +13,7 @@ if __name__=="__main__":
    
     
     parser.add_argument('--dim','-d',type=int,default=2)
-    parser.add_argument('--dims','m',type=str,nargs="+")
+    parser.add_argument('--dims','-m',type=str,nargs="+")
     #parser.add_argument('--size_x','-x',type=int,default=1800)
     #parser.add_argument('--size_y','-y',type=int,default=3600)
     #parser.add_argument('--size_z','-z',type=int,default=512)
