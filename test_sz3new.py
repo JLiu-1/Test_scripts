@@ -32,7 +32,7 @@ if __name__=="__main__":
     datafiles=[file for file in datafiles if file.split(".")[-1]!="txt" and file.split(".")[-1]!="out" and file.split(".")[-1]!="config"]
     num_files=len(datafiles)
 
-    #ebs=[i*1e-4 for i in range(1,10)]+[i*1e-3 for i in range(1,10)]+[i*1e-2 for i in range(1,11)]
+    #ebs=[i*1e-4 for i in range(1,10)]+[i*1e-3 for i in range(1,10)]+[i*1e-3 for i in range(10,21,5)]
     ebs=[1e-4,1e-3,1e-2]
     num_ebs=len(ebs)
     if args.blocksize>0:
@@ -69,6 +69,12 @@ if __name__=="__main__":
                 p=eval(lines[-6].split(',')[0].split('=')[-1])
                 cr[i][j]=r 
                 psnr[i][j]=p
+                for line in lines:
+                    if "alpha" in line:
+                        a=eval(line.split(".")[1].split(":")[-1])
+                        beta=eval(line.split(".")[2].split(":")[-1])
+                        alpha[i][j]=a
+                        beta[i][j]=b
             
                 
                 
@@ -80,5 +86,9 @@ if __name__=="__main__":
 
     cr_df=pd.DataFrame(cr,index=ebs,columns=datafiles)
     psnr_df=pd.DataFrame(psnr,index=ebs,columns=datafiles)
+    alpha_df=pd.DataFrame(alpha,index=ebs,columns=datafiles)
+    beta_df=pd.DataFrame(beta,index=ebs,columns=datafiles)
     cr_df.to_csv("%s_cr.tsv" % args.output,sep='\t')
     psnr_df.to_csv("%s_psnr.tsv" % args.output,sep='\t')
+    alpha_df.to_csv("%s_alpha.tsv" % args.output,sep='\t')
+    beta_df.to_csv("%s_beta.tsv" % args.output,sep='\t')
