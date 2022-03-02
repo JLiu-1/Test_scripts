@@ -47,9 +47,9 @@ if __name__=="__main__":
     beta=np.zeros((num_ebs,num_files),dtype=np.float32)
     pid=os.getpid()
     
-    configstr="[GlobalSettings]\nCmprAlgo = %s \n \
-    [AlgoSettings]\nautoTuningRate = %f \n predictorTuningRate= %f \n levelwisePredictionSelection = %d \n \
-    maxStep = %d \n interpolationBlockSize = %d \n" % (algo,args.abtuningrate,args.predtuningrate,args.levelwise,args.maxstep,blocksize) 
+    configstr="[GlobalSettings]\nCmprAlgo = %s \n\
+    [AlgoSettings]\nautoTuningRate = %f \npredictorTuningRate= %f \nlevelwisePredictionSelection = %d \n\
+    maxStep = %d \ninterpolationBlockSize = %d \n" % (algo,args.abtuningrate,args.predtuningrate,args.levelwise,args.maxstep,blocksize) 
     with open("%s.config" % pid,"w") as f:
         f.write(configstr)
 
