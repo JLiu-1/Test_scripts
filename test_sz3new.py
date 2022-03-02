@@ -72,8 +72,8 @@ if __name__=="__main__":
                 for line in lines:
                     if "alpha" in line:
                         #print(line)
-                        a=eval(line.split(".")[1].split(":")[-1])
-                        b=eval(line.split(".")[2].split(":")[-1])
+                        a=eval(line.split(" ")[2][:-1])
+                        b=eval(line.split(" ")[5][:-1])
                         alpha[i][j]=a
                         beta[i][j]=b
             
