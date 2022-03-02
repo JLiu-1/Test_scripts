@@ -58,5 +58,5 @@ if __name__=="__main__":
 
     cr_df=pd.DataFrame(cr,index=ebs,columns=datafiles)
     psnr_df=pd.DataFrame(psnr,index=ebs,columns=datafiles)
-    cr_df.to_csv("%s_cr.tsv" % args.out,sep='\t')
-    psnr_df.to_csv("%s_psnr.tsv" % args.out,sep='\t')
+    cr_df.to_csv("%s_cr.tsv" % args.output,sep='\t')
+    psnr_df.to_csv("%s_psnr.tsv" % args.output,sep='\t')
