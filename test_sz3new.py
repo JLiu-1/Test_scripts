@@ -65,6 +65,7 @@ if __name__=="__main__":
             
             with os.popen(comm) as f:
                 lines=f.read().splitlines()
+                print(lines)
                 r=eval(lines[-3].split('=')[-1])
                 p=eval(lines[-6].split(',')[0].split('=')[-1])
                 cr[i][j]=r 
