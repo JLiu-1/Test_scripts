@@ -25,7 +25,8 @@ if __name__=="__main__":
     datafiles=[file for file in datafiles if file.split(".")[-1]!="txt" and file.split(".")[-1]!="out" and file.split(".")[-1]!="config"]
     num_files=len(datafiles)
 
-    ebs=[i*1e-4 for i in range(1,10)]+[i*1e-3 for i in range(1,10)]+[i*1e-2 for i in range(1,11)]
+    #ebs=[i*1e-4 for i in range(1,10)]+[i*1e-3 for i in range(1,10)]+[i*1e-2 for i in range(1,11)]
+    ebs=[1e-4,1e-3,1e-2]
     num_ebs=len(ebs)
 
     cr=np.zeros((num_ebs,num_files),dtype=np.float32)
@@ -57,5 +58,5 @@ if __name__=="__main__":
 
     cr_df=pd.DataFrame(cr,index=ebs,columns=datafiles)
     psnr_df=pd.DataFrame(psnr,index=ebs,columns=datafiles)
-    cr.to_csv("%s_cr.tsv" % args.out,sep='\t')
-    psnr.to_csv("%s_psnr.tsv" % args.out,sep='\t')
+    cr_df.to_csv("%s_cr.tsv" % args.out,sep='\t')
+    psnr_df.to_csv("%s_psnr.tsv" % args.out,sep='\t')
