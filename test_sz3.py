@@ -25,12 +25,13 @@ if __name__=="__main__":
     datafiles=[file for file in datafiles if file.split(".")[-1]!="txt" and file.split(".")[-1]!="out" and file.split(".")[-1]!="config"]
     num_files=len(datafiles)
 
-    ebs=[i*1e-4 for i in range(1,10)]+[i*1e-3 for i in range(1,10)]+[i*1e-3 for i in range(10,21,5)]
-    #ebs=[1e-4,1e-3,1e-2]
+    #ebs=[i*1e-4 for i in range(1,10)]+[i*1e-3 for i in range(1,10)]+[i*1e-3 for i in range(10,21,5)]
+    ebs=[1e-4,1e-3,1e-2]
     num_ebs=len(ebs)
 
     cr=np.zeros((num_ebs,num_files),dtype=np.float32)
     psnr=np.zeros((num_ebs,num_files),dtype=np.float32)
+    algo=np.zeros((num_ebs,num_files),dtype=np.int32)
     pid=os.getpid()
     for i,eb in enumerate(ebs):
     
@@ -47,6 +48,8 @@ if __name__=="__main__":
                 p=eval(lines[-6].split(',')[0].split('=')[-1])
                 cr[i][j]=r 
                 psnr[i][j]=p
+                algo[i][j]="interp" in lines[3]
+
             
                 
                 
@@ -58,5 +61,7 @@ if __name__=="__main__":
 
     cr_df=pd.DataFrame(cr,index=ebs,columns=datafiles)
     psnr_df=pd.DataFrame(psnr,index=ebs,columns=datafiles)
+    algo_df=pd.DataFrame(algo,index=ebs,columns=datafiles)
     cr_df.to_csv("%s_cr.tsv" % args.output,sep='\t')
     psnr_df.to_csv("%s_psnr.tsv" % args.output,sep='\t')
+    algo_df.to_csv("%s_algo.tsv" % args.output,sep='\t')
