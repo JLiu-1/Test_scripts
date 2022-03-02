@@ -63,7 +63,7 @@ if __name__=="__main__":
             
             with os.popen(comm) as f:
                 lines=f.read().splitlines()
-                print(lines)
+                #print(lines)
                 
                 r=eval(lines[-3].split('=')[-1])
                 p=eval(lines[-6].split(',')[0].split('=')[-1])
@@ -71,9 +71,9 @@ if __name__=="__main__":
                 psnr[i][j]=p
                 for line in lines:
                     if "alpha" in line:
-                        print(line)
+                        #print(line)
                         a=eval(line.split(".")[1].split(":")[-1])
-                        beta=eval(line.split(".")[2].split(":")[-1])
+                        b=eval(line.split(".")[2].split(":")[-1])
                         alpha[i][j]=a
                         beta[i][j]=b
             
