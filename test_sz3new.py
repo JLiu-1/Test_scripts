@@ -61,7 +61,7 @@ if __name__=="__main__":
             filepath=os.path.join(datafolder,datafile)
 
             
-            comm="sz -z -f -a -i %s -o %s.out -M REL %f -%d %s -c %s.config" % (filepath,pid,eb,args.dim," ".join(args.dims),pid)
+            comm="sz3_new -z -f -a -i %s -o %s.out -M REL %f -%d %s -c %s.config" % (filepath,pid,eb,args.dim," ".join(args.dims),pid)
             
             with os.popen(comm) as f:
                 lines=f.read().splitlines()
