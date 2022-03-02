@@ -65,7 +65,7 @@ if __name__=="__main__":
             
             with os.popen(comm) as f:
                 lines=f.read().splitlines()
-                print(lines)
+                
                 r=eval(lines[-3].split('=')[-1])
                 p=eval(lines[-6].split(',')[0].split('=')[-1])
                 cr[i][j]=r 
@@ -81,8 +81,10 @@ if __name__=="__main__":
                 
 
             
-            comm="rm -f %s.out;rm -f %s.config" % (pid,pid)
+            comm="rm -f %s.out" % pid
             os.system(comm)
+    comm="rm -f %s.config" % pid
+    os.system(comm)
             
 
     cr_df=pd.DataFrame(cr,index=ebs,columns=datafiles)
