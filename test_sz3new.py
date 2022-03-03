@@ -41,7 +41,7 @@ if __name__=="__main__":
     #ebs=[1e-4,1e-3,1e-2]
     num_ebs=len(ebs)
     if args.blocksize>0:
-        blocksize=blocksize
+        blocksize=args.blocksize
         algo="ALGO_INTERP_BLOCKED"
     else:
         blocksize=32 
@@ -71,7 +71,7 @@ if __name__=="__main__":
             
             with os.popen(comm) as f:
                 lines=f.read().splitlines()
-                #print(lines)
+                print(lines)
                 
                 r=eval(lines[-3].split('=')[-1])
                 p=eval(lines[-6].split(',')[0].split('=')[-1])
