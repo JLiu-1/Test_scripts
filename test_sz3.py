@@ -14,6 +14,7 @@ if __name__=="__main__":
     
     parser.add_argument('--dim','-d',type=int,default=2)
     parser.add_argument('--dims','-m',type=str,nargs="+")
+    parser.add_argument('--config','-c',type=str,default=None)
     #parser.add_argument('--size_x','-x',type=int,default=1800)
     #parser.add_argument('--size_y','-y',type=int,default=3600)
     #parser.add_argument('--size_z','-z',type=int,default=512)
@@ -44,6 +45,8 @@ if __name__=="__main__":
 
             
             comm="sz -z -f -a -i %s -o %s.out -M REL %f -%d %s" % (filepath,pid,eb,args.dim," ".join(args.dims))
+            if args.config!=None:
+                comm+=" -c %s" % args.config 
             
             with os.popen(comm) as f:
                 lines=f.read().splitlines()
