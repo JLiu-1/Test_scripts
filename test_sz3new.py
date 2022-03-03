@@ -13,12 +13,14 @@ if __name__=="__main__":
    
     
     parser.add_argument('--dim','-d',type=int,default=2)
+    parser.add_argument('--lorenzo','-z',type=int,default=1)
     parser.add_argument('--dims','-m',type=str,nargs="+")
     parser.add_argument('--levelwise','-l',type=int,default=0)
     parser.add_argument('--maxstep','-s',type=int,default=0)
     parser.add_argument('--blocksize','-b',type=int,default=0)
     parser.add_argument('--abtuningrate',"-a",type=float,default=0.01)
     parser.add_argument('--predtuningrate',"-p",type=float,default=0.01)
+    parser.add_argument('--totaltuningrate',"-t",type=float,default=None)
     #parser.add_argument('--size_x','-x',type=int,default=1800)
     #parser.add_argument('--size_y','-y',type=int,default=3600)
     #parser.add_argument('--size_z','-z',type=int,default=512)
@@ -27,6 +29,9 @@ if __name__=="__main__":
     
 
     args = parser.parse_args()
+    if args.totaltuningrate!=None:
+        args.abtuningrate=args.totaltuningrate
+        args.predtuningrate=args.totaltuningrate
     datafolder=args.input
     datafiles=os.listdir(datafolder)
     datafiles=[file for file in datafiles if file.split(".")[-1]!="txt" and file.split(".")[-1]!="out" and file.split(".")[-1]!="config"]
@@ -47,7 +52,8 @@ if __name__=="__main__":
     beta=np.zeros((num_ebs,num_files),dtype=np.float32)
     pid=os.getpid()
     
-    configstr="[GlobalSettings]\nCmprAlgo = %s \n[AlgoSettings]\nautoTuningRate = %f \npredictorTuningRate= %f \nlevelwisePredictionSelection = %d \nmaxStep = %d \ninterpolationBlockSize = %d \n" % (algo,args.abtuningrate,args.predtuningrate,args.levelwise,args.maxstep,blocksize) 
+    configstr="[GlobalSettings]\nCmprAlgo = %s \n[AlgoSettings]\nautoTuningRate = %f \npredictorTuningRate= %f \nlevelwisePredictionSelection = %d \nmaxStep = %d \ninterpolationBlockSize = %d \ntestLorenzo= %d \n" % \
+    (algo,args.abtuningrate,args.predtuningrate,args.levelwise,args.maxstep,blocksize,args.lorenzo) 
     with open("%s.config" % pid,"w") as f:
         f.write(configstr)
 
