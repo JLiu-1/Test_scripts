@@ -25,8 +25,8 @@ if __name__=="__main__":
     datafiles=[file for file in datafiles if file.split(".")[-1]=="dat" or file.split(".")[-1]=="f32" or file.split(".")[-1]=="bin"]
     num_files=len(datafiles)
 
-    #ebs=[i*1e-4 for i in range(1,10)]+[i*1e-3 for i in range(1,10)]+[i*1e-3 for i in range(10,21,5)]
-    ebs=[1e-4,1e-3,1e-2]
+    ebs=[i*1e-4 for i in range(1,10)]+[i*1e-3 for i in range(1,10)]+[i*1e-3 for i in range(10,21,5)]
+    #ebs=[1e-4,1e-3,1e-2]
     num_ebs=len(ebs)
 
     cr=np.zeros((num_ebs,num_files),dtype=np.float32)
