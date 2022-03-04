@@ -38,7 +38,7 @@ if __name__=="__main__":
     overall_psnr=np.zeros((num_ebs,1),dtype=np.float32)
     #algo=np.zeros((num_ebs,num_files),dtype=np.int32)
     pid=os.getpid()
-    for i,eb in enumerate(ebs):for i,eb in enumerate(ebs):
+    for i,eb in enumerate(ebs):
     
         for j,datafile in enumerate(datafiles):
             
