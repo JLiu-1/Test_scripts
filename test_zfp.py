@@ -48,7 +48,7 @@ if __name__=="__main__":
             arr=np.fromfile(filepath,dtype=np.float32)
             rng=np.max(arr)-np.min(arr)
             abseb=rng*eb
-            comm="zfp -s -i %s -z %s.out -f -%d %s -a %f" % (filepath,pid,dim," ".join(args.dims),eb)
+            comm="zfp -s -i %s -z %s.out -f -%d %s -a %f" % (filepath,pid,args.dim," ".join(args.dims),eb)
             with os.popen(comm) as f:
                 lines=f.read().splitlines()
                 print(lines)
