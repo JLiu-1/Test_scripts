@@ -48,8 +48,9 @@ if __name__=="__main__":
             arr=np.fromfile(filepath,dtype=np.float32)
             rng=np.max(arr)-np.min(arr)
             abseb=rng*eb
-            comm="zfp -s -i %s -z %s.out -f -%d %s -a %f" % (filepath,pid,args.dim," ".join(args.dims),eb)
-            with os.popen(comm) as f:
+            comm="zfp -s -i %s -z %s.out -f -%d %s -a %f &>%s.txt" % (filepath,pid,args.dim," ".join(args.dims),eb,pid)
+            os.system(comm)
+            with open("%s.txt"%pid,"r") as f:
                 lines=f.read().splitlines()
                 print(lines)
                 r=eval(lines[-3].split(' ')[7].split("=")[-1])
@@ -58,7 +59,7 @@ if __name__=="__main__":
                 cr[i][j]=r 
                 psnr[i][j]=p
                 overall_psnr[i]+=n**2
-            os.system("rm -f %s.dat" % pid)
+            os.system("rm -f %s.dat;rm -f %s.txt" % (pid,pid))
 
     overall_psnr=overall_psnr/num_files
     overall_psnr=np.sqrt(overall_psnr)
