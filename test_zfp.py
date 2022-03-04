@@ -53,9 +53,9 @@ if __name__=="__main__":
             with open("%s.txt"%pid,"r") as f:
                 lines=f.read().splitlines()
                 print(lines)
-                r=eval(lines[-3].split(' ')[7].split("=")[-1])
-                p=eval(lines[-2].split(' ')[-1])
-                n=eval(lines[-3].split(' ')[10].split("=")[-1])
+                r=eval(lines[-5].split(' ')[7].split("=")[-1])
+                p=eval(lines[-1].split(' ')[-1])
+                n=eval(lines[-5].split(' ')[10].split("=")[-1])
                 cr[i][j]=r 
                 psnr[i][j]=p
                 overall_psnr[i]+=n**2
