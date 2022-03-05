@@ -1955,15 +1955,17 @@ if __name__=="__main__":
             for x_start in range(0,args.size_x,cur_interp_block_size):
                 if x_start+2*cur_interp_block_size>=args.size_x:
                     x_end=args.size_x
+                    print(x_start,x_end)
                 else:
                     x_end=x_start+cur_interp_block_size+1
-                    print(x_start,x_end)
+                   
                 for y_start in range(0,args.size_y,cur_interp_block_size):
                     if y_start+2*cur_interp_block_size>=args.size_y:
                         y_end=args.size_y
+                        print(y_start,y_end)
                     else:
                         y_end=y_start+cur_interp_block_size+1
-                        print(y_start,y_end)
+
 
 
                     cur_qs,edge_qs,cur_us,_,lsd=msc2d(array,x_start,x_end,y_start,y_end,error_bound,args.rate,args.maximum_rate,args.min_coeff_level,args.max_step,args.anchor_rate,rate_list=rate_list,\
