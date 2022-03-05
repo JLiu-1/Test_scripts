@@ -2593,7 +2593,7 @@ if __name__=="__main__":
                             cr=1/((1-anchor_ratio)/cr+anchor_ratio)
                         bitrate_r=32/cr
                     os.system("rm -f %s;rm -f %s" % (tq_name,tu_name))
-                    a=(psnr-psnr_r)/(bitrate-bitrate_r)
+                    a=(psnr-psnr_r)/(bitrate-bitrate_r+1e-12)
                     b=psnr-a*bitrate
                     #print(a)
                     #print(b)
@@ -3070,7 +3070,7 @@ if __name__=="__main__":
                                 cr=1/((1-anchor_ratio)/cr+anchor_ratio)
                             bitrate_r=32/cr
                         os.system("rm -f %s;rm -f %s" % (tq_name,tu_name))
-                        a=(psnr-psnr_r)/(bitrate-bitrate_r)
+                        a=(psnr-psnr_r)/(bitrate-bitrate_r+1e-12)
                         b=psnr-a*bitrate
                         #print(a)
                         #print(b)
