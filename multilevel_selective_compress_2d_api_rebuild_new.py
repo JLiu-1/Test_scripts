@@ -1968,7 +1968,9 @@ if __name__=="__main__":
                                                                     sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=args.lorenzo_fallback_check,sample_rate=args.fallback_sample_ratio,\
                                                                     first_level=level,last_level=level,min_sampled_points=100,random_access=False,verbose=False,fix_algo=fix_algo)
                     qs+=sum(cur_qs,[])
+
                     us+=cur_us
+            print(qs)
             print("Level %d finished." % level)
         quants=np.array(qs,dtype=np.int32)
         unpreds=np.array(us,dtype=np.float32)
