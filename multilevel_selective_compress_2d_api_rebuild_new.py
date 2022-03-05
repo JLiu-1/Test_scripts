@@ -1140,6 +1140,8 @@ fix_algo_list=None,first_level=None,last_level=0,first_order="block",fake_compre
 
         if len(best_qs)!=0:
             mean_l1_loss=best_absloss/len(best_qs)
+        else:
+            mean_l1_loss=0
 
         
         if fake_compression:
@@ -1233,7 +1235,7 @@ if __name__=="__main__":
     parser.add_argument('--size_x','-x',type=int,default=1800)
     parser.add_argument('--one_interpolator',type=int,default=0)
     parser.add_argument('--size_y','-y',type=int,default=3600)
-    parser.add_argument('--sz_interp','-n',type=int,default=0)
+    parser.add_argument('--sz_interp','-n',type=int,default=1)
     parser.add_argument('--predictor_first',type=int,default=1)
     parser.add_argument('--autotuning','-t',type=float,default=0.0)
     parser.add_argument('--fix_algo','-f',type=str,default="none")

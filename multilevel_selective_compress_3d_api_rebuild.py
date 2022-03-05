@@ -2266,8 +2266,10 @@ sample_rate=0.05,min_sampled_points=10,new_q_order=0,grid_mode=0,selection_crite
 
 
 
-        
-        mean_loss=best_loss/len(best_qs)
+        if len(best_qs)!=0:
+            mean_loss=best_loss/len(best_qs)
+        else:
+            mean_loss=0
 
         if fake_compression:
             array[x_start:x_end:step,y_start:y_end:step,z_start:z_end:step]=array_slice
@@ -2362,9 +2364,10 @@ if __name__=="__main__":
     parser.add_argument('--multidim_level','-d',type=int,default=-1)
     parser.add_argument('--lorenzo_fallback_check','-l',type=int,default=-1)
     parser.add_argument('--fallback_sample_ratio','-p',type=float,default=0.05)
+
 #parser.add_argument('--level_rate','-lr',type=float,default=1.0)
     parser.add_argument('--anchor_rate','-a',type=float,default=0.0)
-    parser.add_argument('--sz_interp','-n',type=int,default=0)
+    parser.add_argument('--sz_interp','-n',type=int,default=1)
 
     parser.add_argument('--size_x','-x',type=int,default=129)
     #parser.add_argument('--double','-b',type=int,default=0)
@@ -2374,8 +2377,9 @@ if __name__=="__main__":
     parser.add_argument('--autotuning','-t',type=float,default=0.0)
     parser.add_argument('--criteria','-c',type=str,default="l1")
     parser.add_argument('--block_size','-b',type=int,default=16)
+    parser.add_argument('--interp_block_size',type=int,default=0)#interp block size
     parser.add_argument('--one_interpolator',type=int,default=0)
-    parser.add_argument('--predictor_first',type=int,default=0)
+    parser.add_argument('--predictor_first',type=int,default=1)
 #parser.add_argument('--level','-l',type=int,default=2)
 #parser.add_argument('--noise','-n',type=bool,default=False)
 #parser.add_argument('--intercept','-t',type=bool,default=False)
@@ -3099,11 +3103,66 @@ if __name__=="__main__":
         args.maximum_rate=1
 
     #print(rate_list)
-    array,qs,edge_qs,us,_,lsd=msc3d(array,0,args.size_x,0,args.size_y,0,args.size_z,error_bound,args.rate,args.maximum_rate,args.min_coeff_level,args.max_step,args.anchor_rate,rate_list=rate_list,x_preded=False,y_preded=False,z_preded=False,\
-        sz_interp=args.sz_interp,selection_criteria=args.criteria,multidim_level=args.multidim_level,lorenzo=args.lorenzo_fallback_check,sample_rate=args.fallback_sample_ratio,min_sampled_points=100,random_access=False,verbose=True,fix_algo=args.fix_algo,fix_algo_list=fix_algo_list)
-    print(len(edge_qs))
-    quants=np.concatenate( (np.array(edge_qs,dtype=np.int32),np.array(sum(qs,[]),dtype=np.int32) ) )
-    unpreds=np.array(us,dtype=np.float32)
+    if args.interp_block_size<=0:
+        array,qs,edge_qs,us,_,lsd=msc3d(array,0,args.size_x,0,args.size_y,0,args.size_z,error_bound,args.rate,args.maximum_rate,args.min_coeff_level,args.max_step,args.anchor_rate,rate_list=rate_list,x_preded=False,y_preded=False,z_preded=False,\
+            sz_interp=args.sz_interp,selection_criteria=args.criteria,multidim_level=args.multidim_level,lorenzo=args.lorenzo_fallback_check,sample_rate=args.fallback_sample_ratio,min_sampled_points=100,random_access=False,verbose=True,fix_algo=args.fix_algo,fix_algo_list=fix_algo_list)
+        #print(len(edge_qs))
+        quants=np.concatenate( (np.array(edge_qs,dtype=np.int32),np.array(sum(qs,[]),dtype=np.int32) ) )
+        unpreds=np.array(us,dtype=np.float32)
+    else:
+        qs=[]
+        us=[]
+
+
+        for level in range(max_level,-1,-1):
+            print("Level %d started." % level)
+            cur_interp_block_size=args.interp_block_size*(2**level)
+            fix_algo= fix_algo_list[level] if fix_algo_list!=None and level!=max_level else None
+            for x_start in range(0,args.size_x,cur_interp_block_size):
+                if x_start+2*cur_interp_block_size>=args.size_x:
+                    x_end=args.size_x
+                    
+                else:
+                    x_end=x_start+cur_interp_block_size+1
+                   
+                for y_start in range(0,args.size_y,cur_interp_block_size):
+                    if y_start+2*cur_interp_block_size>=args.size_y:
+                        y_end=args.size_y
+                      
+                    else:
+                        y_end=y_start+cur_interp_block_size+1
+                    for z_start in range(0,args.size_z,cur_interp_block_size):
+                        if z_start+2*cur_interp_block_size>=args.size_z:
+                            z_end=args.size_z
+                          
+                        else:
+                            z_end=z_start+cur_interp_block_size+1
+
+
+
+
+                        cur_qs,edge_qs,cur_us,_,lsd=msc2d(array,x_start,x_end,y_start,y_end,z_start,z_end,error_bound,args.rate,args.maximum_rate,args.min_coeff_level,args.max_step,args.anchor_rate,rate_list=rate_list,\
+                                                                        sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=args.lorenzo_fallback_check,sample_rate=args.fallback_sample_ratio,\
+                                                                        first_level=level,last_level=level,min_sampled_points=100,random_access=False,verbose=False,fix_algo=fix_algo,x_preded=(x_start>0),y_preded=(y_start>0),z_preded=(z_start>0))
+                        qs+=sum(cur_qs,[])
+
+                        us+=cur_us
+                        if z_end==args.size_z:
+                            break
+                    if y_end==args.size_y:
+                        break
+                if x_end==args.size_x:
+                    break
+            #print(qs)
+            print("Level %d finished." % level)
+        quants=np.array(qs,dtype=np.int32)
+        unpreds=np.array(us,dtype=np.float32)
+
+
+
+
+
+
     array.tofile(args.output)
     quants.tofile(args.quant)
     unpreds.tofile(args.unpred)
