@@ -14,7 +14,7 @@ if __name__=="__main__":
     parser.add_argument('--maximum_rate','-m',type=float,default=-1)
     #parser.add_argument('--anchor_rate','-a',type=float,default=0.0)
     parser.add_argument('--multidim_level','-d',type=int,default=-1)
-    #parser.add_argument('--sz_interp','-n',type=int,default=1)
+    parser.add_argument('--sz_interp','-n',type=int,default=1)
     parser.add_argument('--rlist',type=float,default=-1,nargs="+")
     parser.add_argument('--size_x','-x',type=int,default=1800)
     parser.add_argument('--size_y','-y',type=int,default=3600)
