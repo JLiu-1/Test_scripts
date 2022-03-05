@@ -1964,7 +1964,7 @@ if __name__=="__main__":
                         y_end=y_start+cur_interp_block_size+1
 
 
-                    cur_qs,edge_qs,cur_us,_,lsd=msc2d(array,x_start,x_end,y_start,y_end,error_bound,args.rate,args.maximum_rate,args.min_coeff_level,args.max_step,args.anchor_rate,rate_list=rate_list\
+                    cur_qs,edge_qs,cur_us,_,lsd=msc2d(array,x_start,x_end,y_start,y_end,error_bound,args.rate,args.maximum_rate,args.min_coeff_level,args.max_step,args.anchor_rate,rate_list=rate_list,\
                                                                     sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=args.lorenzo_fallback_check,sample_rate=args.fallback_sample_ratio,\
                                                                     first_level=level,last_level=level,min_sampled_points=100,random_access=False,verbose=False,fix_algo=fix_algo,x_preded=(x_start>0),y_preded=(y_start>0))
                     qs+=sum(cur_qs,[])
