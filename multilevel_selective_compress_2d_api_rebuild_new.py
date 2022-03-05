@@ -1955,14 +1955,14 @@ if __name__=="__main__":
             for x_start in range(0,args.size_x,cur_interp_block_size):
                 if x_start+2*cur_interp_block_size>=args.size_x:
                     x_end=args.size_x
-                    print(x_start,x_end)
+                    
                 else:
                     x_end=x_start+cur_interp_block_size+1
                    
                 for y_start in range(0,args.size_y,cur_interp_block_size):
                     if y_start+2*cur_interp_block_size>=args.size_y:
                         y_end=args.size_y
-                        print(y_start,y_end)
+                      
                     else:
                         y_end=y_start+cur_interp_block_size+1
 
@@ -1974,6 +1974,10 @@ if __name__=="__main__":
                     qs+=sum(cur_qs,[])
 
                     us+=cur_us
+                    if y_end==args.size_y:
+                        break
+                if x_end==args.size_x:
+                    break
             #print(qs)
             print("Level %d finished." % level)
         quants=np.array(qs,dtype=np.int32)
