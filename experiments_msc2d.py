@@ -109,7 +109,7 @@ if __name__=="__main__":
         
             command4="rm -f %s;rm -f %s;rm -f %s" % (dout,qout,uout)
             os.system(command4)
-            print(datafile,eb)
+            print(datafile,eb,a,b,r,p)
 
     overall_psnr=overall_psnr/num_files
     overall_psnr=np.sqrt(overall_psnr)
