@@ -64,13 +64,14 @@ if __name__=="__main__":
     for i,eb in enumerate(ebs):
     
         for j,datafile in enumerate(datafiles):
+            filepath=os.path.join(datafolder,datafile)
 
 
 
     
  
             command1="python %s -i %s -o %s -q %s -u %s -s %d -r %f -m %f -x %d -y %d -e %f   -d %d -n %d --rlist %s -f %s -t %f --interp_block_size %d"\
-            % (script_name,args.input, dout,qout,uout,args.max_step,args.rate,args.maximum_rate,args.size_x,args.size_y,\
+            % (script_name,filepath, dout,qout,uout,args.max_step,args.rate,args.maximum_rate,args.size_x,args.size_y,\
             eb,args.multidim_level,args.sz_interp,rlist,args.fix,args.autotuning,args.interp_block_size)
             if args.block_size>0:
                 command1+=" -b %d -w %d --order %s" % (args.block_size,args.blockwise_tuning,args.order)
