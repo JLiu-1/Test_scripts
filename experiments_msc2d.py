@@ -96,7 +96,7 @@ if __name__=="__main__":
                 if args.block_size>0:
                     r=1/(1/r+2*math.log(args.max_step,2)/( 32*(args.block_size**2)) )
 
-            command3="compareData -f %s %s" % (args.input,dout)
+            command3="compareData -f %s %s" % (filepath,dout)
             with os.popen(command3) as f:
                 lines=f.read().splitlines()
                 p=eval(lines[-3].split(',')[0].split('=')[1])
