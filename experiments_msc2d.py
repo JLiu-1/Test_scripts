@@ -36,6 +36,7 @@ if __name__=="__main__":
     uout="%s_u.dat" % pid
 
     ebs=[i*1e-4 for i in range(1,10)]+[i*1e-3 for i in range(1,11)]+[1.5e-2,2e-2]
+    num_ebs=len(ebs)
     datafolder=args.input
     datafiles=os.listdir(datafolder)
     datafiles=[file for file in datafiles if file.split(".")[-1]=="dat" or file.split(".")[-1]=="f32" or file.split(".")[-1]=="bin"]
