@@ -99,8 +99,8 @@ if __name__=="__main__":
             command3="compareData -f %s %s" % (args.input,dout)
             with os.popen(command3) as f:
                 lines=f.read().splitlines()
-                p=eval(lines[6].split(',')[0].split('=')[1])
-                n=eval(lines[-6].split(',')[1].split('=')[-1])
+                p=eval(lines[-3].split(',')[0].split('=')[1])
+                n=eval(lines[-3].split(',')[1].split('=')[-1])
             cr[i][j]=r 
             psnr[i][j]=p
             overall_psnr[i]+=n**2
