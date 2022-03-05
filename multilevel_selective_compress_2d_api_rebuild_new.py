@@ -1138,8 +1138,8 @@ fix_algo_list=None,first_level=None,last_level=0,first_order="block",fake_compre
 
 
 
-
-        mean_l1_loss=best_absloss/len(best_qs)
+        if len(best_qs)!=0:
+            mean_l1_loss=best_absloss/len(best_qs)
 
         
         if fake_compression:
