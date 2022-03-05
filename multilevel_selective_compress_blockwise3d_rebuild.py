@@ -138,7 +138,10 @@ if __name__=="__main__":
                             idx+=1
                 t_mse=square_error/element_counts
                 #zero_mse=zero_square_error/element_counts
-                psnr=20*math.log(rng,10)-10*math.log(t_mse,10)
+                if t_mse==0:
+                    psnr=9999
+                else:
+                    psnr=20*math.log(rng,10)-10*math.log(t_mse,10)
                 #zero_psnr=20*math.log(themax-themin,10)-10*math.log(zero_mse,10)
                 #print(zero_psnr)
               
@@ -219,7 +222,10 @@ if __name__=="__main__":
                                 idx+=1
                     t_mse=square_error/element_counts
                     #zero_mse=zero_square_error/element_counts
-                    psnr_r=20*math.log(rng,10)-10*math.log(t_mse,10)
+                    if t_mse==0:
+                        psnr_r=9999
+                    else:
+                        psnr_r=20*math.log(rng,10)-10*math.log(t_mse,10)
                     #zero_psnr=20*math.log(themax-themin,10)-10*math.log(zero_mse,10)
                     #print(zero_psnr)
                   
