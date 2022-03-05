@@ -1224,7 +1224,8 @@ if __name__=="__main__":
     parser.add_argument('--maximum_rate','-m',type=float,default=-1)
     parser.add_argument('--cubic','-c',type=int,default=1)
     parser.add_argument('--multidim_level','-d',type=int,default=-1)
-    parser.add_argument('--block_size','-b',type=int,default=64)
+    parser.add_argument('--block_size','-b',type=int,default=64)#sample block size
+    parser.add_argument('--interp_block_size',type=int,default=0)#interp block size
     parser.add_argument('--lorenzo_fallback_check','-l',type=int,default=-1)
     parser.add_argument('--fallback_sample_ratio','-p',type=float,default=0.05)
     parser.add_argument('--anchor_rate','-a',type=float,default=0.0)
@@ -1233,7 +1234,7 @@ if __name__=="__main__":
     parser.add_argument('--one_interpolator',type=int,default=0)
     parser.add_argument('--size_y','-y',type=int,default=3600)
     parser.add_argument('--sz_interp','-n',type=int,default=0)
-    parser.add_argument('--predictor_first',type=int,default=0)
+    parser.add_argument('--predictor_first',type=int,default=1)
     parser.add_argument('--autotuning','-t',type=float,default=0.0)
     parser.add_argument('--fix_algo','-f',type=str,default="none")
 
@@ -1937,11 +1938,40 @@ if __name__=="__main__":
     if args.rate<1:
         args.rate=1
         args.maximum_rate=1
+    if args.interp_block_size<=0:
+        qs,edge_qs,us,_,lsd=msc2d(array,0,args.size_x,0,args.size_y,error_bound,args.rate,args.maximum_rate,args.min_coeff_level,args.max_step,args.anchor_rate,rate_list=rate_list,x_preded=False,y_preded=False,\
+            sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=args.lorenzo_fallback_check,sample_rate=args.fallback_sample_ratio,min_sampled_points=100,random_access=False,verbose=True,fix_algo=args.fix_algo,fix_algo_list=fix_algo_list)
+        quants=np.concatenate( (np.array(edge_qs,dtype=np.int32),np.array(sum(qs,[]),dtype=np.int32) ) )
+        unpreds=np.array(us,dtype=np.float32)
+    else:
+        qs=[]
+        us=[]
 
-    qs,edge_qs,us,_,lsd=msc2d(array,0,args.size_x,0,args.size_y,error_bound,args.rate,args.maximum_rate,args.min_coeff_level,args.max_step,args.anchor_rate,rate_list=rate_list,x_preded=False,y_preded=False,\
-        sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=args.lorenzo_fallback_check,sample_rate=args.fallback_sample_ratio,min_sampled_points=100,random_access=False,verbose=True,fix_algo=args.fix_algo,fix_algo_list=fix_algo_list)
-    quants=np.concatenate( (np.array(edge_qs,dtype=np.int32),np.array(sum(qs,[]),dtype=np.int32) ) )
-    unpreds=np.array(us,dtype=np.float32)
+
+        for level in range(max_level,-1,-1):
+            cur_interp_block_size=args.interp_block_size*(2**level)
+            fix_algo= fix_algo_list[level] if fix_algo_list!=None else None
+            for x_start in range(0,size_x,cur_interp_block_size):
+                if x_start+2*cur_interp_block_size>=size_x:
+                    x_end=size_x
+                else:
+                    x_end=x_start+cur_interp_block_size+1
+                for y_start in range(0,size_y,cur_interp_block_size):
+                    if y_start+2*cur_interp_block_size>=size_y:
+                        y_end=size_y
+                    else:
+                        y_end=y_start+cur_interp_block_size+1
+
+
+                    cur_qs,edge_qs,cur_us,_,lsd=qs,edge_qs,us,_,lsd=msc2d(array,x_start,x_end,y_start,y_end,error_bound,args.rate,args.maximum_rate,args.min_coeff_level,args.max_step,args.anchor_rate,rate_list=rate_list,x_preded=False,y_preded=False,\
+            sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=args.lorenzo_fallback_check,sample_rate=args.fallback_sample_ratio,\
+            first_level=level,end_level=level,min_sampled_points=100,random_access=False,verbose=True,fix_algo=fix_algo)
+                    qs+=sum(cur_qs,[])
+                    us+=cur_us
+        quants=np.array(qs,dtype=np.int32)
+        unpreds=np.array(us,dtype=np.float32)
+
+
     array.tofile(args.output)
     quants.tofile(args.quant)
     unpreds.tofile(args.unpred)
