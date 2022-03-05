@@ -1949,6 +1949,7 @@ if __name__=="__main__":
 
 
         for level in range(max_level,-1,-1):
+            print("Level %d started." % level)
             cur_interp_block_size=args.interp_block_size*(2**level)
             fix_algo= fix_algo_list[level] if fix_algo_list!=None and level!=max_level else None
             for x_start in range(0,args.size_x,cur_interp_block_size):
@@ -1964,10 +1965,11 @@ if __name__=="__main__":
 
 
                     cur_qs,edge_qs,cur_us,_,lsd=qs,edge_qs,us,_,lsd=msc2d(array,x_start,x_end,y_start,y_end,error_bound,args.rate,args.maximum_rate,args.min_coeff_level,args.max_step,args.anchor_rate,rate_list=rate_list,x_preded=False,y_preded=False,\
-            sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=args.lorenzo_fallback_check,sample_rate=args.fallback_sample_ratio,\
-            first_level=level,last_level=level,min_sampled_points=100,random_access=False,verbose=True,fix_algo=fix_algo)
+                                                                    sz3_interp=args.sz_interp,multidim_level=args.multidim_level,lorenzo=args.lorenzo_fallback_check,sample_rate=args.fallback_sample_ratio,\
+                                                                    first_level=level,last_level=level,min_sampled_points=100,random_access=False,verbose=True,fix_algo=fix_algo,verbose=False)
                     qs+=sum(cur_qs,[])
                     us+=cur_us
+            print("Level %d finished." % level)
         quants=np.array(qs,dtype=np.int32)
         unpreds=np.array(us,dtype=np.float32)
 
