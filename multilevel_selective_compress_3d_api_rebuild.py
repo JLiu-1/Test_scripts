@@ -2877,7 +2877,7 @@ if __name__=="__main__":
 
 
 
-        if args.rate<1 and args.rlist==-1:
+        if args.rate<1 :
             print("Alphabeta tuning started.")
             alpha_list=[1,1.25,1.5,1.75,2]
             #beta_list=[2,4,4,6,6]

@@ -1720,7 +1720,7 @@ if __name__=="__main__":
 
 
 
-        if args.rate<1 and args.rlist==-1:
+        if args.rate<1:
             print("Alphabeta tuning started.")
             alpha_list=[1,1.25,1.5,1.75,2]
             beta_list=[1.5,2,3,4]
@@ -1906,10 +1906,10 @@ if __name__=="__main__":
                
 
 
-        print("Autotuning finished. Selected alpha: %f. Selected beta: %f. Best bitrate: %f. Best PSNR: %f."\
-        %(bestalpha,bestbeta,bestb,bestp) )
-        args.rate=bestalpha
-        args.maximum_rate=bestbeta
+            print("Autotuning finished. Selected alpha: %f. Selected beta: %f. Best bitrate: %f. Best PSNR: %f."\
+            %(bestalpha,bestbeta,bestb,bestp) )
+            args.rate=bestalpha
+            args.maximum_rate=bestbeta
         
 
 
