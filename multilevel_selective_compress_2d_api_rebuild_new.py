@@ -1970,7 +1970,7 @@ if __name__=="__main__":
                     qs+=sum(cur_qs,[])
 
                     us+=cur_us
-            print(qs)
+            #print(qs)
             print("Level %d finished." % level)
         quants=np.array(qs,dtype=np.int32)
         unpreds=np.array(us,dtype=np.float32)
