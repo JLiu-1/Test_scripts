@@ -1951,14 +1951,14 @@ if __name__=="__main__":
         for level in range(max_level,-1,-1):
             cur_interp_block_size=args.interp_block_size*(2**level)
             fix_algo= fix_algo_list[level] if fix_algo_list!=None and level!=max_level else None
-            for x_start in range(0,size_x,cur_interp_block_size):
-                if x_start+2*cur_interp_block_size>=size_x:
-                    x_end=size_x
+            for x_start in range(0,args.size_x,cur_interp_block_size):
+                if x_start+2*cur_interp_block_size>=args.size_x:
+                    x_end=args.size_x
                 else:
                     x_end=x_start+cur_interp_block_size+1
-                for y_start in range(0,size_y,cur_interp_block_size):
-                    if y_start+2*cur_interp_block_size>=size_y:
-                        y_end=size_y
+                for y_start in range(0,args.size_y,cur_interp_block_size):
+                    if y_start+2*cur_interp_block_size>=args.size_y:
+                        y_end=args.size_y
                     else:
                         y_end=y_start+cur_interp_block_size+1
 
