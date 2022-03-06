@@ -26,8 +26,8 @@ if __name__=="__main__":
     datafiles=[file for file in datafiles if file.split(".")[-1]=="dat" or file.split(".")[-1]=="f32" or file.split(".")[-1]=="bin"]
     num_files=len(datafiles)
 
-    #ebs=[i*1e-4 for i in range(1,10)]+[i*1e-3 for i in range(1,10)]+[i*1e-3 for i in range(10,21,5)]
-    ebs=[1e-4,1e-3,1e-2]
+    ebs=[i*1e-4 for i in range(1,10)]+[i*1e-3 for i in range(1,10)]+[i*1e-3 for i in range(10,21,5)]
+    #ebs=[1e-4,1e-3,1e-2]
     num_ebs=len(ebs)
 
     cr=np.zeros((num_ebs,num_files),dtype=np.float32)
@@ -48,7 +48,7 @@ if __name__=="__main__":
             arr=np.fromfile(filepath,dtype=np.float32)
             rng=np.max(arr)-np.min(arr)
             abseb=rng*eb
-            comm="zfp -s -i %s -z %s.out -f -%d %s -a %f &>%s.txt" % (filepath,pid,args.dim," ".join(args.dims),eb,pid)
+            comm="zfp -s -i %s -z %s.out -f -%d %s -a %f &>%s.txt" % (filepath,pid,args.dim," ".join(args.dims),abseb,pid)
             print(comm)
             os.system(comm)
             with open("%s.txt"%pid,"r") as f:
