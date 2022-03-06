@@ -14,6 +14,7 @@ if __name__=="__main__":
     
     parser.add_argument('--dim','-d',type=int,default=2)
     parser.add_argument('--dims','-m',type=str,nargs="+")
+    parser.add_argument('--large_eb','-l',type=int,default=0)
     #parser.add_argument('--config','-c',type=str,default=None)
     #parser.add_argument('--size_x','-x',type=int,default=1800)
     #parser.add_argument('--size_y','-y',type=int,default=3600)
@@ -25,8 +26,11 @@ if __name__=="__main__":
     datafiles=os.listdir(datafolder)
     datafiles=[file for file in datafiles if file.split(".")[-1]=="dat" or file.split(".")[-1]=="f32" or file.split(".")[-1]=="bin"]
     num_files=len(datafiles)
+    if args.large_eb:
+        ebs=[i*1e-2 for i in range(3,11)]
+    else:
 
-    ebs=[i*1e-4 for i in range(1,10)]+[i*1e-3 for i in range(1,10)]+[i*1e-3 for i in range(10,21,5)]
+        ebs=[i*1e-4 for i in range(1,10)]+[i*1e-3 for i in range(1,10)]+[i*1e-3 for i in range(10,21,5)]
     #ebs=[1e-4,1e-3,1e-2]
     num_ebs=len(ebs)
 
