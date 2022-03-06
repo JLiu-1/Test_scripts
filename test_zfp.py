@@ -49,10 +49,11 @@ if __name__=="__main__":
             rng=np.max(arr)-np.min(arr)
             abseb=rng*eb
             comm="zfp -s -i %s -z %s.out -f -%d %s -a %f &>%s.txt" % (filepath,pid,args.dim," ".join(args.dims),eb,pid)
+            print(comm)
             os.system(comm)
             with open("%s.txt"%pid,"r") as f:
                 lines=f.read().splitlines()
-                print(lines)
+                #print(lines)
                 r=eval(lines[-5].split(' ')[7].split("=")[-1])
                 try:
                     p=eval(lines[-1].split(' ')[-1])
