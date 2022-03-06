@@ -26,8 +26,8 @@ if __name__=="__main__":
     datafiles=[file for file in datafiles if file.split(".")[-1]=="dat" or file.split(".")[-1]=="f32" or file.split(".")[-1]=="bin"]
     num_files=len(datafiles)
 
-    ebs=[i*1e-4 for i in range(1,10)]+[i*1e-3 for i in range(1,10)]+[i*1e-3 for i in range(10,21,5)]
-    #ebs=[1e-4,1e-3,1e-2]
+    #ebs=[i*1e-4 for i in range(1,10)]+[i*1e-3 for i in range(1,10)]+[i*1e-3 for i in range(10,21,5)]
+    ebs=[1e-4,1e-3,1e-2]
     num_ebs=len(ebs)
 
     cr=np.zeros((num_ebs,num_files),dtype=np.float32)
@@ -63,6 +63,7 @@ if __name__=="__main__":
                 psnr[i][j]=p
                 overall_psnr[i]+=n**2
             os.system("rm -f %s.dat;rm -f %s.txt" % (pid,pid))
+            print(datafile,eb,rng,abseb,r,p)
 
     overall_psnr=overall_psnr/num_files
     overall_psnr=np.sqrt(overall_psnr)
