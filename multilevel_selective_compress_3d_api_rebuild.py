@@ -2374,7 +2374,7 @@ if __name__=="__main__":
     parser.add_argument('--size_y','-y',type=int,default=129)
     parser.add_argument('--size_z','-z',type=int,default=129)
     parser.add_argument('--fix_algo','-f',type=str,default="none")
-    parser.add_argument('--autotuning','-t',type=float,default=0.0)
+    parser.add_argument('--autotuning','-t',type=int,default=0)
     parser.add_argument('--criteria','-c',type=str,default="l1")
     parser.add_argument('--block_size','-b',type=int,default=16)
     parser.add_argument('--interp_block_size',type=int,default=0)#interp block size
