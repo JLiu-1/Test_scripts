@@ -18,9 +18,11 @@ if __name__=="__main__":
     parser.add_argument('--levelwise','-l',type=int,default=0)
     parser.add_argument('--maxstep','-s',type=int,default=0)
     parser.add_argument('--blocksize','-b',type=int,default=0)
+    
     parser.add_argument('--abtuningrate',"-a",type=float,default=0.01)
     parser.add_argument('--predtuningrate',"-p",type=float,default=0.01)
     parser.add_argument('--totaltuningrate',"-t",type=float,default=None)
+    parser.add_argument('--cr_tuning',"-c",type=int,default=0)
     #parser.add_argument('--size_x','-x',type=int,default=1800)
     #parser.add_argument('--size_y','-y',type=int,default=3600)
     #parser.add_argument('--size_z','-z',type=int,default=512)
@@ -46,6 +48,14 @@ if __name__=="__main__":
     else:
         blocksize=32 
         algo="ALGO_INTERP_LORENZO"
+
+
+    if args.cr_tuning:
+        
+        tuning_target="TUNING_TARGET_CR"
+    else:
+        
+        tuning_target="TUNING_TARGET_RD"
     cr=np.zeros((num_ebs,num_files),dtype=np.float32)
     psnr=np.zeros((num_ebs,num_files),dtype=np.float32)
     alpha=np.zeros((num_ebs,num_files),dtype=np.float32)
@@ -54,8 +64,8 @@ if __name__=="__main__":
     overall_psnr=np.zeros((num_ebs,1),dtype=np.float32)
     pid=os.getpid()
     
-    configstr="[GlobalSettings]\nCmprAlgo = %s \n[AlgoSettings]\nautoTuningRate = %f \npredictorTuningRate= %f \nlevelwisePredictionSelection = %d \nmaxStep = %d \ninterpolationBlockSize = %d \ntestLorenzo= %d \n" % \
-    (algo,args.abtuningrate,args.predtuningrate,args.levelwise,args.maxstep,blocksize,args.lorenzo) 
+    configstr="[GlobalSettings]\nCmprAlgo = %s \ntuningTarget = %s \n[AlgoSettings]\nautoTuningRate = %f \npredictorTuningRate= %f \nlevelwisePredictionSelection = %d \nmaxStep = %d \ninterpolationBlockSize = %d \ntestLorenzo= %d \n" % \
+    (algo,tuning_target,args.abtuningrate,args.predtuningrate,args.levelwise,args.maxstep,blocksize,args.lorenzo) 
     with open("%s.config" % pid,"w") as f:
         f.write(configstr)
 
