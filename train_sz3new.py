@@ -140,7 +140,7 @@ if __name__=="__main__":
                 
                         with os.popen(comm) as f:
                             lines=f.read().splitlines()
-                            print(lines)
+                            #print(lines)
                             
                             cr=eval(lines[-3].split('=')[-1])
                             bitrate_r=32/cr
