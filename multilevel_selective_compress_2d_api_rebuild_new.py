@@ -1445,7 +1445,7 @@ if __name__=="__main__":
                    
                         bestb=bitrate
                         bestp=psnr
-                if alpha**(max_level-1)<=beta:
+                if alpha**(block_max_level-1)<=beta:
                     break
 
                 
@@ -1910,7 +1910,7 @@ if __name__=="__main__":
                        
                             bestb=bitrate
                             bestp=psnr
-                    if alpha**(max_level-1)<=beta:
+                    if alpha**(block_max_level-1)<=beta:
                         break
 
                 
