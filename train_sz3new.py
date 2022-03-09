@@ -51,7 +51,7 @@ if __name__=="__main__":
     datafolder=args.input
     datafiles=os.listdir(datafolder)
     print(datafiles)
-    datafiles=[file for file in datafiles if file.split(".")[-1]=="dat" or file.split(".")[-1]=="f32" or file.split(".")[-1]=="bin" or file.split(".")[-1]==".log10"]
+    datafiles=[file for file in datafiles if file.split(".")[-1]=="dat" or file.split(".")[-1]=="f32" or file.split(".")[-1]=="bin" or file.split(".")[-1]=="log10"]
     print(datafiles)
     if args.field!=None:
         datafiles=[f for f in datafiles if args.field in f]
