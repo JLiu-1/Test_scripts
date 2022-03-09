@@ -74,12 +74,7 @@ if __name__=="__main__":
         algo="ALGO_INTERP_LORENZO"
 
 
-    if args.cr_tuning:
-        
-        tuning_target="TUNING_TARGET_CR"
-    else:
-        
-        tuning_target="TUNING_TARGET_RD"
+   
     #cr=np.zeros((num_ebs,num_files),dtype=np.float32)
     #psnr=np.zeros((num_ebs,num_files),dtype=np.float32)
     alphas=np.zeros((num_ebs,num_files),dtype=np.float32)
