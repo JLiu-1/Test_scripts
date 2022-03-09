@@ -101,6 +101,8 @@ if __name__=="__main__":
                 for beta in beta_list:
                     if alpha>beta:
                         continue
+                    if alpha==1 and beta!=1:
+                        continue
     
                     configstr="[GlobalSettings]\nCmprAlgo = %s \n[AlgoSettings]\nalpha = %f \nbeta = %f \npredictorTuningRate= %f \nlevelwisePredictionSelection = %d \nmaxStep = %d \ninterpolationBlockSize = %d \ntestLorenzo= %d \ntrain= 1 \n" % \
                     (algo,alpha,beta,args.predtuningrate,args.levelwise,args.maxstep,blocksize,args.lorenzo) 
