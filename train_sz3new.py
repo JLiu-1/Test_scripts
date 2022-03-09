@@ -50,7 +50,7 @@ if __name__=="__main__":
     
     datafolder=args.input
     datafiles=os.listdir(datafolder)
-    datafiles=[file for file in datafiles if file.split(".")[-1]=="dat" or file.split(".")[-1]=="f32" or file.split(".")[-1]=="bin"]
+    datafiles=[file for file in datafiles if file.split(".")[-1]=="dat" or file.split(".")[-1]=="f32" or file.split(".")[-1]=="bin" or file.split(".")[-1]==".log10"]
     if args.field!=None:
         datafiles=[f for f in datafiles if args.field in f]
     datafiles=sorted(datafiles)
