@@ -53,6 +53,7 @@ if __name__=="__main__":
     datafiles=[file for file in datafiles if file.split(".")[-1]=="dat" or file.split(".")[-1]=="f32" or file.split(".")[-1]=="bin"]
     if args.field!=None:
         datafiles=[f for f in datafiles if args.field in f]
+    datafiles=sorted(datafiles)
     num_files=len(datafiles)
 
     #ebs=[i*1e-4 for i in range(1,10)]+[i*1e-3 for i in range(1,10)]+[i*1e-3 for i in range(10,21,5)]
