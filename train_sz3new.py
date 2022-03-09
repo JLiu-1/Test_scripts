@@ -201,10 +201,10 @@ if __name__=="__main__":
 
     alphas_df=pd.DataFrame(alphas,index=ebs,columns=datafiles)
     betas_df=pd.DataFrame(betas,index=ebs,columns=datafiles)
-    ave_alphas_df=pd.DataFrame(ave_alphas,index=ebs,columns="ave")
-    ave_betas_df=pd.DataFrame(ave_betas,index=ebs,columns="ave")
-    most_alphas_df=pd.DataFrame(most_alphas,index=ebs,columns="most")
-    most_betas_df=pd.DataFrame(most_betas,index=ebs,columns="most")
+    ave_alphas_df=pd.DataFrame(ave_alphas,index=ebs,columns=["ave"])
+    ave_betas_df=pd.DataFrame(ave_betas,index=ebs,columns=["ave"])
+    most_alphas_df=pd.DataFrame(most_alphas,index=ebs,columns=["most"])
+    most_betas_df=pd.DataFrame(most_betas,index=ebs,columns=["most"])
 
 
     
