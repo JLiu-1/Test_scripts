@@ -122,8 +122,7 @@ if __name__=="__main__":
                     comm="rm -f %s.out" % pid
                     os.system(comm)
                     if psnr<=bestp and bitrate>=bestb:
-                        if alpha**(block_max_level-1)<=beta:
-                            break
+                        
                         continue
                     elif psnr>=bestp and bitrate<=bestb:
 
