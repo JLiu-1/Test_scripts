@@ -47,9 +47,7 @@ if __name__=="__main__":
     
 
     args = parser.parse_args() 
-    if args.totaltuningrate!=None:
-        args.abtuningrate=args.totaltuningrate
-        args.predtuningrate=args.totaltuningrate
+    
     datafolder=args.input
     datafiles=os.listdir(datafolder)
     datafiles=[file for file in datafiles if file.split(".")[-1]=="dat" or file.split(".")[-1]=="f32" or file.split(".")[-1]=="bin"]
