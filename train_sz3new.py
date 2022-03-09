@@ -193,7 +193,7 @@ if __name__=="__main__":
 
                     
     ave_alphas=np.mean(alphas,axis=1)
-    ave_betas=np.mead(betas,axis=1)
+    ave_betas=np.mean(betas,axis=1)
     for i in range(num_ebs):
         most_alphas[i]=find_most_occured(alphas[i])
         most_betas[i]=find_most_occured(betas[i])
