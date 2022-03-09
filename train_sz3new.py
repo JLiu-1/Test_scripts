@@ -33,7 +33,7 @@ if __name__=="__main__":
     parser.add_argument('--blocksize','-b',type=int,default=0)
     
     #parser.add_argument('--abtuningrate',"-a",type=float,default=0.01)
-    parase.add_argument('--field',"-f",type=str,default=None)
+    parser.add_argument('--field',"-f",type=str,default=None)
     parser.add_argument('--predtuningrate',"-p",type=float,default=0.01)
     #parser.add_argument('--totaltuningrate',"-t",type=float,default=None)
     #parser.add_argument('--cr_tuning',"-c",type=int,default=0)
