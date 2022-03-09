@@ -65,7 +65,7 @@ if __name__=="__main__":
 
 
 
-    ebs=[1e-4,1e-3,1e-2]
+    ebs=[1e-4,3e-4,7e-4,1e-3,3e-3,7e-3,1e-2]
     num_ebs=len(ebs)
     if args.blocksize>0:
         blocksize=args.blocksize
