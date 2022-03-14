@@ -92,7 +92,7 @@ if __name__=="__main__":
     overall_psnr_df.to_csv("%s_overall_psnr.tsv" % args.output,sep='\t')
     algo_df.to_csv("%s_algo.tsv" % args.output,sep='\t')
 
-    if (args.tuning_target=="ssim"):
+    if (args.ssim):
         overall_ssim=np.mean(ssim,axis=1)
         ssim_df=pd.DataFrame(ssim,index=ebs,columns=datafiles)
         overall_ssim_df=pd.DataFrame(overall_ssim,index=ebs,columns=["overall_ssim"])
