@@ -26,7 +26,7 @@ if __name__=="__main__":
    
     
     parser.add_argument('--dim','-d',type=int,default=2)
-    parser.add_argument('--lorenzo','-z',type=int,default=1)
+    parser.add_argument('--lorenzo','-z',type=int,default=0)
     parser.add_argument('--dims','-m',type=str,nargs="+")
     parser.add_argument('--levelwise','-l',type=int,default=0)
     parser.add_argument('--maxstep','-s',type=int,default=0)
@@ -35,6 +35,8 @@ if __name__=="__main__":
     #parser.add_argument('--abtuningrate',"-a",type=float,default=0.01)
     parser.add_argument('--field',"-f",type=str,default=None)
     parser.add_argument('--predtuningrate',"-p",type=float,default=0.01)
+    parser.add_argument('--multidim',"-u",type=int,default=0)
+    parser.add_argument('--profiling',type=int,default=0)
     #parser.add_argument('--totaltuningrate',"-t",type=float,default=None)
     #parser.add_argument('--cr_tuning',"-c",type=int,default=0)
     #parser.add_argument('--linear_reduce',"-r",type=int,default=0)
@@ -107,8 +109,8 @@ if __name__=="__main__":
                     if alpha==1 and beta!=1:
                         continue
     
-                    configstr="[GlobalSettings]\nCmprAlgo = %s \n[AlgoSettings]\nalpha = %f \nbeta = %f \npredictorTuningRate= %f \nlevelwisePredictionSelection = %d \nmaxStep = %d \ninterpolationBlockSize = %d \ntestLorenzo= %d \ntrain= 1 \n" % \
-                    (algo,alpha,beta,args.predtuningrate,args.levelwise,args.maxstep,blocksize,args.lorenzo) 
+                    configstr="[GlobalSettings]\nCmprAlgo = %s \n[AlgoSettings]\nalpha = %f \nbeta = %f \npredictorTuningRate= %f \nlevelwisePredictionSelection = %d \nmaxStep = %d \ninterpolationBlockSize = %d \ntestLorenzo= %d \nmultiDimInterp= %d \nprofiling= %d \ntrain= 1 \n" % \
+                    (algo,alpha,beta,args.predtuningrate,args.levelwise,args.maxstep,blocksize,args.lorenzo.args.multidim,args.profiling) 
                     with open("%s.config" % pid,"w") as f:
                         f.write(configstr)
 
