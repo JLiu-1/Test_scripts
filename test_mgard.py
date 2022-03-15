@@ -47,9 +47,8 @@ if __name__=="__main__":
             filepath=os.path.join(datafolder,datafile)
 
             
-            comm="test_compress %s 0 %f 3 1 %d %s" % (filepath,eb,args.dim," ".join(reversed(args.dims)))
-            os.system(comm)
-            comm="test_decompress %s %s.mgard 0 %d %s" % (filepath,filepath,args.dim," ".join(reversed(args.dims)))
+            comm="test_compress_decompress %s 0 %f 3 1 %d %s" % (filepath,eb,args.dim," ".join(reversed(args.dims)))
+            
 
             
             
