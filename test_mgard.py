@@ -74,7 +74,7 @@ if __name__=="__main__":
 
             if args.ssim:
 
-                comm="calculateSSIM -f %s %s.mgard.out %s" % (filepath,pid," ".join(args.dims) )
+                comm="calculateSSIM -f %s %s.mgard.out %s" % (filepath,filepath," ".join(args.dims) )
                 try:
                     with os.popen(comm) as f:
                         lines=f.read().splitlines()
