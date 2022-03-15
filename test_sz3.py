@@ -61,12 +61,16 @@ if __name__=="__main__":
                 overall_psnr[i]+=n**2
                 algo[i][j]="interp" in lines[3]
             if args.ssim:
+
                 comm="calculateSSIM -f %s %s.out %s" % (filepath,pid," ".join(args.dims))
-                with os.popen(comm) as f:
-                    lines=f.read().splitlines()
-                    print(lines)
-                    s=eval(lines[-1].split('=')[-1])
-                    ssim[i][j]=s
+                try:
+                    with os.popen(comm) as f:
+                        lines=f.read().splitlines()
+                        print(lines)
+                        s=eval(lines[-1].split('=')[-1])
+                        ssim[i][j]=max(s,0)
+                except:
+                    ssim[i][j]=0
 
             
                 
