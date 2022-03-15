@@ -74,7 +74,7 @@ if __name__=="__main__":
 
             if args.ssim:
 
-                comm="calculateSSIM -f %s %s.out %s" % (filepath,pid," ".join(args.dims) )
+                comm="calculateSSIM -f %s %s.mgard.out %s" % (filepath,pid," ".join(args.dims) )
                 try:
                     with os.popen(comm) as f:
                         lines=f.read().splitlines()
@@ -89,7 +89,7 @@ if __name__=="__main__":
                 
 
             
-            comm="rm -f %s.out" % pid
+            comm="rm -f %s.mgard;rm -f %s.mgard.out;" % (filepath,filepath)
             os.system(comm)
     overall_psnr=overall_psnr/num_files
     overall_psnr=np.sqrt(overall_psnr)
