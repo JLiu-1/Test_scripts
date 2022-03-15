@@ -54,8 +54,9 @@ if __name__=="__main__":
             
             
             with os.popen(comm) as f:
-                print(lines)
+                
                 lines=f.read().splitlines()
+                print(lines)
                 r=eval(lines[-1].split('=')[-1])
                 p=eval(lines[-2].split(',')[-1].split('=')[-1])
                
@@ -65,8 +66,9 @@ if __name__=="__main__":
                
             comm="compareData -f %s %s.mgard.out " % (filepath,filepath)
             with os.popen(comm) as f:
-                print(lines)
+                
                 lines=f.read().splitlines()
+                print(lines)
                 
                 n=eval(lines[-3].split(',')[-1].split('=')[-1])
                 
