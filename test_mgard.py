@@ -43,6 +43,8 @@ if __name__=="__main__":
     for i,eb in enumerate(ebs):
     
         for j,datafile in enumerate(datafiles):
+
+            compress_err=False
             
             filepath=os.path.join(datafolder,datafile)
 
@@ -56,36 +58,43 @@ if __name__=="__main__":
                 
                 lines=f.read().splitlines()
                 print(lines)
-                r=eval(lines[-1].split('=')[-1])
-                p=eval(lines[-2].split(',')[-1].split('=')[-1])
-               
-                cr[i][j]=r 
-                psnr[i][j]=p
-                #overall_psnr[i]+=n**2
-               
-            comm="compareData -f %s %s.mgard.out " % (filepath,filepath)
-            with os.popen(comm) as f:
-                
-                lines=f.read().splitlines()
-                print(lines)
-                
-                n=eval(lines[-3].split(',')[-1].split('=')[-1])
-                
-                overall_psnr[i]+=n**2
-              
-
-
-            if args.ssim:
-
-                comm="calculateSSIM -f %s %s.mgard.out %s" % (filepath,filepath," ".join(args.dims) )
                 try:
-                    with os.popen(comm) as f:
-                        lines=f.read().splitlines()
-                        print(lines)
-                        s=eval(lines[-1].split('=')[-1])
-                        ssim[i][j]=max(s,0)
+                    r=eval(lines[-1].split('=')[-1])
+                    p=eval(lines[-2].split(',')[-1].split('=')[-1])
+                    
+                    cr[i][j]=r 
+                    psnr[i][j]=p
                 except:
-                    ssim[i][j]=0
+                    cr[i][j]=1
+                    psnr[i][j]=200
+                    compress_err=True
+                #overall_psnr[i]+=n**2
+            if compress_err:
+                ssim[i][j]=1
+            else:
+                comm="compareData -f %s %s.mgard.out " % (filepath,filepath)
+                with os.popen(comm) as f:
+                    
+                    lines=f.read().splitlines()
+                    print(lines)
+                    
+                    n=eval(lines[-3].split(',')[-1].split('=')[-1])
+                    
+                    overall_psnr[i]+=n**2
+                  
+
+
+                if args.ssim:
+
+                    comm="calculateSSIM -f %s %s.mgard.out %s" % (filepath,filepath," ".join(args.dims) )
+                    try:
+                        with os.popen(comm) as f:
+                            lines=f.read().splitlines()
+                            print(lines)
+                            s=eval(lines[-1].split('=')[-1])
+                            ssim[i][j]=max(s,0)
+                    except:
+                        ssim[i][j]=0
 
             
                 
