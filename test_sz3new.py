@@ -40,11 +40,12 @@ if __name__=="__main__":
     '''
 
 
-    if args.tuning_target=="ssim":
-        args.ssim=1
+
     
 
     args = parser.parse_args()
+    if args.tuning_target=="ssim":
+        args.ssim=1
     if args.totaltuningrate!=None:
         args.abtuningrate=args.totaltuningrate
         args.predtuningrate=args.totaltuningrate
