@@ -43,7 +43,10 @@ if __name__=="__main__":
             filepath=os.path.join(datafolder,datafile)
 
             
-            comm="sz2 -z -f -a -i %s -o %s.out -M REL -R %f -%d %s" % (filepath,pid,eb,args.dim," ".join(args.dims))
+            comm="sz2 -z -f -i %s  -M REL -R %f -%d %s" % (filepath,eb,args.dim," ".join(args.dims))
+            os.system(comm)
+            comm="sz2 -x -f -a -i %s -s %s.sz -%d %s" % (filepath,filepath,args.dim," ".join(args.dims))
+
             
             with os.popen(comm) as f:
                 lines=f.read().splitlines()
@@ -57,7 +60,7 @@ if __name__=="__main__":
 
             if args.ssim:
 
-                comm="calculateSSIM -f %s %s.out %s" % (filepath,pid," ".join(args.dims))
+                comm="calculateSSIM -f %s %s.sz.out %s" % (filepath,filepath," ".join(args.dims))
                 try:
                     with os.popen(comm) as f:
                         lines=f.read().splitlines()
@@ -71,7 +74,7 @@ if __name__=="__main__":
                 
 
             
-            comm="rm -f %s.out" % pid
+            comm="rm -f %s.sz;rm -f %s.sz.out" % (filepath,filepath)
             os.system(comm)
     overall_psnr=overall_psnr/num_files
     overall_psnr=np.sqrt(overall_psnr)
