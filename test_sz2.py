@@ -14,6 +14,7 @@ if __name__=="__main__":
     
     parser.add_argument('--dim','-d',type=int,default=2)
     parser.add_argument('--dims','-m',type=str,nargs="+")
+    parser.add_argument('--ssim',"-s",type=int,default=0)
     #parser.add_argument('--size_x','-x',type=int,default=1800)
     #parser.add_argument('--size_y','-y',type=int,default=3600)
     #parser.add_argument('--size_z','-z',type=int,default=512)
@@ -25,7 +26,7 @@ if __name__=="__main__":
     datafiles=[file for file in datafiles if file.split(".")[-1]=="dat" or file.split(".")[-1]=="f32" or file.split(".")[-1]=="bin"]
     num_files=len(datafiles)
 
-    ebs=[i*1e-4 for i in range(1,10)]+[i*1e-3 for i in range(1,10)]+[i*1e-3 for i in range(10,21,5)]
+    ebs=[1e-5,5e-5]+[i*1e-4 for i in range(1,10)]+[i*1e-3 for i in range(1,10)]+[i*1e-3 for i in range(10,21,5)]
     num_ebs=len(ebs)
 
     cr=np.zeros((num_ebs,num_files),dtype=np.float32)
@@ -33,6 +34,8 @@ if __name__=="__main__":
     overall_cr=np.zeros((num_ebs,1),dtype=np.float32)
     overall_psnr=np.zeros((num_ebs,1),dtype=np.float32)
     pid=os.getpid()
+    ssim=np.zeros((num_ebs,num_files),dtype=np.float32)
+    overall_ssim=np.zeros((num_ebs,1),dtype=np.float32)
     for i,eb in enumerate(ebs):
     
         for j,datafile in enumerate(datafiles):
@@ -51,6 +54,18 @@ if __name__=="__main__":
                 psnr[i][j]=p
 
                 overall_psnr[i]+=n**2
+
+            if args.ssim:
+
+                comm="calculateSSIM -f %s %s.out %s" % (filepath,pid," ".join(args.dims))
+                try:
+                    with os.popen(comm) as f:
+                        lines=f.read().splitlines()
+                        print(lines)
+                        s=eval(lines[-1].split('=')[-1])
+                        ssim[i][j]=max(s,0)
+                except:
+                    ssim[i][j]=0
             
                 
                 
@@ -72,3 +87,10 @@ if __name__=="__main__":
     psnr_df.to_csv("%s_psnr.tsv" % args.output,sep='\t')
     overall_cr_df.to_csv("%s_overall_cr.tsv" % args.output,sep='\t')
     overall_psnr_df.to_csv("%s_overall_psnr.tsv" % args.output,sep='\t')
+
+    if (args.ssim):
+        overall_ssim=np.mean(ssim,axis=1)
+        ssim_df=pd.DataFrame(ssim,index=ebs,columns=datafiles)
+        overall_ssim_df=pd.DataFrame(overall_ssim,index=ebs,columns=["overall_ssim"])
+        ssim_df.to_csv("%s_ssim.tsv" % args.output,sep='\t')
+        overall_ssim_df.to_csv("%s_overall_ssim.tsv" % args.output,sep='\t')
