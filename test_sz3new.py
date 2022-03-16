@@ -28,6 +28,7 @@ if __name__=="__main__":
     parser.add_argument('--multidim',"-u",type=int,default=0)
     parser.add_argument('--profiling',type=int,default=0)
     parser.add_argument('--fixblock',"-f",type=int,default=0)
+    parser.add_argument('--ssim',type=int,default=0)
     #parser.add_argument('--size_x','-x',type=int,default=1800)
     #parser.add_argument('--size_y','-y',type=int,default=3600)
     #parser.add_argument('--size_z','-z',type=int,default=512)
@@ -39,7 +40,8 @@ if __name__=="__main__":
     '''
 
 
-
+    if args.tuning_target=="ssim":
+        args.ssim=1
     
 
     args = parser.parse_args()
@@ -111,7 +113,7 @@ if __name__=="__main__":
                         beta[i][j]=b
             
                 
-            if args.tuning_target=="ssim":
+            if args.ssim:
                 comm="calculateSSIM -f %s %s.out %s" % (filepath,pid," ".join(args.dims))
                 try:
                     with os.popen(comm) as f:
@@ -151,7 +153,7 @@ if __name__=="__main__":
     alpha_df.to_csv("%s_alpha.tsv" % args.output,sep='\t')
     beta_df.to_csv("%s_beta.tsv" % args.output,sep='\t')
 
-    if (args.tuning_target=="ssim"):
+    if args.ssim: 
         overall_ssim=np.mean(ssim,axis=1)
         ssim_df=pd.DataFrame(ssim,index=ebs,columns=datafiles)
         overall_ssim_df=pd.DataFrame(overall_ssim,index=ebs,columns=["overall_ssim"])
