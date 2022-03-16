@@ -59,7 +59,7 @@ if __name__=="__main__":
                 cr[i][j]=r 
                 psnr[i][j]=p
                 overall_psnr[i]+=n**2
-                algo[i][j]="interp" in lines[3]
+                algo[i][j]="INTERP" in lines[-14]
             if args.ssim:
 
                 comm="calculateSSIM -f %s %s.out %s" % (filepath,pid," ".join(args.dims))
