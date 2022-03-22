@@ -42,7 +42,7 @@ if __name__=="__main__":
     pid=os.getpid()
     total_data_size=num_files
     for d in args.dims:
-        total_data_size*=d
+        total_data_size*=eval(d)
     total_data_size=total_data_size*4/(1024*1024)
     print(total_data_size)
     for i,eb in enumerate(ebs):
