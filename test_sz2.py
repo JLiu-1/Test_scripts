@@ -15,6 +15,7 @@ if __name__=="__main__":
     parser.add_argument('--dim','-d',type=int,default=2)
     parser.add_argument('--dims','-m',type=str,nargs="+")
     parser.add_argument('--ssim',"-s",type=int,default=0)
+    parser.add_argument('--autocorr',"-a",type=int,default=0)
     #parser.add_argument('--size_x','-x',type=int,default=1800)
     #parser.add_argument('--size_y','-y',type=int,default=3600)
     #parser.add_argument('--size_z','-z',type=int,default=512)
@@ -36,6 +37,8 @@ if __name__=="__main__":
     pid=os.getpid()
     ssim=np.zeros((num_ebs,num_files),dtype=np.float32)
     overall_ssim=np.zeros((num_ebs,1),dtype=np.float32)
+    ac=np.zeros((num_ebs,num_files),dtype=np.float32)
+    overall_ac=np.zeros((num_ebs,1),dtype=np.float32)
     for i,eb in enumerate(ebs):
     
         for j,datafile in enumerate(datafiles):
@@ -69,6 +72,18 @@ if __name__=="__main__":
                         ssim[i][j]=max(s,0)
                 except:
                     ssim[i][j]=0
+
+            if args.autocorr:
+
+                comm="computeErrAutoCorrelation -f %s %s.sz.out " % (filepath,filepath)
+                try:
+                    with os.popen(comm) as f:
+                        lines=f.read().splitlines()
+                        print(lines)
+                        a=eval(lines[-1].split(':')[-1])
+                        ac[i][j]=a
+                except:
+                    ac[i][j]=1
             
                 
                 
@@ -97,3 +112,10 @@ if __name__=="__main__":
         overall_ssim_df=pd.DataFrame(overall_ssim,index=ebs,columns=["overall_ssim"])
         ssim_df.to_csv("%s_ssim.tsv" % args.output,sep='\t')
         overall_ssim_df.to_csv("%s_overall_ssim.tsv" % args.output,sep='\t')
+
+    if (args.autocorr):
+        overall_ac=np.mean(ac,axis=1)
+        ac_df=pd.DataFrame(ac,index=ebs,columns=datafiles)
+        overall_ac_df=pd.DataFrame(overall_ac,index=ebs,columns=["overall_ac"])
+        ac_df.to_csv("%s_ac.tsv" % args.output,sep='\t')
+        overall_ac_df.to_csv("%s_overall_ac.tsv" % args.output,sep='\t')
