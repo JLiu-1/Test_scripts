@@ -29,6 +29,7 @@ if __name__=="__main__":
     parser.add_argument('--profiling',type=int,default=0)
     parser.add_argument('--fixblock',"-f",type=int,default=0)
     parser.add_argument('--ssim',type=int,default=0)
+    parser.add_argument('--autocorr',"-a",type=int,default=0)
     #parser.add_argument('--size_x','-x',type=int,default=1800)
     #parser.add_argument('--size_y','-y',type=int,default=3600)
     #parser.add_argument('--size_z','-z',type=int,default=512)
@@ -46,6 +47,8 @@ if __name__=="__main__":
     args = parser.parse_args()
     if args.tuning_target=="ssim":
         args.ssim=1
+    if args.tuning_target=="ac":
+        args.autocorr=1
     if args.totaltuningrate!=None:
         args.abtuningrate=args.totaltuningrate
         args.predtuningrate=args.totaltuningrate
@@ -64,7 +67,7 @@ if __name__=="__main__":
         blocksize=32 
         algo="ALGO_INTERP_LORENZO"
     
-    tuning_target_dict={"rd":"TUNING_TARGET_RD","cr":"TUNING_TARGET_CR","ssim":"TUNING_TARGET_SSIM"}
+    tuning_target_dict={"rd":"TUNING_TARGET_RD","cr":"TUNING_TARGET_CR","ssim":"TUNING_TARGET_SSIM","ac":"TUNING_TARGET_AC"}
 
     
         
@@ -78,6 +81,8 @@ if __name__=="__main__":
     overall_cr=np.zeros((num_ebs,1),dtype=np.float32)
     overall_psnr=np.zeros((num_ebs,1),dtype=np.float32)
     overall_ssim=np.zeros((num_ebs,1),dtype=np.float32)
+    ac=np.zeros((num_ebs,num_files),dtype=np.float32)
+    overall_ac=np.zeros((num_ebs,1),dtype=np.float32)
     pid=os.getpid()
     
     configstr="[GlobalSettings]\nCmprAlgo = %s \ntuningTarget = %s \n[AlgoSettings]\nautoTuningRate = %f \npredictorTuningRate= %f \nlevelwisePredictionSelection = %d \nmaxStep = %d \ninterpBlockSize = %d \ntestLorenzo = %d \nlinearReduce = %d \nmultiDimInterp = %d \nsampleBlockSize = %d \nprofiling = %d \nfixBlockSize = %d \n" % \
@@ -125,6 +130,18 @@ if __name__=="__main__":
                 except:
                     ssim[i][j]=0
 
+            if args.autocorr:
+
+                comm="computeErrAutoCorrelation -f %s %s.out " % (filepath,pid)
+                try:
+                    with os.popen(comm) as f:
+                        lines=f.read().splitlines()
+                        print(lines)
+                        a=eval(lines[-1].split(':')[-1])
+                        ac[i][j]=a
+                except:
+                    ac[i][j]=1
+
 
 
 
@@ -160,3 +177,10 @@ if __name__=="__main__":
         overall_ssim_df=pd.DataFrame(overall_ssim,index=ebs,columns=["overall_ssim"])
         ssim_df.to_csv("%s_ssim.tsv" % args.output,sep='\t')
         overall_ssim_df.to_csv("%s_overall_ssim.tsv" % args.output,sep='\t')
+        
+    if (args.autocorr):
+        overall_ac=np.mean(ac,axis=1)
+        ac_df=pd.DataFrame(ac,index=ebs,columns=datafiles)
+        overall_ac_df=pd.DataFrame(overall_ac,index=ebs,columns=["overall_ac"])
+        ac_df.to_csv("%s_ac.tsv" % args.output,sep='\t')
+        overall_ac_df.to_csv("%s_overall_ac.tsv" % args.output,sep='\t')
