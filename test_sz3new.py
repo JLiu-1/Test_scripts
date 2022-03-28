@@ -29,7 +29,7 @@ if __name__=="__main__":
     parser.add_argument('--profiling',type=int,default=0)
     parser.add_argument('--fixblock',"-f",type=int,default=0)
     parser.add_argument('--ssim',type=int,default=0)
-    parser.add_argument('--autocorr',"-a",type=int,default=0)
+    parser.add_argument('--autocorr',"-c",type=int,default=0)
     #parser.add_argument('--size_x','-x',type=int,default=1800)
     #parser.add_argument('--size_y','-y',type=int,default=3600)
     #parser.add_argument('--size_z','-z',type=int,default=512)
