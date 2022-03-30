@@ -56,7 +56,7 @@ if __name__=="__main__":
             rng=np.max(arr)-np.min(arr)
             abseb=rng*eb
             comm="zfp -s -i %s -o %s.out -f -%d %s -a %f &>%s.txt" % (filepath,pid,args.dim," ".join(args.dims),abseb,pid)
-            os.system(command)
+            os.system(comm)
             
             
             with open("%s.txt"%pid,"r") as f:
@@ -77,7 +77,7 @@ if __name__=="__main__":
 
             
             os.system("rm -f %s.out;rm -f %s.txt" % (pid,pid))
-            os.system(comm)
+            
     
     c_speed=total_data_size*np.reciprocal(c_speed)
     d_speed=total_data_size*np.reciprocal(d_speed)
