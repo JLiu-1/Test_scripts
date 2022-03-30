@@ -54,8 +54,7 @@ if __name__=="__main__":
             filepath=os.path.join(datafolder,datafile)
 
             
-            comm="sz -z -f -a -i %s -o %s.out -M REL %f -%d %s" % (filepath,pid,eb,args.dim," ".join(args.dims))
-            
+            comm="test_compress_decompress %s 0 %f 3 1 %d %s" % (filepath,eb,args.dim," ".join(reversed(args.dims)))
             
             with os.popen(comm) as f:
                 lines=f.read().splitlines()
