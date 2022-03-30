@@ -13,7 +13,22 @@ if __name__=="__main__":
    
     
     parser.add_argument('--dim','-d',type=int,default=2)
+    parser.add_argument('--lorenzo','-z',type=int,default=0)
     parser.add_argument('--dims','-m',type=str,nargs="+")
+    parser.add_argument('--levelwise','-l',type=int,default=0)
+    parser.add_argument('--maxstep','-s',type=int,default=0)
+    parser.add_argument('--blocksize','-b',type=int,default=0)
+    parser.add_argument('--sample_blocksize','-e',type=int,default=0)
+    
+    parser.add_argument('--abtuningrate',"-a",type=float,default=0.01)
+    parser.add_argument('--predtuningrate',"-p",type=float,default=0.01)
+    parser.add_argument('--totaltuningrate',"-t",type=float,default=None)
+    parser.add_argument('--tuning_target',"-n",type=str,default="rd")
+    parser.add_argument('--linear_reduce',"-r",type=int,default=0)
+    parser.add_argument('--multidim',"-u",type=int,default=0)
+    parser.add_argument('--profiling',type=int,default=0)
+    parser.add_argument('--fixblock',"-f",type=int,default=0)
+   
     #parser.add_argument('--config','-c',type=str,default=None)
     #parser.add_argument('--ssim',"-s",type=int,default=0)
     #parser.add_argument('--size_x','-x',type=int,default=1800)
@@ -45,6 +60,24 @@ if __name__=="__main__":
         total_data_size*=eval(d)
     total_data_size=total_data_size*4/(1024*1024)
     print(total_data_size)
+
+    if args.blocksize>0:
+        blocksize=args.blocksize
+        algo="ALGO_INTERP_BLOCKED"
+    else:
+        blocksize=32 
+        algo="ALGO_INTERP_LORENZO"
+    
+    tuning_target_dict={"rd":"TUNING_TARGET_RD","cr":"TUNING_TARGET_CR","ssim":"TUNING_TARGET_SSIM"}
+    tuning_target=tuning_target_dict[args.tuning_target]
+
+    configstr="[GlobalSettings]\nCmprAlgo = %s \ntuningTarget = %s \n[AlgoSettings]\nautoTuningRate = %f \npredictorTuningRate= %f \nlevelwisePredictionSelection = %d \nmaxStep = %d \ninterpBlockSize = %d \ntestLorenzo = %d \nlinearReduce = %d \nmultiDimInterp = %d \nsampleBlockSize = %d \nprofiling = %d \nfixBlockSize = %d \n" % \
+    (algo,tuning_target,args.abtuningrate,args.predtuningrate,args.levelwise,args.maxstep,blocksize,args.lorenzo,args.linear_reduce,args.multidim,args.sample_blocksize,args.profiling,args.fixblock) 
+    with open("%s.config" % pid,"w") as f:
+        f.write(configstr)
+
+
+
     for i,eb in enumerate(ebs):
     
         for j,datafile in enumerate(datafiles):
@@ -52,7 +85,7 @@ if __name__=="__main__":
             filepath=os.path.join(datafolder,datafile)
 
             
-            comm="sz -z -f -a -i %s -o %s.out -M REL %f -%d %s" % (filepath,pid,eb,args.dim," ".join(args.dims))
+            comm="sz3_qoz -z -f -a -i %s -o %s.out -M REL %f -%d %s -c %s.config" % (filepath,pid,eb,args.dim," ".join(args.dims),pid)
             
             
             with os.popen(comm) as f:
@@ -73,7 +106,10 @@ if __name__=="__main__":
             
             comm="rm -f %s.out" % pid
             os.system(comm)
-    
+
+            
+    comm="rm -f %s.config" % pid
+    os.system(comm)
     c_speed=total_data_size*np.reciprocal(c_speed)
     d_speed=total_data_size*np.reciprocal(d_speed)
 
