@@ -54,7 +54,7 @@ if __name__=="__main__":
             filepath=os.path.join(datafolder,datafile)
 
             
-            comm="test_compress_decompress %s 0 %f 3 1 %d %s>&%s.txt" % (filepath,eb,args.dim," ".join(reversed(args.dims)),pid)
+            comm="test_compress_decompress %s 0 %f 3 1 %d %s &> %s.txt" % (filepath,eb,args.dim," ".join(reversed(args.dims)),pid)
             os.system(comm)
             with open("%s.txt"%pid,"r") as f:
                 lines=f.read().splitlines()
