@@ -62,8 +62,8 @@ if __name__=="__main__":
             with open("%s.txt"%pid,"r") as f:
                 lines=f.read().splitlines()
                 print(lines)
-                ct=eval(lines[0].split('=')[-1])
-                dt=eval(lines[1].split('=')[-1])
+                ct=eval(lines[1].split('=')[-1])
+                dt=eval(lines[2].split('=')[-1])
                 c_speed[i]+=ct
                 d_speed[i]+=dt
 
