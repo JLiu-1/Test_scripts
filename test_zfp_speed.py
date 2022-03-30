@@ -58,8 +58,9 @@ if __name__=="__main__":
             comm="zfp -s -i %s -o %s.out -f -%d %s -a %f &>%s.txt" % (filepath,pid,args.dim," ".join(args.dims),abseb,pid)
             
             
-            with os.popen(comm) as f:
+            with open("%s.txt"%pid,"r") as f:
                 lines=f.read().splitlines()
+                print(lines)
                 ct=eval(lines[0].split('=')[-1])
                 dt=eval(lines[1].split('=')[-1])
                 c_speed[i]+=ct
@@ -74,7 +75,7 @@ if __name__=="__main__":
                 
 
             
-            comm="rm -f %s.out" % pid
+            os.system("rm -f %s.out;rm -f %s.txt" % (pid,pid))
             os.system(comm)
     
     c_speed=total_data_size*np.reciprocal(c_speed)
