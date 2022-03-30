@@ -62,7 +62,7 @@ if __name__=="__main__":
                 for line in lines:
                     if "Compression time" in line:
                         ct=eval(line.split(':')[-1].split("s")[0])
-                    elif "Deompression time" in line:
+                    elif "Decompression time" in line:
                         dt=eval(line.split(':')[-1].split("s")[0])
                 c_speed[i]+=ct
                 d_speed[i]+=dt
