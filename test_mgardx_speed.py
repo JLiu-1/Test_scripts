@@ -59,6 +59,7 @@ if __name__=="__main__":
             
             with os.popen(comm) as f:
                 lines=f.read().splitlines()
+                print(lines)
                 ct=eval(lines[-8].split(':')[-1].split("s")[0])
                 dt=eval(lines[-5].split(':')[-1].split("s")[0])
                 c_speed[i]+=ct
