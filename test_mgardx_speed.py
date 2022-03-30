@@ -54,9 +54,9 @@ if __name__=="__main__":
             filepath=os.path.join(datafolder,datafile)
 
             
-            comm="test_compress_decompress %s 0 %f 3 1 %d %s" % (filepath,eb,args.dim," ".join(reversed(args.dims)))
-            
-            with os.popen(comm) as f:
+            comm="test_compress_decompress %s 0 %f 3 1 %d %s>&%s.txt" % (filepath,eb,args.dim," ".join(reversed(args.dims)),pid)
+            os.system(comm)
+            with open("%s.txt"%pid,"r") as f:
                 lines=f.read().splitlines()
                 print(lines)
                 ct=eval(lines[-8].split(':')[-1].split("s")[0])
@@ -73,7 +73,7 @@ if __name__=="__main__":
                 
 
             
-            comm="rm -f %s.mgard;rm -f %s.mgard.out;" % (filepath,filepath)
+            comm="rm -f %s.mgard;rm -f %s.mgard.out;rm -f %s.txt" % (filepath,filepath,pid)
             os.system(comm)
     
     c_speed=total_data_size*np.reciprocal(c_speed)
