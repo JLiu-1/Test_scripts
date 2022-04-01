@@ -88,8 +88,9 @@ if __name__=="__main__":
 
 
                 if args.ssim:
-                    if args.dims[-1]==1:
+                    if args.dims[-1]=="1":
                         args.dims=args.dims[:-1]
+                        
 
                     comm="calculateSSIM -f %s %s.mgard.out %s" % (filepath,filepath," ".join(args.dims) )
                     try:
