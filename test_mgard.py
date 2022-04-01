@@ -88,11 +88,12 @@ if __name__=="__main__":
 
 
                 if args.ssim:
-                    if args.dims[-1]=="1":
-                        args.dims=args.dims[:-1]
+                    ssim_dims=args.dims
+                    if ssim_dims[-1]=="1":
+                        ssim_dims=ssim_dims[:-1]
                         
 
-                    comm="calculateSSIM -f %s %s.mgard.out %s" % (filepath,filepath," ".join(args.dims) )
+                    comm="calculateSSIM -f %s %s.mgard.out %s" % (filepath,filepath," ".join(ssim_dims) )
                     try:
                         with os.popen(comm) as f:
                             lines=f.read().splitlines()
