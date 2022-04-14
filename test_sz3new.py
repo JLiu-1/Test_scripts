@@ -57,7 +57,7 @@ if __name__=="__main__":
     datafiles=[file for file in datafiles if file.split(".")[-1]=="dat" or file.split(".")[-1]=="f32" or file.split(".")[-1]=="bin"]
     num_files=len(datafiles)
 
-    ebs=[1e-5,5e-5]+[i*1e-4 for i in range(1,10)]+[i*1e-3 for i in range(1,10)]+[i*1e-3 for i in range(10,21,5)]
+    ebs=[1e-5,5e-5]+[i*1e-4 for i in range(1,10)]+[1e-3]#+[i*1e-3 for i in range(1,10)]+[i*1e-3 for i in range(10,21,5)]
     #ebs=[1e-4,1e-3,1e-2]
     num_ebs=len(ebs)
     if args.blocksize>0:
@@ -98,7 +98,7 @@ if __name__=="__main__":
             filepath=os.path.join(datafolder,datafile)
 
             
-            comm="sz3_qoz -z -f -a -i %s -o %s.out -M REL %f -%d %s -c %s.config" % (filepath,pid,eb,args.dim," ".join(args.dims),pid)
+            comm="qoz -z -f -a -i %s -o %s.out -M REL %f -%d %s -c %s.config" % (filepath,pid,eb,args.dim," ".join(args.dims),pid)
             
             with os.popen(comm) as f:
                 lines=f.read().splitlines()
