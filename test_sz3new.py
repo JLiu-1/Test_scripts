@@ -12,7 +12,7 @@ if __name__=="__main__":
     
    
     
-    parser.add_argument('--dim','-d',type=int,default=2)
+    parser.add_argument('--dim','-d',type=int,default=3)
     parser.add_argument('--lorenzo','-z',type=int,default=0)
     parser.add_argument('--dims','-m',type=str,nargs="+")
     parser.add_argument('--levelwise','-l',type=int,default=0)
@@ -20,8 +20,8 @@ if __name__=="__main__":
     parser.add_argument('--blocksize','-b',type=int,default=0)
     parser.add_argument('--sample_blocksize','-e',type=int,default=0)
     
-    parser.add_argument('--abtuningrate',"-a",type=float,default=0.01)
-    parser.add_argument('--predtuningrate',"-p",type=float,default=0.01)
+    parser.add_argument('--abtuningrate',"-a",type=float,default=0.005)
+    parser.add_argument('--predtuningrate',"-p",type=float,default=0.005)
     parser.add_argument('--totaltuningrate',"-t",type=float,default=None)
     parser.add_argument('--tuning_target',"-n",type=str,default="rd")
     parser.add_argument('--linear_reduce',"-r",type=int,default=0)
