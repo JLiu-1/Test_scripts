@@ -30,6 +30,8 @@ if __name__=="__main__":
     parser.add_argument('--fixblock',"-f",type=int,default=0)
     parser.add_argument('--ssim',type=int,default=0)
     parser.add_argument('--autocorr',"-c",type=int,default=0)
+    parser.add_argument('--alpha',type=float,default=-1)
+    parser.add_argument('--beta',type=float,default=-1)
     #parser.add_argument('--size_x','-x',type=int,default=1800)
     #parser.add_argument('--size_y','-y',type=int,default=3600)
     #parser.add_argument('--size_z','-z',type=int,default=512)
@@ -85,8 +87,8 @@ if __name__=="__main__":
     overall_ac=np.zeros((num_ebs,1),dtype=np.float32)
     pid=os.getpid()
     
-    configstr="[GlobalSettings]\nCmprAlgo = %s \ntuningTarget = %s \n[AlgoSettings]\nautoTuningRate = %f \npredictorTuningRate= %f \nlevelwisePredictionSelection = %d \nmaxStep = %d \ninterpBlockSize = %d \ntestLorenzo = %d \nlinearReduce = %d \nmultiDimInterp = %d \nsampleBlockSize = %d \nprofiling = %d \nfixBlockSize = %d \n" % \
-    (algo,tuning_target,args.abtuningrate,args.predtuningrate,args.levelwise,args.maxstep,blocksize,args.lorenzo,args.linear_reduce,args.multidim,args.sample_blocksize,args.profiling,args.fixblock) 
+    configstr="[GlobalSettings]\nCmprAlgo = %s \ntuningTarget = %s \n[AlgoSettings]\nautoTuningRate = %f \npredictorTuningRate= %f \nlevelwisePredictionSelection = %d \nmaxStep = %d \ninterpBlockSize = %d \ntestLorenzo = %d \nlinearReduce = %d \nmultiDimInterp = %d \nsampleBlockSize = %d \nprofiling = %d \nfixBlockSize = %d \nalpha = %f \nbeta = %f \n" % \
+    (algo,tuning_target,args.abtuningrate,args.predtuningrate,args.levelwise,args.maxstep,blocksize,args.lorenzo,args.linear_reduce,args.multidim,args.sample_blocksize,args.profiling,args.fixblock,args.alpha,args.beta) 
     with open("%s.config" % pid,"w") as f:
         f.write(configstr)
 
