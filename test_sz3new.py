@@ -94,9 +94,9 @@ if __name__=="__main__":
     overall_ac=np.zeros((num_ebs,1),dtype=np.float32)
     pid=os.getpid()
     
-    configstr="[GlobalSettings]\nCmprAlgo = %s \ntuningTarget = %s \n[AlgoSettings]\nautoTuningRate = %f \npredictorTuningRate= %f \nlevelwisePredictionSelection = %d \n \
-    maxStep = %d \ninterpBlockSize = %d \ntestLorenzo = %d \nlinearReduce = %d \nmultiDimInterp = %d \nsampleBlockSize = %d \nprofiling = %d \nfixBlockSize = %d \nalpha = %f \nbeta = %f \n\
-    pdTuningAbConf = %d \npdAlpha = %d \npdBeta = %d \npdTuningRealComp = %d \nlastPdTuning = %d \n"% (algo,tuning_target,args.abtuningrate,args.predtuningrate,args.levelwise,args.maxstep,blocksize\
+    configstr="[GlobalSettings]\nCmprAlgo = %s \ntuningTarget = %s \n[AlgoSettings]\nautoTuningRate = %f \npredictorTuningRate= %f \nlevelwisePredictionSelection = %d \nmaxStep =\
+     %d \ninterpBlockSize = %d \ntestLorenzo = %d \nlinearReduce = %d \nmultiDimInterp = %d \nsampleBlockSize = %d \nprofiling = %d \nfixBlockSize = %d \nalpha = %f \nbeta = \
+     %f \npdTuningAbConf = %d \npdAlpha = %d \npdBeta = %d \npdTuningRealComp = %d \nlastPdTuning = %d \n"% (algo,tuning_target,args.abtuningrate,args.predtuningrate,args.levelwise,args.maxstep,blocksize\
         ,args.lorenzo,args.linear_reduce,args.multidim,args.sample_blocksize,args.profiling,args.fixblock,args.alpha,args.beta,args.abconf,args.pda,args.pdb,args.pdreal,args.lastpdt) 
     with open("%s.config" % pid,"w") as f:
         f.write(configstr)
