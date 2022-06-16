@@ -32,6 +32,7 @@ if __name__=="__main__":
     parser.add_argument('--autocorr',"-c",type=int,default=0)
     parser.add_argument('--alpha',type=float,default=-1)
     parser.add_argument('--beta',type=float,default=-1)
+    parser.add_argument('--bsbs',type=int,default=0)
     
     parser.add_argument('--abconf',type=int,default=0)
     parser.add_argument('--pda',type=float,default=1.5)
@@ -97,8 +98,8 @@ if __name__=="__main__":
     
     configstr="[GlobalSettings]\nCmprAlgo = %s \ntuningTarget = %s \n[AlgoSettings]\nautoTuningRate = %f \npredictorTuningRate= %f \nlevelwisePredictionSelection = %d \nmaxStep =\
      %d \ninterpBlockSize = %d \ntestLorenzo = %d \nlinearReduce = %d \nmultiDimInterp = %d \nsampleBlockSize = %d \nprofiling = %d \nfixBlockSize = %d \nalpha = %f \nbeta = \
-     %f \npdTuningAbConf = %d \npdAlpha = %d \npdBeta = %d \npdTuningRealComp = %d \nlastPdTuning = %d \nabList = %d \n"% (algo,tuning_target,args.abtuningrate,args.predtuningrate,args.levelwise,args.maxstep,blocksize\
-        ,args.lorenzo,args.linear_reduce,args.multidim,args.sample_blocksize,args.profiling,args.fixblock,args.alpha,args.beta,args.abconf,args.pda,args.pdb,args.pdreal,args.lastpdt,args.ablist) 
+     %f \npdTuningAbConf = %d \npdAlpha = %d \npdBeta = %d \npdTuningRealComp = %d \nlastPdTuning = %d \nabList = %d \nblockwiseSampleBlockSize = %d \n"% (algo,tuning_target,args.abtuningrate,args.predtuningrate,args.levelwise,args.maxstep,blocksize\
+        ,args.lorenzo,args.linear_reduce,args.multidim,args.sample_blocksize,args.profiling,args.fixblock,args.alpha,args.beta,args.abconf,args.pda,args.pdb,args.pdreal,args.lastpdt,args.ablist,args.bsbs) 
     with open("%s.config" % pid,"w") as f:
         f.write(configstr)
 
