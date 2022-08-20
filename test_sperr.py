@@ -85,7 +85,7 @@ if __name__=="__main__":
 
                         ct=eval(line.split('=')[-1].split('s')[0])
                     elif "Decompression time" in line:
-                        dt=eval(lines[2].split('=')[-1])
+                        dt=eval(line.split('=')[-1].split('s')[0])
 
 
                 c_speed[i]+=ct
