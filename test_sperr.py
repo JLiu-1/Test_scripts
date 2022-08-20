@@ -64,9 +64,9 @@ if __name__=="__main__":
             rng=np.max(arr)-np.min(arr)
             abseb=rng*eb
             if args.dim==2:
-                comm="compressor_2d --show_stats --dims %s -o %s.sperr --pwe %f %s &>%s.txt;decompressor_2d -o %s.sperr %s.sperr.out >>%s.txt;compareData -f %s %s.sperr.out>>%s.txt" % (" ".join(args.dims),pid,abseb,filepath,pid,pid,pid,pid,filepath,pid,pid)
+                comm="compressor_2d --show_stats --dims %s -o %s.sperr --pwe %f %s &>%s.txt;decompressor_2d -o %s.sperr.out %s.sperr >>%s.txt;compareData -f %s %s.sperr.out>>%s.txt" % (" ".join(args.dims),pid,abseb,filepath,pid,pid,pid,pid,filepath,pid,pid)
             else:
-                comm="compressor_3d --show_stats --dims %s -o %s.sperr --pwe %f %s &>%s.txt;decompressor_3d -o %s.sperr %s.sperr.out >>%s.txt;compareData -f %s %s.sperr.out>>%s.txt" % (" ".join(args.dims),pid,abseb,filepath,pid,pid,pid,pid,filepath,pid,pid)
+                comm="compressor_3d --show_stats --dims %s -o %s.sperr --pwe %f %s &>%s.txt;decompressor_3d -o %s.sperr.out %s.sperr >>%s.txt;compareData -f %s %s.sperr.out>>%s.txt" % (" ".join(args.dims),pid,abseb,filepath,pid,pid,pid,pid,filepath,pid,pid)
             #print(comm)
             os.system(comm)
             with open("%s.txt"%pid,"r") as f:
