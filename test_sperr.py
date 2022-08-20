@@ -96,7 +96,7 @@ if __name__=="__main__":
 
             if args.ssim:
 
-                comm="calculateSSIM -f %s %s.out %s" % (filepath,pid," ".join(args.dims))
+                comm="calculateSSIM -f %s %s.sperr.out %s" % (filepath,pid," ".join(args.dims))
                 try:
                     with os.popen(comm) as f:
                         lines=f.read().splitlines()
@@ -108,7 +108,7 @@ if __name__=="__main__":
 
             if args.autocorr:
 
-                comm="computeErrAutoCorrelation -f %s %s.out " % (filepath,pid)
+                comm="computeErrAutoCorrelation -f %s %s.sperr.out " % (filepath,pid)
                 try:
                     with os.popen(comm) as f:
                         lines=f.read().splitlines()
