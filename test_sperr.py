@@ -81,10 +81,10 @@ if __name__=="__main__":
                 for line in lines:
                     if "Average bpp" in line:
                         r=32/float(line.split(',')[0].split('=')[-1])
-                    else if "Compression time" in line:
+                    elif "Compression time" in line:
 
                         ct=eval(line.split('=')[-1].split('s')[0])
-                    else if "Decompression time" in line:
+                    elif "Decompression time" in line:
                         dt=eval(lines[2].split('=')[-1])
 
 
