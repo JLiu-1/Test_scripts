@@ -117,6 +117,7 @@ if __name__=="__main__":
 
         if args.external_wave:
             command="python coeff_dwt.py %s %s %s" % (filepath,args.wave_type," ".join(args.dims))
+            os.system(command)
 
 
         for i,eb in enumerate(ebs):
