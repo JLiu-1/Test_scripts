@@ -44,6 +44,9 @@ if __name__=="__main__":
     parser.add_argument('--cross',type=int,default=0)
     parser.add_argument('--wavelet',type=int,default=0)
     parser.add_argument('--wrc',type=float,default=0.0)
+    parser.add_argument('--external_wave','-x',type=int,default=0)
+    parser.add_argument('--wave_type',"-w",type=str)
+
 
     #parser.add_argument('--size_x','-x',type=int,default=1800)
     #parser.add_argument('--size_y','-y',type=int,default=3600)
@@ -103,16 +106,21 @@ if __name__=="__main__":
     configstr="[GlobalSettings]\nCmprAlgo = %s \ntuningTarget = %s \n[AlgoSettings]\nautoTuningRate = %f \npredictorTuningRate= %f \nlevelwisePredictionSelection = %d \nmaxStep =\
      %d \ninterpBlockSize = %d \ntestLorenzo = %d \nlinearReduce = %d \nmultiDimInterp = %d \nsampleBlockSize = %d \nprofiling = %d \nfixBlockSize = %d \nalpha = %f \nbeta = \
      %f \npdTuningAbConf = %d \npdAlpha = %d \npdBeta = %d \npdTuningRealComp = %d \nlastPdTuning = %d \nabList = %d \nblockwiseSampleBlockSize = %d \ncrossBlock = \
-     %d \nsampleBlockSampleBlockSize = %d \nwavelet = %d\nwavelet_rel_coeff = %d\n"% (algo,tuning_target,args.abtuningrate,args.predtuningrate\
+     %d \nsampleBlockSampleBlockSize = %d \nwavelet = %d\nwavelet_rel_coeff = %d\nexternal_wave = %d\n"% (algo,tuning_target,args.abtuningrate,args.predtuningrate\
         ,args.levelwise,args.maxstep,blocksize,args.lorenzo,args.linear_reduce,args.multidim,args.sample_blocksize,args.profiling,args.fixblock,args.alpha,args.beta\
-        ,args.abconf,args.pda,args.pdb,args.pdreal,args.lastpdt,args.ablist,args.bsbs,args.cross,args.sbsbs,args.wavelet, args.wrc) 
+        ,args.abconf,args.pda,args.pdb,args.pdreal,args.lastpdt,args.ablist,args.bsbs,args.cross,args.sbsbs,args.wavelet, args.wrc,args.external_wave) 
     with open("%s.config" % pid,"w") as f:
         f.write(configstr)
 
+    for j,datafile in enumerate(datafiles):
 
-    for i,eb in enumerate(ebs):
+        if args.external_wave:
+            command="python coeff_dwt.py %s %s %s" % (filepath,args.wave_type," ".join(args.dims))
+
+
+        for i,eb in enumerate(ebs):
     
-        for j,datafile in enumerate(datafiles):
+        
             
             filepath=os.path.join(datafolder,datafile)
 
@@ -167,7 +175,7 @@ if __name__=="__main__":
             
             comm="rm -f %s.out" % pid
             os.system(comm)
-    comm="rm -f %s.config" % pid
+    comm="rm -f %s.config;rm -f external*" % pid
     os.system(comm)
     overall_psnr=overall_psnr/num_files
     overall_psnr=np.sqrt(overall_psnr)
