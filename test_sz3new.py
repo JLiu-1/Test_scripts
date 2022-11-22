@@ -113,6 +113,7 @@ if __name__=="__main__":
         f.write(configstr)
 
     for j,datafile in enumerate(datafiles):
+        filepath=os.path.join(datafolder,datafile)
 
         if args.external_wave:
             command="python coeff_dwt.py %s %s %s" % (filepath,args.wave_type," ".join(args.dims))
@@ -122,7 +123,7 @@ if __name__=="__main__":
     
         
             
-            filepath=os.path.join(datafolder,datafile)
+            
 
             
             comm="qoz -z -f -a -i %s -o %s.out -M REL %f -%d %s -c %s.config" % (filepath,pid,eb,args.dim," ".join(args.dims),pid)
