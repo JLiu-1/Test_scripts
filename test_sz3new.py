@@ -74,7 +74,7 @@ if __name__=="__main__":
     datafolder=args.input
     datafiles=os.listdir(datafolder)
     datafiles=[file for file in datafiles if file.split(".")[-1]=="dat" or file.split(".")[-1]=="f32" or file.split(".")[-1]=="bin"]
-    if field!=None:
+    if args.field!=None:
         datafiles=[file for file in datafiles if field in datafiles]
     num_files=len(datafiles)
 
