@@ -81,7 +81,7 @@ if __name__=="__main__":
                     n=np.inf
                 #print(lines)
                 for line in lines:
-                    if "Average bpp" in line:
+                    if "Average BPP" in line:
                         r=32/float(line.split(',')[0].split('=')[-1])
                     elif "Compression time" in line:
 
