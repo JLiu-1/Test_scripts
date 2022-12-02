@@ -180,11 +180,9 @@ if __name__=="__main__":
             
             comm="rm -f %s.out" % pid
             os.system(comm)
-    comm="rm -f %s.config" % pid
+    comm="rm -f *%s*" % pid
     os.system(comm)
-    if args.external_wave:
-        comm="rm -f *external*"
-        os.system(comm)
+    
     overall_psnr=overall_psnr/num_files
     overall_psnr=np.sqrt(overall_psnr)
     overall_psnr=-20*np.log10(overall_psnr)
