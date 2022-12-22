@@ -196,7 +196,7 @@ if __name__=="__main__":
     overall_psnr_df=pd.DataFrame(overall_psnr,index=ebs,columns=["overall_psnr"])
     alpha_df=pd.DataFrame(alpha,index=ebs,columns=datafiles)
     beta_df=pd.DataFrame(beta,index=ebs,columns=datafiles)
-    w
+    
 
 
     cr_df.to_csv("%s_cr.tsv" % args.output,sep='\t')
