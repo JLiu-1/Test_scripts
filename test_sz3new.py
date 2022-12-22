@@ -44,9 +44,11 @@ if __name__=="__main__":
     parser.add_argument('--cross',type=int,default=0)
     parser.add_argument('--wavelet',type=int,default=0)
     parser.add_argument('--wrc',type=float,default=0.0)
-    parser.add_argument('--external_wave','-x',type=int,default=0)
-    parser.add_argument('--wave_type',"-w",type=str)
+    parser.add_argument('--waveletautotuning',type=int,default=0)
+    #parser.add_argument('--external_wave','-x',type=int,default=0)
+    #parser.add_argument('--wave_type',"-w",type=str)
     parser.add_argument('--field',type=str,default=None)
+    parser.add_argument('--var_first',type=int,default=0)
 
 
     #parser.add_argument('--size_x','-x',type=int,default=1800)
@@ -104,26 +106,28 @@ if __name__=="__main__":
     overall_ssim=np.zeros((num_ebs,1),dtype=np.float32)
     ac=np.zeros((num_ebs,num_files),dtype=np.float32)
     overall_ac=np.zeros((num_ebs,1),dtype=np.float32)
+    wavelet_selection=np.zeros((num_ebs,num_files),dtype=np.int32)
     pid=os.getpid()
     
     configstr="[GlobalSettings]\nCmprAlgo = %s \ntuningTarget = %s \n[AlgoSettings]\nautoTuningRate = %f \npredictorTuningRate= %f \nlevelwisePredictionSelection = %d \nmaxStep =\
      %d \ninterpBlockSize = %d \ntestLorenzo = %d \nlinearReduce = %d \nmultiDimInterp = %d \nsampleBlockSize = %d \nprofiling = %d \nfixBlockSize = %d \nalpha = %f \nbeta = \
      %f \npdTuningAbConf = %d \npdAlpha = %d \npdBeta = %d \npdTuningRealComp = %d \nlastPdTuning = %d \nabList = %d \nblockwiseSampleBlockSize = %d \ncrossBlock = \
-     %d \nsampleBlockSampleBlockSize = %d \nwavelet = %d\nwavelet_rel_coeff = %f\nexternal_wave = %d\npid = %s\n"% (algo,tuning_target,args.abtuningrate,args.predtuningrate\
+     %d \nsampleBlockSampleBlockSize = %d \nwavelet = %d\nwavelet_rel_coeff = %f\npid = %s\nwaveletAutoTuning = %d\nvar_first = %d\n"% (algo,tuning_target,args.abtuningrate,args.predtuningrate\
         ,args.levelwise,args.maxstep,blocksize,args.lorenzo,args.linear_reduce,args.multidim,args.sample_blocksize,args.profiling,args.fixblock,args.alpha,args.beta\
-        ,args.abconf,args.pda,args.pdb,args.pdreal,args.lastpdt,args.ablist,args.bsbs,args.cross,args.sbsbs,args.wavelet, args.wrc,args.external_wave,pid) 
+        ,args.abconf,args.pda,args.pdb,args.pdreal,args.lastpdt,args.ablist,args.bsbs,args.cross,args.sbsbs,args.wavelet,args.wrc,pid,args.waveletautotuning,args.var_first) 
     with open("%s.config" % pid,"w") as f:
         f.write(configstr)
-
-    for j,datafile in enumerate(datafiles):
-        filepath=os.path.join(datafolder,datafile)
-
+    for i,eb in enumerate(ebs):
+        for j,datafile in enumerate(datafiles):
+            filepath=os.path.join(datafolder,datafile)
+        '''
         if args.external_wave:
             command="python coeff_dwt.py %s %s %s %s" % (filepath,args.wave_type,pid," ".join(args.dims))
             os.system(command)
+        '''
 
 
-        for i,eb in enumerate(ebs):
+        
     
         
             
@@ -149,6 +153,9 @@ if __name__=="__main__":
                         b=eval(line.split(" ")[7][:-1])
                         alpha[i][j]=a
                         beta[i][j]=b
+                    if "Selected wavelet" in line:
+                        wv=eval(line.split(":")[-1])
+                        wavelet_selection[i][j]=wv
             
                 
             if args.ssim:
@@ -195,6 +202,7 @@ if __name__=="__main__":
     overall_psnr_df=pd.DataFrame(overall_psnr,index=ebs,columns=["overall_psnr"])
     alpha_df=pd.DataFrame(alpha,index=ebs,columns=datafiles)
     beta_df=pd.DataFrame(beta,index=ebs,columns=datafiles)
+    w
 
 
     cr_df.to_csv("%s_cr.tsv" % args.output,sep='\t')
@@ -217,3 +225,6 @@ if __name__=="__main__":
         overall_ac_df=pd.DataFrame(overall_ac,index=ebs,columns=["overall_ac"])
         ac_df.to_csv("%s_ac.tsv" % args.output,sep='\t')
         overall_ac_df.to_csv("%s_overall_ac.tsv" % args.output,sep='\t')
+    if args.waveletautotuning:
+        wvs_df=pd.DataFrame(wavelet_selection,index=ebs,columns=datafiles)
+        wvs_df.to_csv("%s_wave_selection.tsv" % args.output,sep='\t')
