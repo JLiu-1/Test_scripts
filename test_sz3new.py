@@ -43,7 +43,7 @@ if __name__=="__main__":
     parser.add_argument('--ablist',type=int,default=0)
     parser.add_argument('--cross',type=int,default=0)
     parser.add_argument('--wavelet',type=int,default=0)
-    parser.add_argument('--wrc',type=float,default=0.0)
+    parser.add_argument('--wrc',type=float,default=1.0)
     parser.add_argument('--waveletautotuning',type=int,default=0)
     #parser.add_argument('--external_wave','-x',type=int,default=0)
     #parser.add_argument('--wave_type',"-w",type=str)
