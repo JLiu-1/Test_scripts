@@ -82,10 +82,13 @@ if __name__=="__main__":
     if args.field!=None:
         datafiles=[file for file in datafiles if args.field in file]
     num_files=len(datafiles)
-
-    ebs=[1e-5,5e-5]+[i*1e-4 for i in range(1,10)]+[i*1e-3 for i in range(1,10)]+[i*1e-3 for i in range(10,21,5)]
+    if args.tuning_target!="cr":
+        ebs=[1e-5,5e-5]+[i*1e-4 for i in range(1,10)]+[i*1e-3 for i in range(1,10)]+[i*1e-3 for i in range(10,21,5)]
+    else:
+        ebs=[1e-4,1e-3,1e-2]
     #ebs=[i*1e-3 for i in range(1,10)]+[i*1e-3 for i in range(10,21,5)]
-    #ebs=[1e-4,1e-3,1e-2]
+    
+
     num_ebs=len(ebs)
     if args.blocksize>0:
         blocksize=args.blocksize
