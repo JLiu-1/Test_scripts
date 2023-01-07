@@ -12,7 +12,7 @@ if __name__=="__main__":
     
    
     
-    parser.add_argument('--dim','-d',type=int,default=2)
+    parser.add_argument('--dim','-d',type=int,default=3)
     parser.add_argument('--lorenzo','-z',type=int,default=0)
     parser.add_argument('--dims','-m',type=str,nargs="+")
     parser.add_argument('--levelwise','-l',type=int,default=0)
@@ -28,12 +28,30 @@ if __name__=="__main__":
     parser.add_argument('--multidim',"-u",type=int,default=0)
     parser.add_argument('--profiling',type=int,default=0)
     parser.add_argument('--fixblock',"-f",type=int,default=0)
-   
-    #parser.add_argument('--config','-c',type=str,default=None)
-    #parser.add_argument('--ssim',"-s",type=int,default=0)
-    #parser.add_argument('--size_x','-x',type=int,default=1800)
-    #parser.add_argument('--size_y','-y',type=int,default=3600)
-    #parser.add_argument('--size_z','-z',type=int,default=512)
+    parser.add_argument('--ssim',type=int,default=0)
+    parser.add_argument('--autocorr',"-c",type=int,default=0)
+    parser.add_argument('--alpha',type=float,default=-1)
+    parser.add_argument('--beta',type=float,default=-1)
+    parser.add_argument('--bsbs',type=int,default=0)
+    parser.add_argument('--sbsbs',type=int,default=0)
+    
+    parser.add_argument('--abconf',type=int,default=0)
+    parser.add_argument('--pda',type=float,default=1.5)
+    parser.add_argument('--pdb',type=float,default=2)
+    parser.add_argument('--pdreal',type=int,default=0)
+    parser.add_argument('--lastpdt',type=int,default=0)
+    parser.add_argument('--ablist',type=int,default=0)
+    parser.add_argument('--cross',type=int,default=0)
+    parser.add_argument('--wavelet',type=int,default=0)
+    parser.add_argument('--wrc',type=float,default=1.0)
+    parser.add_argument('--waveletautotuning',type=int,default=0)
+    #parser.add_argument('--external_wave','-x',type=int,default=0)
+    #parser.add_argument('--wave_type',"-w",type=str)
+    parser.add_argument('--field',type=str,default=None)
+    parser.add_argument('--var_first',type=int,default=0)
+    parser.add_argument('--sperr',type=int,default=-1)
+    parser.add_argument('--conditioning',type=int,default=0)
+    parser.add_argument('--fixwave',type=int,default=0)
     
 
     args = parser.parse_args()
@@ -76,8 +94,13 @@ if __name__=="__main__":
     tuning_target_dict={"rd":"TUNING_TARGET_RD","cr":"TUNING_TARGET_CR","ssim":"TUNING_TARGET_SSIM"}
     tuning_target=tuning_target_dict[args.tuning_target]
 
-    configstr="[GlobalSettings]\nCmprAlgo = %s \ntuningTarget = %s \n[AlgoSettings]\nautoTuningRate = %f \npredictorTuningRate= %f \nlevelwisePredictionSelection = %d \nmaxStep = %d \ninterpBlockSize = %d \ntestLorenzo = %d \nlinearReduce = %d \nmultiDimInterp = %d \nsampleBlockSize = %d \nprofiling = %d \nfixBlockSize = %d \n" % \
-    (algo,tuning_target,args.abtuningrate,args.predtuningrate,args.levelwise,args.maxstep,blocksize,args.lorenzo,args.linear_reduce,args.multidim,args.sample_blocksize,args.profiling,args.fixblock) 
+    configstr="[GlobalSettings]\nCmprAlgo = %s \ntuningTarget = %s \n[AlgoSettings]\nautoTuningRate = %f \npredictorTuningRate= %f \nlevelwisePredictionSelection = %d \nmaxStep =\
+     %d \ninterpBlockSize = %d \ntestLorenzo = %d \nlinearReduce = %d \nmultiDimInterp = %d \nsampleBlockSize = %d \nprofiling = %d \nfixBlockSize = %d \nalpha = %f \nbeta = \
+     %f \npdTuningAbConf = %d \npdAlpha = %d \npdBeta = %d \npdTuningRealComp = %d \nlastPdTuning = %d \nabList = %d \nblockwiseSampleBlockSize = %d \ncrossBlock = \
+     %d \nsampleBlockSampleBlockSize = %d \nwavelet = %d\nwavelet_rel_coeff = %f\npid = %s\nwaveletAutoTuning = %d\nvar_first = %d\nsperr = %d\nconditioning = %d\nfixWave = %d\n"\
+     % (algo,tuning_target,args.abtuningrate,args.predtuningrate,args.levelwise,args.maxstep,blocksize,args.lorenzo,args.linear_reduce,args.multidim,args.sample_blocksize,\
+        args.profiling,args.fixblock,args.alpha,args.beta,args.abconf,args.pda,args.pdb,args.pdreal,args.lastpdt,args.ablist,args.bsbs,args.cross,args.sbsbs,args.wavelet,\
+        args.wrc,pid,args.waveletautotuning,args.var_first,args.sperr,args.conditioning,args.fixwave) 
     with open("%s.config" % pid,"w") as f:
         f.write(configstr)
 
