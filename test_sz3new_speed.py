@@ -136,7 +136,8 @@ if __name__=="__main__":
 
                     elif "Pybind import time" in line:
                         if(ct<=0):
-                            ct-=eval(line.split('=')[-1].spilt("s")[0])
+                            print(line)
+                            ct-=eval( line.split('=')[-1].spilt("s")[0] )
                         else:
                             dt-=eval(line.split('=')[-1].spilt("s")[0])
 
