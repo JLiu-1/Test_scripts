@@ -130,7 +130,7 @@ if __name__=="__main__":
 
                 for line in lines:
                     if "decompression time" in line:
-                        dt+=eval(line.split('=')[-1])
+                        dt+=eval(line.split('=')[-1].split('s')[0])
                     elif "compression time" in line:
                         ct+=eval(line.split('=')[-1])
 
