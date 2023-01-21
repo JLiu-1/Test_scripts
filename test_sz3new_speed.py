@@ -125,15 +125,14 @@ if __name__=="__main__":
                 print(lines)
                 ct=0
                 dt=0
-                ct=eval(lines[-12].split('=')[-1])
-                dt=eval(lines[-2].split('=')[-1].split("s")[0])
+        
                 
 
                 for line in lines:
                     if "decompression time" in line:
-                        dt+=eval(lines.split('=')[-1])
+                        dt+=eval(line.split('=')[-1])
                     elif "compression time" in line:
-                        ct+=eval(lines.split('=')[-1])
+                        ct+=eval(line.split('=')[-1])
 
                     elif "Pybind import time" in line:
                         if(ct<=0):
