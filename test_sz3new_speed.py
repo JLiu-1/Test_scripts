@@ -50,7 +50,7 @@ if __name__=="__main__":
     parser.add_argument('--field',type=str,default=None)
     parser.add_argument('--var_first',type=int,default=0)
     parser.add_argument('--sperr',type=int,default=-1)
-    parser.add_argument('--conditioning',type=int,default=0)
+    parser.add_argument('--conditioning',type=int,default=1)
     parser.add_argument('--fixwave',type=int,default=0)
     parser.add_argument('--wavetest',type=int,default=1)
     parser.add_argument('--pybind',type=int,default=1)
@@ -123,10 +123,27 @@ if __name__=="__main__":
             with os.popen(comm) as f:
                 lines=f.read().splitlines()
                 print(lines)
+                ct=0
+                dt=0
                 ct=eval(lines[-12].split('=')[-1])
                 dt=eval(lines[-2].split('=')[-1].split("s")[0])
+                
+
+                for line in lines:
+                    if "decompression time" in line:
+                        dt+=eval(lines.split('=')[-1])
+                    elif "compression time" in line:
+                        ct+=eval(lines.split('=')[-1])
+
+                    elif "Pybind import time" in line:
+                        if(ct<=0)
+                            ct-=eval(lines.split('=')[-1].spilt("s")[0])
+                        else
+                            dt-=eval(lines.split('=')[-1].spilt("s")[0])
+
                 c_speed[i]+=ct
                 d_speed[i]+=dt
+
 
                 
                 
