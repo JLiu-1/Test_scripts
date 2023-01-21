@@ -139,10 +139,11 @@ if __name__=="__main__":
                             print(line)
                             a=line.split('=')[-1]
                             print(a)
-                            print(a.spilt("s")[0])
-                            ct-=eval( line.split('=')[-1].spilt("s")[0] )
+
+                            print(a.spilt('s')[0])
+                            ct-=eval( line.split('=')[-1].spilt('s')[0] )
                         else:
-                            dt-=eval(line.split('=')[-1].spilt("s")[0])
+                            dt-=eval(line.split('=')[-1].spilt('s')[0])
 
                 c_speed[i]+=ct
                 d_speed[i]+=dt
