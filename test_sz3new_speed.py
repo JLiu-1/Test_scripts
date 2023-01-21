@@ -136,14 +136,10 @@ if __name__=="__main__":
 
                     elif "Pybind import time" in line:
                         if(ct<=0):
-                            print(line)
-                            a=line.split('=')[-1]
-                            print(a)
-
-                            print(a.spilt('s')[0])
-                            ct-=eval( line.split('=')[-1].spilt('s')[0] )
+                            
+                            ct-=eval( line.split('=')[-1].split('s')[0] )
                         else:
-                            dt-=eval(line.split('=')[-1].spilt('s')[0])
+                            dt-=eval(line.split('=')[-1].split('s')[0])
 
                 c_speed[i]+=ct
                 d_speed[i]+=dt
