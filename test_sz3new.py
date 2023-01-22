@@ -151,16 +151,27 @@ if __name__=="__main__":
                 cr[i][j]=r 
                 psnr[i][j]=p
                 overall_psnr[i]+=n**2
+              
                 for line in lines:
-                    if "alpha" in line:
-                        #print(line)
-                        a=eval(line.split(" ")[4][:-1])
-                        b=eval(line.split(" ")[7][:-1])
-                        alpha[i][j]=a
-                        beta[i][j]=b
                     if "Selected wavelet" in line:
                         wv=eval(line.split(":")[-1])
                         wavelet_selection[i][j]=wv
+
+                    if "Interp/SPECK" in line:
+                        #print(line)
+                        if (wavelet_selection[i][j]==0):
+                            a=eval(line.split(" ")[7][:-1])
+                            b=eval(line.split(" ")[10][:-1])
+                            alpha[i][j]=a
+                            beta[i][j]=b
+                        else:
+                            a=eval(line.split(" ")[4][:-1])
+                            
+                            alpha[i][j]=a
+                          
+
+                   
+
             
                 
             if args.ssim:
