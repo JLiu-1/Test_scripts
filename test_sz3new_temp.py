@@ -53,7 +53,8 @@ if __name__=="__main__":
     parser.add_argument('--conditioning',type=int,default=1)
     parser.add_argument('--fixwave',type=int,default=0)
     parser.add_argument('--wavetest',type=int,default=1)
-
+    parser.add_argument('--pybind',type=int,default=1)
+    parser.add_argument('--lfix',type=float,default=1.0)
 
     #parser.add_argument('--size_x','-x',type=int,default=1800)
     #parser.add_argument('--size_y','-y',type=int,default=3600)
@@ -84,8 +85,7 @@ if __name__=="__main__":
         datafiles=[file for file in datafiles if args.field in file]
     num_files=len(datafiles)
     if args.tuning_target!="cr":
-        #ebs=[1e-5,5e-5]+[i*1e-4 for i in range(1,10)]+[i*1e-3 for i in range(1,10)]+[i*1e-3 for i in range(10,21,5)]
-        ebs=[0.01]
+        ebs=[1e-5,5e-5]+[i*1e-4 for i in range(1,11)]
     else:
         ebs=[1e-4,1e-3,1e-2]
     #ebs=[i*1e-3 for i in range(1,10)]+[i*1e-3 for i in range(10,21,5)]
@@ -121,10 +121,11 @@ if __name__=="__main__":
     configstr="[GlobalSettings]\nCmprAlgo = %s \ntuningTarget = %s \n[AlgoSettings]\nautoTuningRate = %f \npredictorTuningRate= %f \nlevelwisePredictionSelection = %d \nmaxStep =\
      %d \ninterpBlockSize = %d \ntestLorenzo = %d \nlinearReduce = %d \nmultiDimInterp = %d \nsampleBlockSize = %d \nprofiling = %d \nfixBlockSize = %d \nalpha = %f \nbeta = \
      %f \npdTuningAbConf = %d \npdAlpha = %d \npdBeta = %d \npdTuningRealComp = %d \nlastPdTuning = %d \nabList = %d \nblockwiseSampleBlockSize = %d \ncrossBlock = \
-     %d \nsampleBlockSampleBlockSize = %d \nwavelet = %d\nwavelet_rel_coeff = %f\npid = %s\nwaveletAutoTuning = %d\nvar_first = %d\nsperr = %d\nconditioning = %d\nfixWave = %d\nwaveletTest = %d\n"\
+     %d \nsampleBlockSampleBlockSize = %d \nwavelet = %d\nwavelet_rel_coeff = %f\npid = %s\nwaveletAutoTuning = %d\nvar_first = %d\nsperr = %d\nconditioning = %d\nfixWave = %d\nwaveletTest = \
+     %d \npyBind = %d\n lorenzoBrFix = %d\n"\
      % (algo,tuning_target,args.abtuningrate,args.predtuningrate,args.levelwise,args.maxstep,blocksize,args.lorenzo,args.linear_reduce,args.multidim,args.sample_blocksize,\
         args.profiling,args.fixblock,args.alpha,args.beta,args.abconf,args.pda,args.pdb,args.pdreal,args.lastpdt,args.ablist,args.bsbs,args.cross,args.sbsbs,args.wavelet,\
-        args.wrc,pid,args.waveletautotuning,args.var_first,args.sperr,args.conditioning,args.fixwave,args.wavetest) 
+        args.wrc,pid,args.waveletautotuning,args.var_first,args.sperr,args.conditioning,args.fixwave,args.wavetest,args.pybind,args.lfix) 
     with open("%s.config" % pid,"w") as f:
         f.write(configstr)
     for i,eb in enumerate(ebs):
@@ -150,16 +151,27 @@ if __name__=="__main__":
                 cr[i][j]=r 
                 psnr[i][j]=p
                 overall_psnr[i]+=n**2
+              
                 for line in lines:
-                    if "alpha" in line:
-                        #print(line)
-                        a=eval(line.split(" ")[4][:-1])
-                        b=eval(line.split(" ")[7][:-1])
-                        alpha[i][j]=a
-                        beta[i][j]=b
                     if "Selected wavelet" in line:
                         wv=eval(line.split(":")[-1])
                         wavelet_selection[i][j]=wv
+
+                    if "Interp/SPECK" in line:
+                        #print(line)
+                        if (wavelet_selection[i][j]==0):
+                            a=eval(line.split(" ")[7][:-1])
+                            b=eval(line.split(" ")[10][:-1])
+                            alpha[i][j]=a
+                            beta[i][j]=b
+                        else:
+                            a=eval(line.split(" ")[4][:-1])
+                            
+                            alpha[i][j]=a
+                          
+
+                   
+
             
                 
             if args.ssim:
