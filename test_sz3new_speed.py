@@ -142,17 +142,8 @@ if __name__=="__main__":
                             dt-=eval(line.split('=')[-1].split('s')[0])
 
                 c_speed[i]+=ct
-                d_speed[i]+=dt
-
-
+                d_speed[i]+=dt              
                 
-                
-           
-
-            
-                
-                
-
             
             comm="rm -f %s.out" % pid
             os.system(comm)

@@ -85,7 +85,7 @@ if __name__=="__main__":
         datafiles=[file for file in datafiles if args.field in file]
     num_files=len(datafiles)
     if args.tuning_target!="cr":
-        ebs=[1e-5,5e-5]
+        ebs=[3e-4,5e-4,2e-3]
     else:
         ebs=[1e-4,1e-3,1e-2]
     #ebs=[i*1e-3 for i in range(1,10)]+[i*1e-3 for i in range(10,21,5)]
