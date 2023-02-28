@@ -70,9 +70,9 @@ if __name__=="__main__":
             #if args.dim==2 and abseb<1e-8:
             #    abseb=1e-8
             if args.dim==2:
-                comm="compressor_2d --show_stats --dims %s -o %s.sperr --pwe %s %s &>%s.txt;decompressor_2d -o %s.sperr.out %s.sperr >>%s.txt;compareData -f %s %s.sperr.out>>%s.txt" % (" ".join(args.dims),pid,str(abseb),filepath,pid,pid,pid,pid,filepath,pid,pid)
+                comm="compressor_2d --show_stats --dims %s --out_bitstream %s.sperr --pwe %s %s &>%s.txt;decompressor_2d -o %s.sperr.out %s.sperr >>%s.txt;compareData -f %s %s.sperr.out>>%s.txt" % (" ".join(args.dims),pid,str(abseb),filepath,pid,pid,pid,pid,filepath,pid,pid)
             else:
-                comm="compressor_3d --show_stats --dims %s -o %s.sperr --pwe %s %s &>%s.txt;decompressor_3d -o %s.sperr.out %s.sperr >>%s.txt;compareData -f %s %s.sperr.out>>%s.txt" % (" ".join(args.dims),pid,str(abseb),filepath,pid,pid,pid,pid,filepath,pid,pid)
+                comm="compressor_3d --omp 1 --show_stats --dims %s --out_bitstream %s.sperr --pwe %s %s &>%s.txt;decompressor_3d --omp 1 -o %s.sperr.out %s.sperr >>%s.txt;compareData -f %s %s.sperr.out>>%s.txt" % (" ".join(args.dims),pid,str(abseb),filepath,pid,pid,pid,pid,filepath,pid,pid)
             #print(comm)
             os.system(comm)
             with open("%s.txt"%pid,"r") as f:
