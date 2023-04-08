@@ -133,6 +133,7 @@ if __name__=="__main__":
     for i,eb in enumerate(ebs):
         for j,datafile in enumerate(datafiles):
             filepath=os.path.join(datafolder,datafile)
+            print(datafile)
             '''
             if args.external_wave:
                 command="python coeff_dwt.py %s %s %s %s" % (filepath,args.wave_type,pid," ".join(args.dims))
