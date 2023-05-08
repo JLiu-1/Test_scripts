@@ -51,7 +51,7 @@ if __name__=="__main__":
             filepath=os.path.join(datafolder,datafile)
 
             
-            comm="sz -z -f -a -i %s -o %s.out -M REL %f -%d %s" % (filepath,pid,eb,args.dim," ".join(args.dims))
+            comm="sz -z -f -a -i %s -o %s.out -M REL -R %f -%d %s" % (filepath,pid,eb,args.dim," ".join(args.dims))
             if args.config!=None:
                 comm+=" -c %s" % args.config 
             
