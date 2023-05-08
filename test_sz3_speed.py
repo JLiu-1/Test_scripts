@@ -53,7 +53,7 @@ if __name__=="__main__":
 
             
             comm="sz -z -f -a -i %s -o %s.out -M REL -R %f -%d %s" % (filepath,pid,eb,args.dim," ".join(args.dims))
-            print(comm)
+            #print(comm)
             
             
             with os.popen(comm) as f:
