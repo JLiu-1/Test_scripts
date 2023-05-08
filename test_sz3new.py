@@ -9,7 +9,7 @@ if __name__=="__main__":
     
     parser.add_argument('--input','-i',type=str)
     parser.add_argument('--output','-o',type=str)
-    
+    parser.add_argument('--speed',type=int,default=0)
    
     
     parser.add_argument('--dim','-d',type=int,default=3)
@@ -88,7 +88,7 @@ if __name__=="__main__":
     if args.field!=None:
         datafiles=[file for file in datafiles if args.field in file]
     num_files=len(datafiles)
-    if args.tuning_target!="cr":
+    if args.tuning_target!="cr" and args.speed!=0:
         ebs=[1e-5,5e-5]+[i*1e-4 for i in range(1,10)]+[i*1e-3 for i in range(1,10)]+[i*1e-3 for i in range(10,21,5)]
     else:
         ebs=[1e-4,1e-3,1e-2]
@@ -96,6 +96,8 @@ if __name__=="__main__":
     
 
     num_ebs=len(ebs)
+    
+
     if args.blocksize>0:
         blocksize=args.blocksize
         algo="ALGO_INTERP_BLOCKED"
@@ -120,6 +122,15 @@ if __name__=="__main__":
     ac=np.zeros((num_ebs,num_files),dtype=np.float32)
     overall_ac=np.zeros((num_ebs,1),dtype=np.float32)
     wavelet_selection=np.zeros((num_ebs,num_files),dtype=np.int32)
+
+    c_speed=np.zeros((num_ebs),dtype=np.float32)
+    d_speed=np.zeros((num_ebs),dtype=np.float32)
+    total_data_size=num_files
+    for d in args.dims:
+        total_data_size*=eval(d)
+    total_data_size=total_data_size*4/(1024*1024)
+
+
     pid=os.getpid()
     
     configstr="[GlobalSettings]\nCmprAlgo = %s \ntuningTarget = %s \n[AlgoSettings]\nautoTuningRate = %f \npredictorTuningRate= %f \nlevelwisePredictionSelection = %d \nmaxStep =\
@@ -173,6 +184,28 @@ if __name__=="__main__":
                             a=eval(line.split(" ")[4][:-1])
                             
                             alpha[i][j]=a
+
+                if(args.speed):
+                    ct=0
+                    dt=0
+            
+                    
+
+                    for line in lines:
+                        if "decompression time" in line:
+                            dt+=eval(line.split('=')[-1].split('s')[0])
+                        elif "compression time" in line:
+                            ct+=eval(line.split('=')[-1])
+
+                        elif "Pybind import time" in line:
+                            if(ct<=0):
+                                
+                                ct-=eval( line.split('=')[-1].split('s')[0] )
+                            else:
+                                dt-=eval(line.split('=')[-1].split('s')[0])
+
+                    c_speed[i]+=ct
+                    d_speed[i]+=dt    
                           
 
                    
@@ -233,6 +266,19 @@ if __name__=="__main__":
     alpha_df.to_csv("%s_alpha.tsv" % args.output,sep='\t')
     beta_df.to_csv("%s_beta.tsv" % args.output,sep='\t')
 
+    if args.speed:
+        c_speed=total_data_size*np.reciprocal(c_speed)
+        d_speed=total_data_size*np.reciprocal(d_speed)
+
+
+       
+        cs_df=pd.DataFrame(c_speed,index=ebs,columns=["Compression Speed (MB/s)"])
+        ds_df=pd.DataFrame(d_speed,index=ebs,columns=["Decompression Speed (MB/s)"])
+        
+        
+        cs_df.to_csv("%s_cspeed.tsv" % args.output,sep='\t')
+        ds_df.to_csv("%s_dspeed.tsv" % args.output,sep='\t')
+
     if args.ssim: 
         overall_ssim=np.mean(ssim,axis=1)
         ssim_df=pd.DataFrame(ssim,index=ebs,columns=datafiles)
@@ -249,3 +295,6 @@ if __name__=="__main__":
     if args.waveletautotuning:
         wvs_df=pd.DataFrame(wavelet_selection,index=ebs,columns=datafiles)
         wvs_df.to_csv("%s_wave_selection.tsv" % args.output,sep='\t')
+
+
+   
