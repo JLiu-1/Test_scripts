@@ -110,6 +110,7 @@ if __name__=="__main__":
         
     '''
     algo="ALGO_INTERP_LORENZO"
+    blocksize=args.blocksize
     
     tuning_target_dict={"rd":"TUNING_TARGET_RD","cr":"TUNING_TARGET_CR","ssim":"TUNING_TARGET_SSIM","ac":"TUNING_TARGET_AC"}
 
