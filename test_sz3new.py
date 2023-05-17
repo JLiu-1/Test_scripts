@@ -107,8 +107,9 @@ if __name__=="__main__":
         #algo="ALGO_INTERP_BLOCKED"
     else:
         blocksize=32 
-        algo="ALGO_INTERP_LORENZO"
+        
     '''
+    algo="ALGO_INTERP_LORENZO"
     
     tuning_target_dict={"rd":"TUNING_TARGET_RD","cr":"TUNING_TARGET_CR","ssim":"TUNING_TARGET_SSIM","ac":"TUNING_TARGET_AC"}
 
