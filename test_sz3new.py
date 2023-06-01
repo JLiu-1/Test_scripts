@@ -60,6 +60,7 @@ if __name__=="__main__":
     parser.add_argument('--adj',type=int,default=0)
     parser.add_argument('--nat',type=int,default=0)
     parser.add_argument('--ams',type=int,default=8)
+    parser.add_argument('--blockrate',type=int,default=2)
     parser.add_argument('--freeze',type=int,default=0)
     parser.add_argument('--ddc',type=int,default=0)
     parser.add_argument('--fgt',type=int,default=0)
