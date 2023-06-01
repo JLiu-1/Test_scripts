@@ -62,6 +62,7 @@ if __name__=="__main__":
     parser.add_argument('--ams',type=int,default=8)
     parser.add_argument('--freeze',type=int,default=0)
     parser.add_argument('--ddc',type=int,default=0)
+    parser.add_argument('--fgt',type=int,default=0)
     #parser.add_argument('--lfix',type=float,default=1.0)
 
     #parser.add_argument('--size_x','-x',type=int,default=1800)
@@ -145,10 +146,12 @@ if __name__=="__main__":
      %d \ninterpBlockSize = %d \ntestLorenzo = %d \nlinearReduce = %d \nmultiDimInterp = %d \nsampleBlockSize = %d \nprofiling = %d \nfixBlockSize = %d \nalpha = %f \nbeta = \
      %f \npdTuningAbConf = %d \npdAlpha = %d \npdBeta = %d \npdTuningRealComp = %d \nlastPdTuning = %d \nabList = %d \nblockwiseSampleBlockSize = %d \ncrossBlock = \
      %d \nsampleBlockSampleBlockSize = %d \nwavelet = %d\nwavelet_rel_coeff = %f\npid = %s\nwaveletAutoTuning = %d\nvar_first = %d\nsperr = %d\nconditioning = %d\nfixWave = %d\nwaveletTest = \
-     %d \npyBind = %d \nwaveAutoFix = %d\nprofilingFix = %d\nfullAdjacentInterp = %d\nnaturalSpline = %d\nadaptiveMultiDimStride=%d\nblockwiseTuning = %d\nblockwiseSampleRate = %d\nfreezeDimTest = %d\ndynamicDimCoeff = %d\n"\
+     %d \npyBind = %d \nwaveAutoFix = %d\nprofilingFix = %d\nfullAdjacentInterp = %d\nnaturalSpline = %d\nadaptiveMultiDimStride=%d\nblockwiseTuning = %d\nblockwiseSampleRate = %d\nfreezeDimTest = \
+     %d \ndynamicDimCoeff = %d\nfineGrainTuning = %d\n"\
      % (algo,tuning_target,args.abtuningrate,args.predtuningrate,args.levelwise,args.maxstep,blocksize,args.lorenzo,args.linear_reduce,args.multidim,args.sample_blocksize,\
         args.profiling,args.fixblock,args.alpha,args.beta,args.abconf,args.pda,args.pdb,args.pdreal,args.lastpdt,args.ablist,args.bsbs,args.cross,args.sbsbs,args.wavelet,\
-        args.wrc,pid,args.waveletautotuning,args.var_first,args.sperr,args.conditioning,args.fixwave,args.wavetest,args.pybind,args.autofix,args.proffix,args.adj,args.nat,args.ams,args.blt,args.blockrate,args.freeze,args.ddc) 
+        args.wrc,pid,args.waveletautotuning,args.var_first,args.sperr,args.conditioning,args.fixwave,args.wavetest,args.pybind,args.autofix,args.proffix,args.adj,args.nat,\
+        args.ams,args.blt,args.blockrate,args.freeze,args.ddc,args.fgt) 
     with open("%s.config" % pid,"w") as f:
         f.write(configstr)
     for i,eb in enumerate(ebs):
