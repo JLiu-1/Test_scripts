@@ -84,6 +84,8 @@ if __name__=="__main__":
 
             comm="compareData -f %s %s.tth.out" % (filepath,pid)
             with os.popen(comm) as f:
+                lines=f.read().splitlines()
+                print(lines)
                 p=eval(lines[-3].split(',')[0].split('=')[-1])
                 n=eval(lines[-3].split(',')[1].split('=')[-1])
                 psnr[i][j]=p
