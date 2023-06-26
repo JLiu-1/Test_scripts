@@ -63,6 +63,7 @@ if __name__=="__main__":
         for j,datafile in enumerate(datafiles):
             
             filepath=os.path.join(datafolder,datafile)
+            print(datafile,eb)
 
             
             comm="qoz1 -z -f -a -i %s -o %s.out -M REL -R %f -%d %s" % (filepath,pid,eb,args.dim," ".join(args.dims))
@@ -71,6 +72,7 @@ if __name__=="__main__":
             
             with os.popen(comm) as f:
                 lines=f.read().splitlines()
+                print(lines)
                 r=eval(lines[-3].split('=')[-1])
                 p=eval(lines[-6].split(',')[0].split('=')[-1])
                 n=eval(lines[-6].split(',')[1].split('=')[-1])
