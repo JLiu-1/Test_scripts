@@ -14,7 +14,7 @@ if __name__=="__main__":
     
     parser.add_argument('--dim','-d',type=int,default=2)
     parser.add_argument('--dims','-m',type=str,nargs="+")
-    #parser.add_argument('--config','-c',type=str,default=None)
+    parser.add_argument('--config','-c',type=str,default=None)
     parser.add_argument('--ssim',"-s",type=int,default=0)
     parser.add_argument('--autocorr',"-a",type=int,default=0)
     parser.add_argument('--speed',type=int,default=0)

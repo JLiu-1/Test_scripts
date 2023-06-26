@@ -66,8 +66,6 @@ if __name__=="__main__":
 
             
             comm="tthresh -t float -i %s -c %s.tth -o %s.tth.out -e %f -s %s" % (filepath,pid,pid,eb," ".join(args.dims))
-            if args.config!=None:
-                comm+=" -c %s" % args.config 
             
             with os.popen(comm) as f:
                 lines=f.read().splitlines()
