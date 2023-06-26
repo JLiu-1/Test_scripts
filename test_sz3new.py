@@ -60,7 +60,7 @@ if __name__=="__main__":
     parser.add_argument('--adj',type=int,default=0)
     parser.add_argument('--nat',type=int,default=0)
     parser.add_argument('--ams',type=int,default=8)
-    parser.add_argument('--blockrate',type=int,default=2)
+    parser.add_argument('--blockrate',type=float,default=2)
     parser.add_argument('--freeze',type=int,default=0)
     parser.add_argument('--ddc',type=int,default=0)
     parser.add_argument('--fgt',type=int,default=0)
@@ -147,7 +147,7 @@ if __name__=="__main__":
      %d \ninterpBlockSize = %d \ntestLorenzo = %d \nlinearReduce = %d \nmultiDimInterp = %d \nsampleBlockSize = %d \nprofiling = %d \nfixBlockSize = %d \nalpha = %f \nbeta = \
      %f \npdTuningAbConf = %d \npdAlpha = %d \npdBeta = %d \npdTuningRealComp = %d \nlastPdTuning = %d \nabList = %d \nblockwiseSampleBlockSize = %d \ncrossBlock = \
      %d \nsampleBlockSampleBlockSize = %d \nwavelet = %d\nwavelet_rel_coeff = %f\npid = %s\nwaveletAutoTuning = %d\nvar_first = %d\nsperr = %d\nconditioning = %d\nfixWave = %d\nwaveletTest = \
-     %d \npyBind = %d \nwaveAutoFix = %d\nprofilingFix = %d\nfullAdjacentInterp = %d\nnaturalSpline = %d\nadaptiveMultiDimStride=%d\nblockwiseTuning = %d\nblockwiseSampleRate = %d\nfreezeDimTest = \
+     %d \npyBind = %d \nwaveAutoFix = %d\nprofilingFix = %d\nfullAdjacentInterp = %d\nnaturalSpline = %d\nadaptiveMultiDimStride=%d\nblockwiseTuning = %d\nblockwiseSampleRate = %f\nfreezeDimTest = \
      %d \ndynamicDimCoeff = %d\nfineGrainTuning = %d\n"\
      % (algo,tuning_target,args.abtuningrate,args.predtuningrate,args.levelwise,args.maxstep,blocksize,args.lorenzo,args.linear_reduce,args.multidim,args.sample_blocksize,\
         args.profiling,args.fixblock,args.alpha,args.beta,args.abconf,args.pda,args.pdb,args.pdreal,args.lastpdt,args.ablist,args.bsbs,args.cross,args.sbsbs,args.wavelet,\
