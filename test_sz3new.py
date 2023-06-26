@@ -15,7 +15,7 @@ if __name__=="__main__":
     parser.add_argument('--dim','-d',type=int,default=3)
     parser.add_argument('--lorenzo','-z',type=int,default=0)
     parser.add_argument('--dims','-m',type=str,nargs="+")
-    parser.add_argument('--levelwise','-l',type=int,default=0)
+    parser.add_argument('--levelwise','-l',type=int,default=4)
     parser.add_argument('--maxstep','-s',type=int,default=32)
     parser.add_argument('--blocksize','-b',type=int,default=32)
     parser.add_argument('--sample_blocksize','-e',type=int,default=32)
