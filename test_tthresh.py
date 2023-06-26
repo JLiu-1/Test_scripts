@@ -61,6 +61,7 @@ if __name__=="__main__":
     for i,eb in enumerate(ebs):
     
         for j,datafile in enumerate(datafiles):
+            print(datafile,eb)
             
             filepath=os.path.join(datafolder,datafile)
 
@@ -69,6 +70,7 @@ if __name__=="__main__":
             
             with os.popen(comm) as f:
                 lines=f.read().splitlines()
+                print(lines)
                 r=eval(lines[-4].split(',')[2].split('=')[-1])
                 ct=eval(lines[-3].split('=')[-1].split("s")[0])
                 dt=eval(lines[-1].split('=')[-1].split("s")[0])
