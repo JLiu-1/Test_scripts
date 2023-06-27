@@ -18,6 +18,7 @@ if __name__=="__main__":
     parser.add_argument('--ssim',"-s",type=int,default=0)
     parser.add_argument('--autocorr',"-a",type=int,default=0)
     parser.add_argument('--speed',type=int,default=0)
+    parser.add_argument('--tuning_target',"-n",type=str,default="PSNR")
     #parser.add_argument('--size_x','-x',type=int,default=1800)
     #parser.add_argument('--size_y','-y',type=int,default=3600)
     #parser.add_argument('--size_z','-z',type=int,default=512)
@@ -66,7 +67,7 @@ if __name__=="__main__":
             print(datafile,eb)
 
             
-            comm="qoz1 -z -f -a -i %s -o %s.out -M REL -R %f -%d %s" % (filepath,pid,eb,args.dim," ".join(args.dims))
+            comm="qoz1 -z -f -a -i %s -o %s.out -M REL -R %f -%d %s -T %s" % (filepath,pid,eb,args.dim," ".join(args.dims),args.tuning_target)
             if args.config!=None:
                 comm+=" -c %s" % args.config 
             
