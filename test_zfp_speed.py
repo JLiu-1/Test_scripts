@@ -55,7 +55,7 @@ if __name__=="__main__":
             arr=np.fromfile(filepath,dtype=np.float32)
             rng=np.max(arr)-np.min(arr)
             abseb=rng*eb
-            comm="zfp -s -i %s -o %s.out -f -%d %s -a %f &>%s.txt" % (filepath,pid,args.dim," ".join(args.dims),abseb,pid)
+            comm="zfp -s -i %s -o %s.out -f -%d %s -a %e &>%s.txt" % (filepath,pid,args.dim," ".join(args.dims),abseb,pid)
             os.system(comm)
             
             
