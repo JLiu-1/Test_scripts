@@ -9,16 +9,16 @@ if __name__=="__main__":
     
     parser.add_argument('--input','-i',type=str)
     parser.add_argument('--output','-o',type=str)
-    
+    parser.add_argument('--speed',type=int,default=0)
    
     
     parser.add_argument('--dim','-d',type=int,default=3)
-    parser.add_argument('--lorenzo','-z',type=int,default=0)
+    parser.add_argument('--lorenzo','-z',type=int,default=1)
     parser.add_argument('--dims','-m',type=str,nargs="+")
-    parser.add_argument('--levelwise','-l',type=int,default=0)
-    parser.add_argument('--maxstep','-s',type=int,default=0)
-    parser.add_argument('--blocksize','-b',type=int,default=0)
-    parser.add_argument('--sample_blocksize','-e',type=int,default=0)
+    parser.add_argument('--levelwise','-l',type=int,default=4)
+    parser.add_argument('--maxstep','-s',type=int,default=32)
+    parser.add_argument('--blocksize','-b',type=int,default=32)
+    parser.add_argument('--sample_blocksize','-e',type=int,default=32)
     
     parser.add_argument('--abtuningrate',"-a",type=float,default=0.005)
     parser.add_argument('--predtuningrate',"-p",type=float,default=0.005)
@@ -26,7 +26,7 @@ if __name__=="__main__":
     parser.add_argument('--tuning_target',"-n",type=str,default="rd")
     parser.add_argument('--linear_reduce',"-r",type=int,default=0)
     parser.add_argument('--multidim',"-u",type=int,default=0)
-    parser.add_argument('--profiling',type=int,default=0)
+    parser.add_argument('--profiling',type=int,default=1)
     parser.add_argument('--fixblock',"-f",type=int,default=0)
     parser.add_argument('--ssim',type=int,default=0)
     parser.add_argument('--autocorr',"-c",type=int,default=0)
@@ -45,16 +45,26 @@ if __name__=="__main__":
     parser.add_argument('--wavelet',type=int,default=0)
     parser.add_argument('--wrc',type=float,default=1.0)
     parser.add_argument('--waveletautotuning',type=int,default=0)
+    parser.add_argument('--blt',type=int,default=0)
     #parser.add_argument('--external_wave','-x',type=int,default=0)
     #parser.add_argument('--wave_type',"-w",type=str)
     parser.add_argument('--field',type=str,default=None)
     parser.add_argument('--var_first',type=int,default=0)
     parser.add_argument('--sperr',type=int,default=-1)
     parser.add_argument('--conditioning',type=int,default=1)
-    parser.add_argument('--fixwave',type=int,default=0)
+    parser.add_argument('--fixwave',type=int,default=-1)
     parser.add_argument('--wavetest',type=int,default=1)
     parser.add_argument('--pybind',type=int,default=1)
-    parser.add_argument('--lfix',type=float,default=1.0)
+    parser.add_argument('--autofix',type=int,default=1)
+    parser.add_argument('--proffix',type=int,default=1)
+    parser.add_argument('--adj',type=int,default=0)
+    parser.add_argument('--nat',type=int,default=0)
+    parser.add_argument('--ams',type=int,default=8)
+    parser.add_argument('--blockrate',type=float,default=2)
+    parser.add_argument('--freeze',type=int,default=0)
+    parser.add_argument('--ddc',type=int,default=0)
+    parser.add_argument('--fgt',type=int,default=0)
+    #parser.add_argument('--lfix',type=float,default=1.0)
 
     #parser.add_argument('--size_x','-x',type=int,default=1800)
     #parser.add_argument('--size_y','-y',type=int,default=3600)
@@ -84,20 +94,26 @@ if __name__=="__main__":
     if args.field!=None:
         datafiles=[file for file in datafiles if args.field in file]
     num_files=len(datafiles)
-    if args.tuning_target!="cr":
-        ebs=[1e-5,5e-5]+[i*1e-4 for i in range(1,11)]
-    else:
+    if args.tuning_target=="cr" or args.speed!=0:
         ebs=[1e-4,1e-3,1e-2]
+    else:
+       
+        ebs=[1e-5,5e-5]+[i*1e-4 for i in range(1,10)]+[i*1e-3 for i in range(1,11)]
     #ebs=[i*1e-3 for i in range(1,10)]+[i*1e-3 for i in range(10,21,5)]
     
 
     num_ebs=len(ebs)
+    
+    '''
     if args.blocksize>0:
         blocksize=args.blocksize
-        algo="ALGO_INTERP_BLOCKED"
+        #algo="ALGO_INTERP_BLOCKED"
     else:
         blocksize=32 
-        algo="ALGO_INTERP_LORENZO"
+        
+    '''
+    algo="ALGO_INTERP_LORENZO"
+    blocksize=args.blocksize
     
     tuning_target_dict={"rd":"TUNING_TARGET_RD","cr":"TUNING_TARGET_CR","ssim":"TUNING_TARGET_SSIM","ac":"TUNING_TARGET_AC"}
 
@@ -116,21 +132,33 @@ if __name__=="__main__":
     ac=np.zeros((num_ebs,num_files),dtype=np.float32)
     overall_ac=np.zeros((num_ebs,1),dtype=np.float32)
     wavelet_selection=np.zeros((num_ebs,num_files),dtype=np.int32)
+
+    c_speed=np.zeros((num_ebs),dtype=np.float32)
+    d_speed=np.zeros((num_ebs),dtype=np.float32)
+    total_data_size=num_files
+    for d in args.dims:
+        total_data_size*=eval(d)
+    total_data_size=total_data_size*4/(1024*1024)
+
+
     pid=os.getpid()
     
     configstr="[GlobalSettings]\nCmprAlgo = %s \ntuningTarget = %s \n[AlgoSettings]\nautoTuningRate = %f \npredictorTuningRate= %f \nlevelwisePredictionSelection = %d \nmaxStep =\
      %d \ninterpBlockSize = %d \ntestLorenzo = %d \nlinearReduce = %d \nmultiDimInterp = %d \nsampleBlockSize = %d \nprofiling = %d \nfixBlockSize = %d \nalpha = %f \nbeta = \
      %f \npdTuningAbConf = %d \npdAlpha = %d \npdBeta = %d \npdTuningRealComp = %d \nlastPdTuning = %d \nabList = %d \nblockwiseSampleBlockSize = %d \ncrossBlock = \
      %d \nsampleBlockSampleBlockSize = %d \nwavelet = %d\nwavelet_rel_coeff = %f\npid = %s\nwaveletAutoTuning = %d\nvar_first = %d\nsperr = %d\nconditioning = %d\nfixWave = %d\nwaveletTest = \
-     %d \npyBind = %d\nlorenzoBrFix = %f\n"\
+     %d \npyBind = %d \nwaveAutoFix = %d\nprofilingFix = %d\nfullAdjacentInterp = %d\nnaturalSpline = %d\nadaptiveMultiDimStride=%d\nblockwiseTuning = %d\nblockwiseSampleRate = %f\nfreezeDimTest = \
+     %d \ndynamicDimCoeff = %d\nfineGrainTuning = %d\n"\
      % (algo,tuning_target,args.abtuningrate,args.predtuningrate,args.levelwise,args.maxstep,blocksize,args.lorenzo,args.linear_reduce,args.multidim,args.sample_blocksize,\
         args.profiling,args.fixblock,args.alpha,args.beta,args.abconf,args.pda,args.pdb,args.pdreal,args.lastpdt,args.ablist,args.bsbs,args.cross,args.sbsbs,args.wavelet,\
-        args.wrc,pid,args.waveletautotuning,args.var_first,args.sperr,args.conditioning,args.fixwave,args.wavetest,args.pybind,args.lfix) 
+        args.wrc,pid,args.waveletautotuning,args.var_first,args.sperr,args.conditioning,args.fixwave,args.wavetest,args.pybind,args.autofix,args.proffix,args.adj,args.nat,\
+        args.ams,args.blt,args.blockrate,args.freeze,args.ddc,args.fgt) 
     with open("%s.config" % pid,"w") as f:
         f.write(configstr)
     for i,eb in enumerate(ebs):
         for j,datafile in enumerate(datafiles):
             filepath=os.path.join(datafolder,datafile)
+            print(datafile,eb)
             '''
             if args.external_wave:
                 command="python coeff_dwt.py %s %s %s %s" % (filepath,args.wave_type,pid," ".join(args.dims))
@@ -168,6 +196,28 @@ if __name__=="__main__":
                             a=eval(line.split(" ")[4][:-1])
                             
                             alpha[i][j]=a
+
+                if(args.speed):
+                    ct=0
+                    dt=0
+            
+                    
+
+                    for line in lines:
+                        if "decompression time" in line:
+                            dt+=eval(line.split('=')[-1].split('s')[0])
+                        elif "compression time" in line:
+                            ct+=eval(line.split('=')[-1])
+
+                        elif "Pybind import time" in line:
+                            if(ct<=0):
+                                
+                                ct-=eval( line.split('=')[-1].split('s')[0] )
+                            else:
+                                dt-=eval(line.split('=')[-1].split('s')[0])
+
+                    c_speed[i]+=ct
+                    d_speed[i]+=dt    
                           
 
                    
@@ -228,6 +278,19 @@ if __name__=="__main__":
     alpha_df.to_csv("%s_alpha.tsv" % args.output,sep='\t')
     beta_df.to_csv("%s_beta.tsv" % args.output,sep='\t')
 
+    if args.speed:
+        c_speed=total_data_size*np.reciprocal(c_speed)
+        d_speed=total_data_size*np.reciprocal(d_speed)
+
+
+       
+        cs_df=pd.DataFrame(c_speed,index=ebs,columns=["Compression Speed (MB/s)"])
+        ds_df=pd.DataFrame(d_speed,index=ebs,columns=["Decompression Speed (MB/s)"])
+        
+        
+        cs_df.to_csv("%s_cspeed.tsv" % args.output,sep='\t')
+        ds_df.to_csv("%s_dspeed.tsv" % args.output,sep='\t')
+
     if args.ssim: 
         overall_ssim=np.mean(ssim,axis=1)
         ssim_df=pd.DataFrame(ssim,index=ebs,columns=datafiles)
@@ -244,3 +307,6 @@ if __name__=="__main__":
     if args.waveletautotuning:
         wvs_df=pd.DataFrame(wavelet_selection,index=ebs,columns=datafiles)
         wvs_df.to_csv("%s_wave_selection.tsv" % args.output,sep='\t')
+
+
+   
