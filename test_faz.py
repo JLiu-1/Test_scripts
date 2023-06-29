@@ -30,7 +30,7 @@ if __name__=="__main__":
     datafiles=[file for file in datafiles if file.split(".")[-1]=="dat" or file.split(".")[-1]=="f32" or file.split(".")[-1]=="bin"]
     num_files=len(datafiles)
 
-    if args.speed:
+    if args.speed==1:
         ebs=[1e-4,1e-3,1e-2]
     else:
 

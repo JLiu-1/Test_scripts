@@ -94,7 +94,7 @@ if __name__=="__main__":
     if args.field!=None:
         datafiles=[file for file in datafiles if args.field in file]
     num_files=len(datafiles)
-    if args.tuning_target=="cr" or args.speed!=0:
+    if args.tuning_target=="cr" or args.speed==1:
         ebs=[1e-4,1e-3,1e-2]
     else:
        

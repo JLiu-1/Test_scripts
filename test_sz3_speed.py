@@ -13,6 +13,7 @@ if __name__=="__main__":
    
     
     parser.add_argument('--dim','-d',type=int,default=2)
+    parser.add_argument('--full','-f',type=int,default=0)
     parser.add_argument('--dims','-m',type=str,nargs="+")
     #parser.add_argument('--config','-c',type=str,default=None)
     #parser.add_argument('--ssim',"-s",type=int,default=0)
@@ -28,7 +29,10 @@ if __name__=="__main__":
     num_files=len(datafiles)
 
     #ebs=[1e-4,1e-31]
-    ebs=[1e-4,1e-3,1e-2]
+    if args.full:
+        ebs=[1e-5,5e-5]+[i*1e-4 for i in range(1,10)]+[i*1e-3 for i in range(1,10)]+[i*1e-3 for i in range(10,21,5)]
+    else:
+        ebs=[1e-4,1e-3,1e-2]
     num_ebs=len(ebs)
 
     c_speed=np.zeros((num_ebs),dtype=np.float32)
