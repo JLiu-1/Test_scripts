@@ -83,7 +83,7 @@ if __name__=="__main__":
                 except:
                     p=np.inf
                     n=np.inf
-                #print(lines)
+                print(lines)
                 for line in lines:
                     if "Average BPP" in line:
                         r=32/float(line.split(',')[0].split('=')[-1])
