@@ -60,7 +60,7 @@ if __name__=="__main__":
     for i,eb in enumerate(ebs):
     
         for j,datafile in enumerate(datafiles):
-            
+            print(datafile,eb)
             filepath=os.path.join(datafolder,datafile)
            
             
