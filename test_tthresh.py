@@ -18,6 +18,8 @@ if __name__=="__main__":
     parser.add_argument('--ssim',"-s",type=int,default=0)
     parser.add_argument('--autocorr',"-a",type=int,default=0)
     parser.add_argument('--speed',type=int,default=0)
+    parser.add_argument('--sonly',type=int,default=0)
+
     #parser.add_argument('--size_x','-x',type=int,default=1800)
     #parser.add_argument('--size_y','-y',type=int,default=3600)
     #parser.add_argument('--size_z','-z',type=int,default=512)
@@ -71,6 +73,7 @@ if __name__=="__main__":
             with os.popen(comm) as f:
                 lines=f.read().splitlines()
                 print(lines)
+
                 r=eval(lines[-4].split(',')[2].split('=')[-1])
                 ct=eval(lines[-3].split('=')[-1].split("s")[0])
                 dt=eval(lines[-1].split('=')[-1].split("s")[0])
@@ -81,15 +84,15 @@ if __name__=="__main__":
 
 
                
-
-            comm="compareData -f %s %s.tth.out" % (filepath,pid)
-            with os.popen(comm) as f:
-                lines=f.read().splitlines()
-                print(lines)
-                p=eval(lines[-3].split(',')[0].split('=')[-1])
-                n=eval(lines[-3].split(',')[1].split('=')[-1])
-                psnr[i][j]=p
-                overall_psnr[i]+=n**2
+            if !args.sonly:
+                comm="compareData -f %s %s.tth.out" % (filepath,pid)
+                with os.popen(comm) as f:
+                    lines=f.read().splitlines()
+                    print(lines)
+                    p=eval(lines[-3].split(',')[0].split('=')[-1])
+                    n=eval(lines[-3].split(',')[1].split('=')[-1])
+                    psnr[i][j]=p
+                    overall_psnr[i]+=n**2
 
              
             if args.ssim:
@@ -122,25 +125,29 @@ if __name__=="__main__":
             
             comm="rm -f %s.tth;rm -f %s.tth.out" % (pid,pid)
             os.system(comm)
-    overall_psnr=overall_psnr/num_files
-    overall_psnr=np.sqrt(overall_psnr)
-    overall_psnr=-20*np.log10(overall_psnr)
     overall_cr=np.reciprocal(np.mean(np.reciprocal(cr),axis=1))
+    
+    
     c_speed=total_data_size*np.reciprocal(c_speed)
     d_speed=total_data_size*np.reciprocal(d_speed)
 
 
     cr_df=pd.DataFrame(cr,index=ebs,columns=datafiles)
-    psnr_df=pd.DataFrame(psnr,index=ebs,columns=datafiles)
+    
     overall_cr_df=pd.DataFrame(overall_cr,index=ebs,columns=["overall_cr"])
-    overall_psnr_df=pd.DataFrame(overall_psnr,index=ebs,columns=["overall_psnr"])
+    
     cs_df=pd.DataFrame(c_speed,index=ebs,columns=["Compression Speed (MB/s)"])
     ds_df=pd.DataFrame(d_speed,index=ebs,columns=["Decompression Speed (MB/s)"])
    
     cr_df.to_csv("%s_cr.tsv" % args.output,sep='\t')
-    psnr_df.to_csv("%s_psnr.tsv" % args.output,sep='\t')
+    
     overall_cr_df.to_csv("%s_overall_cr.tsv" % args.output,sep='\t')
-    overall_psnr_df.to_csv("%s_overall_psnr.tsv" % args.output,sep='\t')
+    if !args.sonly:
+        overall_psnr=overall_psnr/num_files
+        overall_psnr=np.sqrt(overall_psnr)
+        overall_psnr=-20*np.log10(overall_psnr)
+        psnr_df=pd.DataFrame(psnr,index=ebs,columns=datafiles)
+        overall_psnr_df=pd.DataFrame(overall_psnr,index=ebs,columns=["overall_psnr"])
     if args.speed:
         cs_df.to_csv("%s_cspeed.tsv" % args.output,sep='\t')
         ds_df.to_csv("%s_dspeed.tsv" % args.output,sep='\t')
