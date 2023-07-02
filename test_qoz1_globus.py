@@ -57,7 +57,7 @@ if __name__=="__main__":
         filepath=os.path.join(datafolder,datafile)
 
         cmppath=os.path.join(cmpfolder,datafile)+".qoz1"
-        comm="qoz -z -f -a -i %s -z %s -o %s.out -M REL -R %f -%d %s -n %s" % (filepath,cmppath,pid,eb,args.dim," ".join(args.dims),args.tuning_target)
+        comm="qoz1 -z -f -a -i %s -z %s -o %s.out -M REL -R %f -%d %s -T %s" % (filepath,cmppath,pid,eb,args.dim," ".join(args.dims),args.tuning_target)
         #print(comm)
         
         
