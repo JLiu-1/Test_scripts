@@ -84,8 +84,8 @@ if __name__=="__main__":
 
 
    
-    cs_df=pd.DataFrame(c_speed,index=ebs,columns=["Compression Speed (MB/s)"])
-    ds_df=pd.DataFrame(d_speed,index=ebs,columns=["Decompression Speed (MB/s)"])
+    cs_df=pd.DataFrame(c_speed,index=[eb],columns=["Compression Speed (MB/s)"])
+    ds_df=pd.DataFrame(d_speed,index=[eb],columns=["Decompression Speed (MB/s)"])
     
     
     cs_df.to_csv("%s_cspeed.tsv" % args.tsvout,sep='\t')
