@@ -95,7 +95,7 @@ if __name__=="__main__":
         for i in range(1,args.copy):
             for j,datafile in enumerate(datafiles):
                 cmppath=os.path.join(cmpfolder,datafile)+".sz3"
-                cmpath_i=cmppath+"."+str(i)
+                cmppath_i=cmppath+"."+str(i)
                 shutil.copy(cmppath,cmppath_i)
 
 
