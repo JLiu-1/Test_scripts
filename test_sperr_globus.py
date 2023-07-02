@@ -71,7 +71,7 @@ if __name__=="__main__":
             lines=f.read().splitlines()
             print(lines)
             for line in lines:
-                elif "Compression time" in line:
+                if "Compression time" in line:
 
                     ct=eval(line.split('=')[-1].split('s')[0])
                 elif "Decompression time" in line:
