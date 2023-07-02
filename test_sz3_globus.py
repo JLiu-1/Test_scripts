@@ -64,8 +64,8 @@ if __name__=="__main__":
             lines=f.read().splitlines()
             ct=eval(lines[-12].split('=')[-1])
             dt=eval(lines[-2].split('=')[-1].split("s")[0])
-            c_speed[i]+=ct
-            d_speed[i]+=dt
+            c_speed[0]+=ct
+            d_speed[0]+=dt
 
             
             
