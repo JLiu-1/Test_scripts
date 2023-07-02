@@ -37,8 +37,8 @@ if __name__=="__main__":
 
     #ebs=[1e-4,1e-31]
     eb=args.error
-    c_speed=np.zeros((num_ebs),dtype=np.float32)
-    d_speed=np.zeros((num_ebs),dtype=np.float32)
+    c_speed=np.zeros((1),dtype=np.float32)
+    d_speed=np.zeros((1),dtype=np.float32)
     #nrmse=np.zeros((num_ebs,num_files),dtype=np.float32)
     #overall_cr=np.zeros((num_ebs,1),dtype=np.float32)
     #overall_psnr=np.zeros((num_ebs,1),dtype=np.float32)
