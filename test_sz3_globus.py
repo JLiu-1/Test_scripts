@@ -29,6 +29,8 @@ if __name__=="__main__":
     args = parser.parse_args()
     datafolder=args.input
     cmpfolder=args.output
+    if not os.path.exists(cmpfolder)
+    os.makedirs(cmpfolder)
     datafiles=os.listdir(datafolder)
     datafiles=[file for file in datafiles if file.split(".")[-1]=="dat" or file.split(".")[-1]=="f32" or file.split(".")[-1]=="bin"]
     num_files=len(datafiles)
