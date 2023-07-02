@@ -55,7 +55,14 @@ if __name__=="__main__":
     for j,datafile in enumerate(datafiles):
         filepath=os.path.join(datafolder,datafile)
 
+
         cmppath=os.path.join(cmpfolder,datafile)+".zfp"
+
+        arr=np.fromfile(filepath,dtype=np.float32)
+        rng=np.max(arr)-np.min(arr)
+        abseb=rng*eb
+
+
         comm="zfp -s -i %s -z %s -o %s.out -f -%d %s -a %e" % (filepath,cmppath,pid,args.dim," ".join(args.dims),abseb)
         #print(comm)
         
