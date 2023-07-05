@@ -85,7 +85,7 @@ if __name__=="__main__":
 
 
                
-            if not args.sonly:
+            if args.sonly==0:
                 comm="compareData -f %s %s.tth.out" % (filepath,pid)
                 with os.popen(comm) as f:
                     lines=f.read().splitlines()
@@ -143,7 +143,7 @@ if __name__=="__main__":
     cr_df.to_csv("%s_cr.tsv" % args.output,sep='\t')
     
     overall_cr_df.to_csv("%s_overall_cr.tsv" % args.output,sep='\t')
-    if not args.sonly:
+    if args.sonly==0:
         overall_psnr=overall_psnr/num_files
         overall_psnr=np.sqrt(overall_psnr)
         overall_psnr=-20*np.log10(overall_psnr)
