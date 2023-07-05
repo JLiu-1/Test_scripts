@@ -36,7 +36,7 @@ if __name__=="__main__":
     else:
 
         #ebs=[1e-5,5e-5]+[1e-4,2.5e-4,5e-4,7.5e-4]+[1e-3,2.5e-3,5e-3,7.5e-3]+[1e-2,2e-2]
-        ebs=[i*1e-2 for i in range (3,4)]
+        ebs=[i*1e-2 for i in range (3,11)]
     #ebs=[1e-4,1e-3,1e-2]
     num_ebs=len(ebs)
 
@@ -148,7 +148,9 @@ if __name__=="__main__":
         overall_psnr=np.sqrt(overall_psnr)
         overall_psnr=-20*np.log10(overall_psnr)
         psnr_df=pd.DataFrame(psnr,index=ebs,columns=datafiles)
+        psnr_df.to_csv("%s_psnr.tsv" % args.output,sep='\t')
         overall_psnr_df=pd.DataFrame(overall_psnr,index=ebs,columns=["overall_psnr"])
+        overall_psnr_df.to_csv("%s_overall_psnr.tsv" % args.output,sep='\t')
     if args.speed:
         cs_df.to_csv("%s_cspeed.tsv" % args.output,sep='\t')
         ds_df.to_csv("%s_dspeed.tsv" % args.output,sep='\t')
