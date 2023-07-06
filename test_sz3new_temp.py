@@ -94,11 +94,11 @@ if __name__=="__main__":
     if args.field!=None:
         datafiles=[file for file in datafiles if args.field in file]
     num_files=len(datafiles)
-    if args.tuning_target=="cr" or args.speed!=0:
+    if args.tuning_target=="cr" or args.speed==1:
         ebs=[1e-4,1e-3,1e-2]
     else:
        
-        ebs=[1e-5,5e-5]+[i*1e-4 for i in range(1,11)]
+        ebs=[i*1e-3 for i in range(2,10)]+[i*1e-3 for i in range(10,21,5)]
     #ebs=[i*1e-3 for i in range(1,10)]+[i*1e-3 for i in range(10,21,5)]
     
 
