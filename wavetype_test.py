@@ -58,8 +58,11 @@ for ifile in ifiles:
                 cr*=float(orisize)/totalsize
        #psnr=eval(lines[-6].split(',')[0].split('=')[-1])
             nd=np.fromfile("%s_decn.test.out" % pid,dtype=np.float32).reshape(d[0].shape)
+            print(nd)
             c=pywt.array_to_coeffs(nd,d[1])
+            print(c)
             b=pywt.waverecn(c,dwt,mode="periodization")
+            print(b)
             if b.shape!=dims:
                 if (len(dims)==2):
                     b=b[:dims[0],:dims[1]]
