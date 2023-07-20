@@ -53,6 +53,7 @@ for ifile in ifiles:
       #extract cr psnr
             with os.popen(command) as p:
                 lines=p.read().splitlines()
+                print(lines)
                 cr=eval(lines[-3].split("=")[-1])
                 cr*=float(orisize)/totalsize
        #psnr=eval(lines[-6].split(',')[0].split('=')[-1])
@@ -68,6 +69,7 @@ for ifile in ifiles:
             b.tofile("%s_recn.test"%pid)
             with os.popen("compareData -f %s %s_recn.test" % (input_file,pid)) as p:
                 lines=p.read().splitlines()
+                print(lines)
 
                 psnr=eval(lines[-3].split(',')[0].split('=')[-1])
             print(cr)
