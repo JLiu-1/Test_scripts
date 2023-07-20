@@ -46,7 +46,7 @@ for ifile in ifiles:
                 totalsize*=x
             s=[str(x) for x in s]
             shapestr=" ".join(s)
-            print(shapestr)
+            #print(shapestr)
       #do qoz
             command="qoz -z -f -a -i %s_decn.test -o %s_decn.test.out -%d %s -c szw_wt.config -M ABS %f" % (pid,pid,len(dims),shapestr,rng*eb)
 
@@ -69,9 +69,9 @@ for ifile in ifiles:
                 else:
                     b=b[:dims[0],:dims[1],:dims[2]]
             b=b+mean
-            print(b.shape)
+            #print(b.shape)
             b.tofile("%s_recn.test"%pid)
-            with os.popen("compareData -f %s %s_recn.test" % (input_file,pid)) as p:
+            with os.popen("compareData -f %s %s_recn.test" % (ifile,pid)) as p:
                 lines=p.read().splitlines()
                 print(lines)
 
