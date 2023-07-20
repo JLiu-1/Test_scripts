@@ -17,6 +17,8 @@ else:
     ifiles= [os.path.join(input_file,file) for file in os.listdir(input_file) if file.split(".")[-1]=="dat" or file.split(".")[-1]=="f32" or file.split(".")[-1]=="bin"]
 
 pid=os.getpid()
+if not os.path.exists(output_folder):
+    os.makedirs(output_folder)
 
 for ifile in ifiles:
     ifilename=os.path.basename(ifile)
