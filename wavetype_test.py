@@ -21,6 +21,14 @@ if not os.path.exists(output_folder):
 
 for ifile in ifiles:
     ifilename=os.path.basename(ifile)
+    ofile=os.path.join(output_folder,ifilename+".test")
+    fl=open(ofile,"w")
+    fl.write("Wave\tCR\tPSNR\n")
+    #dwt_waves=pywt.wavelist(kind='discrete')
+    dwt_waves=["sym13","sym16","sym18"]
+    a=np.fromfile(ifile,dtype=np.float32)
+    a=a.reshape(dims)
+    rng=np.max(a)-np.min(a)
     mean=np.mean(a)
     a=a-mean
     orisize=1
