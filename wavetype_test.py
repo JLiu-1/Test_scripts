@@ -82,6 +82,6 @@ for ifile in ifiles:
         except:
             print("%s error" %dwt)
 
-        os.system("rm -f *%s*"%pid)
+        #os.system("rm -f *%s*"%pid)
 
     fl.close()
