@@ -15,21 +15,12 @@ if os.path.isfile(input_file):
     ifiles=[input_file]
 else:
     ifiles= [os.path.join(input_file,file) for file in os.listdir(input_file) if file.split(".")[-1]=="dat" or file.split(".")[-1]=="f32" or file.split(".")[-1]=="bin"]
-print(ifiles)
 pid=os.getpid()
 if not os.path.exists(output_folder):
     os.makedirs(output_folder)
 
 for ifile in ifiles:
     ifilename=os.path.basename(ifile)
-    ofile=os.path.join(output_folder,ifilename+".tsv")
-    fl=open(ofile,"w")
-    fl.write("Wave\tCR\tPSNR\n")
-    #dwt_waves=pywt.wavelist(kind='discrete')
-    dwt_waves=["sym13","sym16","sym18"]
-    a=np.fromfile(input_file,dtype=np.float32)
-    a=a.reshape(dims)
-    rng=np.max(a)-np.min(a)
     mean=np.mean(a)
     a=a-mean
     orisize=1
