@@ -92,10 +92,10 @@ if __name__=="__main__":
                         ct=eval(line.split('=')[-1].split('s')[0])
                     elif "Decompression time" in line:
                         dt=eval(line.split('=')[-1].split('s')[0])
+                if args.speed>0:
 
-
-                c_speed[i]+=ct
-                d_speed[i]+=dt
+                    c_speed[i]+=ct
+                    d_speed[i]+=dt
                 cr[i][j]=r 
                 psnr[i][j]=p
                 overall_psnr[i]+=n**2
@@ -131,8 +131,7 @@ if __name__=="__main__":
     overall_psnr=np.sqrt(overall_psnr)
     overall_psnr=-20*np.log10(overall_psnr)
     overall_cr=np.reciprocal(np.mean(np.reciprocal(cr),axis=1))
-    c_speed=total_data_size*np.reciprocal(c_speed)
-    d_speed=total_data_size*np.reciprocal(d_speed)
+    
 
 
 
@@ -140,14 +139,17 @@ if __name__=="__main__":
     psnr_df=pd.DataFrame(psnr,index=ebs,columns=datafiles)
     overall_cr_df=pd.DataFrame(overall_cr,index=ebs,columns=["overall_cr"])
     overall_psnr_df=pd.DataFrame(overall_psnr,index=ebs,columns=["overall_psnr"])
-    cs_df=pd.DataFrame(c_speed,index=ebs,columns=["Compression Speed (MB/s)"])
-    ds_df=pd.DataFrame(d_speed,index=ebs,columns=["Decompression Speed (MB/s)"])
+    
     
     cr_df.to_csv("%s_cr.tsv" % args.output,sep='\t')
     psnr_df.to_csv("%s_psnr.tsv" % args.output,sep='\t')
     overall_cr_df.to_csv("%s_overall_cr.tsv" % args.output,sep='\t')
     overall_psnr_df.to_csv("%s_overall_psnr.tsv" % args.output,sep='\t')
     if args.speed:
+        c_speed=total_data_size*np.reciprocal(c_speed)
+        d_speed=total_data_size*np.reciprocal(d_speed)
+        cs_df=pd.DataFrame(c_speed,index=ebs,columns=["Compression Speed (MB/s)"])
+        ds_df=pd.DataFrame(d_speed,index=ebs,columns=["Decompression Speed (MB/s)"])
         cs_df.to_csv("%s_cspeed.tsv" % args.output,sep='\t')
         ds_df.to_csv("%s_dspeed.tsv" % args.output,sep='\t')
     if (args.ssim):
