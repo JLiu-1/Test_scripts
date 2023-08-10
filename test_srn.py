@@ -65,8 +65,10 @@ if __name__=="__main__":
 
 
     pid=os.getpid()
-
-    configstr="[AlgoSettings]\nckpt_path = %s \n" % args.ckpt 
+    if args.ckpt!=None:
+        configstr="[AlgoSettings]\nSRNet = 1 \nckpt_path = %s \n" % args.ckpt 
+    else:
+        configstr="[AlgoSettings]"
     with open("%s.config" % pid,"w") as f:
         f.write(configstr)
 
