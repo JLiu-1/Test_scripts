@@ -14,12 +14,14 @@ if __name__=="__main__":
     
     parser.add_argument('--dim','-d',type=int,default=2)
     parser.add_argument('--dims','-m',type=str,nargs="+")
-    #parser.add_argument('--config','-c',type=str,default=None)
+    parser.add_argument('--config','-c',type=str,default=None)
     parser.add_argument('--ssim',"-s",type=int,default=0)
     parser.add_argument('--autocorr',"-a",type=int,default=0)
     parser.add_argument('--speed',type=int,default=0)
-    parser.add_argument('--sonly',type=int,default=0)
+    parser.add_argument('--tuning_target',"-n",type=str,default="PSNR")
     parser.add_argument('--field',"-f",type=str,default=None)
+    parser.add_argument('--level',"-l",type=int,default=4)
+    parser.add_argument('--ckpt',"-k",type=str,default=None)
 
     #parser.add_argument('--size_x','-x',type=int,default=1800)
     #parser.add_argument('--size_y','-y',type=int,default=3600)
@@ -38,8 +40,7 @@ if __name__=="__main__":
         ebs=[1e-4,1e-3,1e-2]
     else:
 
-        #ebs=[1e-5,5e-5]+[1e-4,2.5e-4,5e-4,7.5e-4]+[1e-3,2.5e-3,5e-3,7.5e-3]+[1e-2,2e-2]
-        ebs=[1e-5,5e-5]+[1e-4,2.5e-4,5e-4,7.5e-4]+[1e-3,2.5e-3,5e-3,7.5e-3]+[1e-2,2e-2]+[4e-2,7e-2,1e-1]
+        ebs=[1e-5,5e-5]+[i*1e-4 for i in range(1,10)]+[i*1e-3 for i in range(1,10)]+[i*1e-3 for i in range(10,21,5)]
     #ebs=[1e-4,1e-3,1e-2]
     num_ebs=len(ebs)
 
@@ -64,44 +65,39 @@ if __name__=="__main__":
 
 
     pid=os.getpid()
+
+    configstr="[AlgoSettings]\nckpt_path = %s \n" % args.ckpt 
+    with open("%s.config" % pid,"w") as f:
+        f.write(configstr)
+
     for i,eb in enumerate(ebs):
     
         for j,datafile in enumerate(datafiles):
-            print(datafile,eb)
             
             filepath=os.path.join(datafolder,datafile)
+            print(datafile,eb)
 
             
-            comm="tthresh -t float -i %s -c %s.tth -o %s.tth.out -e %f -s %s" % (filepath,pid,pid,eb," ".join(args.dims))
+            comm="qoz -z -f -a -i %s -o %s.out -M REL -R %f -%d %s -T %s -q %d -c %s.config" % (filepath,pid,eb,args.dim," ".join(args.dims),args.tuning_target,args.level,pid)
             
             with os.popen(comm) as f:
                 lines=f.read().splitlines()
                 print(lines)
-
-                r=eval(lines[-4].split(',')[2].split('=')[-1])
-                ct=eval(lines[-3].split('=')[-1].split("s")[0])
-                dt=eval(lines[-1].split('=')[-1].split("s")[0])
+                r=eval(lines[-3].split('=')[-1])
+                p=eval(lines[-6].split(',')[0].split('=')[-1])
+                n=eval(lines[-6].split(',')[1].split('=')[-1])
                 cr[i][j]=r 
+                psnr[i][j]=p
+                overall_psnr[i]+=n**2
+
+                ct=eval(lines[-12].split('=')[-1])
+                dt=eval(lines[-2].split('=')[-1].split("s")[0])
                 c_speed[i]+=ct
                 d_speed[i]+=dt
-
-
-
-               
-            if args.sonly==0:
-                comm="compareData -f %s %s.tth.out" % (filepath,pid)
-                with os.popen(comm) as f:
-                    lines=f.read().splitlines()
-                    print(lines)
-                    p=eval(lines[-3].split(',')[0].split('=')[-1])
-                    n=eval(lines[-3].split(',')[1].split('=')[-1])
-                    psnr[i][j]=p
-                    overall_psnr[i]+=n**2
-
              
             if args.ssim:
 
-                comm="calculateSSIM -f %s %s.tth.out %s" % (filepath,pid," ".join(args.dims))
+                comm="calculateSSIM -f %s %s.out %s" % (filepath,pid," ".join(args.dims))
                 try:
                     with os.popen(comm) as f:
                         lines=f.read().splitlines()
@@ -112,7 +108,7 @@ if __name__=="__main__":
                     ssim[i][j]=0
             if args.autocorr:
 
-                comm="computeErrAutoCorrelation -f %s %s.tth.out " % (filepath,pid)
+                comm="computeErrAutoCorrelation -f %s %s.out " % (filepath,pid)
                 try:
                     with os.popen(comm) as f:
                         lines=f.read().splitlines()
@@ -127,33 +123,29 @@ if __name__=="__main__":
                 
 
             
-            comm="rm -f %s.tth;rm -f %s.tth.out" % (pid,pid)
+            comm="rm -f %s.out" % pid
             os.system(comm)
+    comm="rm -f *%s*" % pid
+    os.system(comm)
+    overall_psnr=overall_psnr/num_files
+    overall_psnr=np.sqrt(overall_psnr)
+    overall_psnr=-20*np.log10(overall_psnr)
     overall_cr=np.reciprocal(np.mean(np.reciprocal(cr),axis=1))
-    
-    
     c_speed=total_data_size*np.reciprocal(c_speed)
     d_speed=total_data_size*np.reciprocal(d_speed)
 
 
     cr_df=pd.DataFrame(cr,index=ebs,columns=datafiles)
-    
+    psnr_df=pd.DataFrame(psnr,index=ebs,columns=datafiles)
     overall_cr_df=pd.DataFrame(overall_cr,index=ebs,columns=["overall_cr"])
-    
+    overall_psnr_df=pd.DataFrame(overall_psnr,index=ebs,columns=["overall_psnr"])
     cs_df=pd.DataFrame(c_speed,index=ebs,columns=["Compression Speed (MB/s)"])
     ds_df=pd.DataFrame(d_speed,index=ebs,columns=["Decompression Speed (MB/s)"])
    
     cr_df.to_csv("%s_cr.tsv" % args.output,sep='\t')
-    
+    psnr_df.to_csv("%s_psnr.tsv" % args.output,sep='\t')
     overall_cr_df.to_csv("%s_overall_cr.tsv" % args.output,sep='\t')
-    if args.sonly==0:
-        overall_psnr=overall_psnr/num_files
-        overall_psnr=np.sqrt(overall_psnr)
-        overall_psnr=-20*np.log10(overall_psnr)
-        psnr_df=pd.DataFrame(psnr,index=ebs,columns=datafiles)
-        psnr_df.to_csv("%s_psnr.tsv" % args.output,sep='\t')
-        overall_psnr_df=pd.DataFrame(overall_psnr,index=ebs,columns=["overall_psnr"])
-        overall_psnr_df.to_csv("%s_overall_psnr.tsv" % args.output,sep='\t')
+    overall_psnr_df.to_csv("%s_overall_psnr.tsv" % args.output,sep='\t')
     if args.speed:
         cs_df.to_csv("%s_cspeed.tsv" % args.output,sep='\t')
         ds_df.to_csv("%s_dspeed.tsv" % args.output,sep='\t')

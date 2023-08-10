@@ -19,6 +19,7 @@ if __name__=="__main__":
     parser.add_argument('--autocorr',"-a",type=int,default=0)
     parser.add_argument('--speed',type=int,default=0)
     parser.add_argument('--tuning_target',"-n",type=str,default="PSNR")
+    parser.add_argument('--field',"-f",type=str,default=None)
     #parser.add_argument('--size_x','-x',type=int,default=1800)
     #parser.add_argument('--size_y','-y',type=int,default=3600)
     #parser.add_argument('--size_z','-z',type=int,default=512)
@@ -28,6 +29,8 @@ if __name__=="__main__":
     datafolder=args.input
     datafiles=os.listdir(datafolder)
     datafiles=[file for file in datafiles if file.split(".")[-1]=="dat" or file.split(".")[-1]=="f32" or file.split(".")[-1]=="bin"]
+    if args.field!=None:
+        datafiles=[file for file in datafiles if args.field in file]
     num_files=len(datafiles)
 
     if args.speed==1:

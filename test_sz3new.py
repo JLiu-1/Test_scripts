@@ -10,6 +10,7 @@ if __name__=="__main__":
     parser.add_argument('--input','-i',type=str)
     parser.add_argument('--output','-o',type=str)
     parser.add_argument('--speed',type=int,default=0)
+    parser.add_argument('--field',type=str,default=None)
    
     
     parser.add_argument('--dim','-d',type=int,default=3)
@@ -48,7 +49,6 @@ if __name__=="__main__":
     parser.add_argument('--blt',type=int,default=0)
     #parser.add_argument('--external_wave','-x',type=int,default=0)
     #parser.add_argument('--wave_type',"-w",type=str)
-    parser.add_argument('--field',type=str,default=None)
     parser.add_argument('--var_first',type=int,default=0)
     parser.add_argument('--sperr',type=int,default=-1)
     parser.add_argument('--conditioning',type=int,default=1)
