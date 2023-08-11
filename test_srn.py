@@ -39,8 +39,10 @@ if __name__=="__main__":
     if args.speed==1:
         ebs=[1e-4,1e-3,1e-2]
     else:
-
-        ebs=[1e-5,5e-5]+[i*1e-4 for i in range(1,10)]+[i*1e-3 for i in range(1,10)]+[i*1e-3 for i in range(10,21,5)]
+        if args.ckpt==None:
+            ebs=[1e-5,5e-5]+[i*1e-4 for i in range(1,10)]+[i*1e-3 for i in range(1,10)]+[i*1e-3 for i in range(10,21,5)]
+        else:
+            ebs=[1e-5,5e-5]+[1e-4,2.5e-4,5e-4,7.5e-4]+[1e-3,2.5e-3,5e-3,7.5e-3]+[i*1e-3 for i in range(10,21,5)]
     #ebs=[1e-4,1e-3,1e-2]
     num_ebs=len(ebs)
 
