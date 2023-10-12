@@ -31,7 +31,7 @@ if __name__=="__main__":
         datafiles=[file for file in datafiles if args.field in file]
     num_files=len(datafiles)
 
-    ebs=[1,2,5,10,20,50,75,100]
+    ebs=[1,2,3,5,8,10,12,15,18,20,30,40,50]
     #ebs=[1e-4,1e-3,1e-2]
     num_ebs=len(ebs)
 

@@ -94,7 +94,7 @@ if __name__=="__main__":
     if args.field!=None:
         datafiles=[file for file in datafiles if args.field in file]
     num_files=len(datafiles)
-    ebs=[1,2,5,10,20,50,75,100]
+    ebs=[1,2,3,5,8,10,12,15,18,20,30,40,50]
     #ebs=[i*1e-3 for i in range(1,10)]+[i*1e-3 for i in range(10,21,5)]
     
 
