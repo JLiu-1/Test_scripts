@@ -64,7 +64,7 @@ if __name__=="__main__":
             print(datafile,eb)
 
             
-            comm="qoz1 -z -I 32 -a -i %s -o %s.out -M REL -R %f -%d %s -T %s" % (filepath,pid,eb,args.dim," ".join(args.dims),args.tuning_target)
+            comm="qoz1 -z -I 32 -a -i %s -o %s.out -M ABS -R %f -%d %s -T %s" % (filepath,pid,eb,args.dim," ".join(args.dims),args.tuning_target)
             if args.config!=None:
                 comm+=" -c %s" % args.config 
             

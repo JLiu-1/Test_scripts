@@ -163,7 +163,7 @@ if __name__=="__main__":
             
 
             
-            comm="qoz -z -I 32 -a -i %s -o %s.out -M REL %f -%d %s -c %s.config" % (filepath,pid,eb,args.dim," ".join(args.dims),pid)
+            comm="qoz -z -I 32 -a -i %s -o %s.out -M ABS %f -%d %s -c %s.config" % (filepath,pid,eb,args.dim," ".join(args.dims),pid)
             
             with os.popen(comm) as f:
                 lines=f.read().splitlines()
