@@ -53,7 +53,7 @@ if __name__=="__main__":
             filepath=os.path.join(datafolder,datafile)
            
             
-            comm="zfp -s -i %s -o %s.out -t i32 -%d %s -a %e &>%s.txt" % (filepath,pid,args.dim," ".join(args.dims),eb,pid)
+            comm="zfp -s -i %s -o %s.out -t i32 -%d %s -a %d &>%s.txt" % (filepath,pid,args.dim," ".join(args.dims),eb,pid)
             #print(comm)
             os.system(comm)
             with open("%s.txt"%pid,"r") as f:
