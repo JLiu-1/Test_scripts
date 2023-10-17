@@ -93,7 +93,7 @@ if __name__=="__main__":
                     ac[i][j]=1
 
             os.system("rm -f %s.out;rm -f %s.txt" % (pid,pid))
-            print(datafile,eb,rng,abseb,r,p)
+            #print(datafile,eb,rng,abseb,r,p)
 
     overall_psnr=overall_psnr/num_files
     overall_psnr=np.sqrt(overall_psnr)
