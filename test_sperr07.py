@@ -73,9 +73,9 @@ if __name__=="__main__":
             #if args.dim==2 and abseb<1e-8:
             #    abseb=1e-8
             if args.dim==2:
-                comm="sperr2d -c --ftype 32 --print_stats --dims %s --o_bitstream %s.sperr --pwe %s %s ;sperr2d -d --ftype 32 --o_decomp_f32 %s.sperr.out %s.sperr ;compareData -f %s %s.sperr.out" % (" ".join(args.dims),pid,str(abseb),filepath,pid,pid,pid,pid,filepath,pid,pid)
+                comm="sperr2d -c --ftype 32 --print_stats --dims %s --o_bitstream %s.sperr --pwe %s %s ;sperr2d -d --ftype 32 --o_decomp_f32 %s.sperr.out %s.sperr ;compareData -f %s %s.sperr.out" % (" ".join(args.dims),pid,str(abseb),filepath,pid,pid,filepath,pid)
             else:
-                comm="sperr3d -c --ftype 32 --omp 1 --print_stats --dims %s --o_bitstream %s.sperr --pwe %s %s ;sperr3d -d --ftype 32 --omp 1 --o_decomp_f32 %s.sperr.out %s.sperr;compareData -f %s %s.sperr.out" % (" ".join(args.dims),pid,str(abseb),filepath,pid,pid,pid,pid,filepath,pid,pid)
+                comm="sperr3d -c --ftype 32 --omp 1 --print_stats --dims %s --o_bitstream %s.sperr --pwe %s %s ;sperr3d -d --ftype 32 --omp 1 --o_decomp_f32 %s.sperr.out %s.sperr;compareData -f %s %s.sperr.out" % (" ".join(args.dims),pid,str(abseb),filepath,pid,pid,filepath,pid)
             #print(comm)
            
             with os.popen(comm) as f:
