@@ -72,7 +72,7 @@ if __name__=="__main__":
             filepath=os.path.join(datafolder,datafile)
 
             
-            comm="faz_multi -z -f -a -F -i %s -o %s.out -M REL -R %f -%d %s -T %s -w %d" % (filepath,pid,eb,args.dim," ".join(args.dims),args.tuning_target,args.wave)
+            comm="faz_multi -z -f -a -F 1 -i %s -o %s.out -M REL -R %f -%d %s -T %s -w %d" % (filepath,pid,eb,args.dim," ".join(args.dims),args.tuning_target,args.wave)
             if args.config!=None:
                 comm+=" -c %s" % args.config 
             
