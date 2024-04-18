@@ -28,10 +28,10 @@ if dim_count==3:
 mat_dims=input_array.shape
 
 if r_or_c: #c
-    input_array=scale(input_array,axis=0, with_std=False)
+    input_array=scale(input_array,axis=0)
     output_array=np.matmul(np.transpose(input_array),input_array)/(mat_dims[0]-1)
 else:
-    input_array=scale(input_array,axis=1, with_std=False)
+    input_array=scale(input_array,axis=1)
     output_array=np.matmul(input_array,np.transpose(input_array))/(mat_dims[1]-1)
 
 output_array.tofile(ofile)
