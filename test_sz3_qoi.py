@@ -18,6 +18,7 @@ if __name__=="__main__":
     parser.add_argument('--ssim',"-s",type=int,default=0)
     parser.add_argument('--autocorr',"-a",type=int,default=0)
     parser.add_argument('--field',"-f",type=str,default=None)
+    parser.add_argument('--qoiid',"-q",type=int,default=1)
     #parser.add_argument('--size_x','-x',type=int,default=1800)
     #parser.add_argument('--size_y','-y',type=int,default=3600)
     #parser.add_argument('--size_z','-z',type=int,default=512)
@@ -31,9 +32,9 @@ if __name__=="__main__":
         datafiles=[file for file in datafiles if args.field in file]
     num_files=len(datafiles)
 
-    ebs=[1e-5,5e-5]+[i*1e-4 for i in range(1,10)]+[i*1e-3 for i in range(1,10)]+[i*1e-3 for i in range(10,21,5)]
+    qoi_ebs=[1e-5,5e-5]+[1e-4,5e-4]+[1e-3,5e-3]+[1e-2,2e-2]
     #ebs=[1e-4,1e-3,1e-2]
-    num_ebs=len(ebs)
+    num_ebs=len(qoi_ebs)
 
     cr=np.zeros((num_ebs,num_files),dtype=np.float32)
     psnr=np.zeros((num_ebs,num_files),dtype=np.float32)
@@ -47,22 +48,27 @@ if __name__=="__main__":
     ac=np.zeros((num_ebs,num_files),dtype=np.float32)
     overall_ac=np.zeros((num_ebs,1),dtype=np.float32)
     pid=os.getpid()
-    for i,eb in enumerate(ebs):
-    
+
+    sz3_exe_path = "~/packages/sz3-QoI/bin/sz"
+    for i,qoieb in enumerate(ebs):
+        eb = 10*qoieb
+        configstr = "[QoISettings]\nqoiEB = %f \nqoi = %d \n" % (qoieb,args.qoiid)
+        with open("%s.config" % pid,"w") as f:
+            f.write(configstr)
         for j,datafile in enumerate(datafiles):
             
             filepath=os.path.join(datafolder,datafile)
 
             
-            comm="sz3 -z -f -a -i %s -o %s.out -M REL -R %f -%d %s" % (filepath,pid,eb,args.dim," ".join(args.dims))
-            if args.config!=None:
-                comm+=" -c %s" % args.config 
+            comm="%s -z -f -a -i %s -o %s.out -M REL -R %f -%d %s -c %s.config" % (sz3_exe_path, filepath,pid,eb,args.dim," ".join(args.dims),pid)
             
             with os.popen(comm) as f:
                 lines=f.read().splitlines()
                 r=eval(lines[-3].split('=')[-1])
-                p=eval(lines[-6].split(',')[0].split('=')[-1])
-                n=eval(lines[-6].split(',')[1].split('=')[-1])
+                for line in lines:
+                    if "PSNR" in line:
+                        p=eval(line.split(',')[0].split('=')[-1])
+                        n=eval(line.split(',')[1].split('=')[-1])
                 cr[i][j]=r 
                 psnr[i][j]=p
                 overall_psnr[i]+=n**2
@@ -97,6 +103,9 @@ if __name__=="__main__":
             
             comm="rm -f %s.out" % pid
             os.system(comm)
+
+    comm="rm -f *%s*" % pid
+    os.system(comm)
     overall_psnr=overall_psnr/num_files
     overall_psnr=np.sqrt(overall_psnr)
     overall_psnr=-20*np.log10(overall_psnr)
@@ -107,12 +116,12 @@ if __name__=="__main__":
     psnr_df=pd.DataFrame(psnr,index=ebs,columns=datafiles)
     overall_cr_df=pd.DataFrame(overall_cr,index=ebs,columns=["overall_cr"])
     overall_psnr_df=pd.DataFrame(overall_psnr,index=ebs,columns=["overall_psnr"])
-    algo_df=pd.DataFrame(algo,index=ebs,columns=datafiles)
+    #algo_df=pd.DataFrame(algo,index=ebs,columns=datafiles)
     cr_df.to_csv("%s_cr.tsv" % args.output,sep='\t')
     psnr_df.to_csv("%s_psnr.tsv" % args.output,sep='\t')
     overall_cr_df.to_csv("%s_overall_cr.tsv" % args.output,sep='\t')
     overall_psnr_df.to_csv("%s_overall_psnr.tsv" % args.output,sep='\t')
-    algo_df.to_csv("%s_algo.tsv" % args.output,sep='\t')
+    #algo_df.to_csv("%s_algo.tsv" % args.output,sep='\t')
 
     if (args.ssim):
         overall_ssim=np.mean(ssim,axis=1)
