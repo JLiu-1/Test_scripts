@@ -63,7 +63,7 @@ if __name__=="__main__":
             filepath=os.path.join(datafolder,datafile)
 
             
-            comm="%s -z -f -a -q %d -i %s -o %s.out -M REL -R %f -%d %s -m REL -e %f -t %s -c %s.config" % (hpez_exe_path, args.qozlevel, filepath,pid,eb,args.dim," ".join(args.dims),qoieb, args.target,pid)
+            comm="%s -z -f -a -q %d -i %s -o %s.out -M REL -R %f -%d %s -m REL -e %f -T %s -c %s.config" % (hpez_exe_path, args.qozlevel, filepath,pid,eb,args.dim," ".join(args.dims),qoieb, args.target,pid)
             print(comm)
             
             with os.popen(comm) as f:
