@@ -49,7 +49,7 @@ if __name__=="__main__":
     overall_ac=np.zeros((num_ebs,1),dtype=np.float32)
     pid=os.getpid()
 
-    sz3_exe_path = "~/packages/sz3-QoI/bin/sz"
+    sz3_exe_path = "~/packages/SZ3-QoI/bin/sz"
     for i,qoieb in enumerate(qoi_ebs):
         eb = 10*qoieb
         configstr = "[QoISettings]\nqoiEB = %f \nqoi = %d \n" % (qoieb,args.qoiid)
