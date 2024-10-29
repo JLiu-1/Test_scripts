@@ -64,14 +64,14 @@ if __name__=="__main__":
 
             
             comm="%s -z -f -a -q %d -i %s -o %s.out -M REL -R %f -%d %s -m REL -e %f -T %s -c %s.config" % (hpez_exe_path, args.qozlevel, filepath,pid,eb,args.dim," ".join(args.dims),qoieb, args.target,pid)
-            print(comm)
+            #print(comm)
             
             with os.popen(comm) as f:
                 lines=f.read().splitlines()
                 print(lines)
                 r=eval(lines[-3].split('=')[-1])
                 for line in lines:
-                    if "PSNR" in line:
+                    if "NRMSE" in line :
                         p=eval(line.split(',')[0].split('=')[-1])
                         n=eval(line.split(',')[1].split('=')[-1])
                 cr[i][j]=r 
