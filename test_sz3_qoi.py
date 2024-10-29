@@ -113,10 +113,10 @@ if __name__=="__main__":
     overall_cr=np.reciprocal(np.mean(np.reciprocal(cr),axis=1))
 
 
-    cr_df=pd.DataFrame(cr,index=ebs,columns=datafiles)
-    psnr_df=pd.DataFrame(psnr,index=ebs,columns=datafiles)
-    overall_cr_df=pd.DataFrame(overall_cr,index=ebs,columns=["overall_cr"])
-    overall_psnr_df=pd.DataFrame(overall_psnr,index=ebs,columns=["overall_psnr"])
+    cr_df=pd.DataFrame(cr,index=qoi_ebs,columns=datafiles)
+    psnr_df=pd.DataFrame(psnr,index=qoi_ebs,columns=datafiles)
+    overall_cr_df=pd.DataFrame(overall_cr,index=qoi_ebs,columns=["overall_cr"])
+    overall_psnr_df=pd.DataFrame(overall_psnr,index=qoi_ebs,columns=["overall_psnr"])
     #algo_df=pd.DataFrame(algo,index=ebs,columns=datafiles)
     cr_df.to_csv("%s_cr.tsv" % args.output,sep='\t')
     psnr_df.to_csv("%s_psnr.tsv" % args.output,sep='\t')
@@ -126,13 +126,13 @@ if __name__=="__main__":
 
     if (args.ssim):
         overall_ssim=np.mean(ssim,axis=1)
-        ssim_df=pd.DataFrame(ssim,index=ebs,columns=datafiles)
-        overall_ssim_df=pd.DataFrame(overall_ssim,index=ebs,columns=["overall_ssim"])
+        ssim_df=pd.DataFrame(ssim,index=qoi_ebs,columns=datafiles)
+        overall_ssim_df=pd.DataFrame(overall_ssim,index=qoi_ebs,columns=["overall_ssim"])
         ssim_df.to_csv("%s_ssim.tsv" % args.output,sep='\t')
         overall_ssim_df.to_csv("%s_overall_ssim.tsv" % args.output,sep='\t')
     if (args.autocorr):
         overall_ac=np.mean(ac,axis=1)
-        ac_df=pd.DataFrame(ac,index=ebs,columns=datafiles)
-        overall_ac_df=pd.DataFrame(overall_ac,index=ebs,columns=["overall_ac"])
+        ac_df=pd.DataFrame(ac,index=qoi_ebs,columns=datafiles)
+        overall_ac_df=pd.DataFrame(overall_ac,index=qoi_ebs,columns=["overall_ac"])
         ac_df.to_csv("%s_ac.tsv" % args.output,sep='\t')
         overall_ac_df.to_csv("%s_overall_ac.tsv" % args.output,sep='\t')
