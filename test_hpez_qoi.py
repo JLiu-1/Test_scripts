@@ -55,7 +55,7 @@ if __name__=="__main__":
     hpez_exe_path = "~/packages/HPEZ-QoI/bin/hpez"
     for i,qoieb in enumerate(qoi_ebs):
         eb = 10*qoieb
-        configstr = "[QoISettings]\nqoi = %d \nqoistring = %s \n" % (args.qoiid,args.qoi_string)
+        configstr = "[QoISettings]\nqoi = %d \nqoi_string = %s \n" % (args.qoiid,args.qoistring)
         with open("%s.config" % pid,"w") as f:
             f.write(configstr)
         for j,datafile in enumerate(datafiles):
