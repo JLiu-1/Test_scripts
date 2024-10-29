@@ -64,6 +64,7 @@ if __name__=="__main__":
             
             with os.popen(comm) as f:
                 lines=f.read().splitlines()
+                print(lines)
                 r=eval(lines[-3].split('=')[-1])
                 for line in lines:
                     if "PSNR" in line:
