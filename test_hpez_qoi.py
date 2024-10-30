@@ -22,6 +22,7 @@ if __name__=="__main__":
     parser.add_argument('--qoiid',"-u",type=int,default=14)
     parser.add_argument('--qoistring',"-r",type=str,default="x^2")
     parser.add_argument('--target',"-t",type=str,default="PSNR")
+     parser.add_argument('--lorenzo',"-l",type=int,default=0)
     #parser.add_argument('--size_x','-x',type=int,default=1800)
     #parser.add_argument('--size_y','-y',type=int,default=3600)
     #parser.add_argument('--size_z','-z',type=int,default=512)
@@ -63,7 +64,8 @@ if __name__=="__main__":
             filepath=os.path.join(datafolder,datafile)
 
             
-            comm="%s -z -f -a -q %d -i %s -o %s.out -M REL -R %f -%d %s -m REL -e %f -T %s -c %s.config" % (hpez_exe_path, args.qozlevel, filepath,pid,eb,args.dim," ".join(args.dims),qoieb, args.target,pid)
+            comm="%s -z -f -a -q %d -i %s -o %s.out -M REL -R %f -%d %s -m REL -e %f -T %s -c %s.config -l %d" % \
+            (hpez_exe_path, args.qozlevel, filepath,pid,eb,args.dim," ".join(args.dims),qoieb, args.target,pid,args.lorenzo)
             #print(comm)
             
             with os.popen(comm) as f:
