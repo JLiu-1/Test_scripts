@@ -22,7 +22,7 @@ if __name__=="__main__":
     parser.add_argument('--qoiid',"-u",type=int,default=14)
     parser.add_argument('--qoistring',"-r",type=str,default="x^2")
     parser.add_argument('--target',"-t",type=str,default="PSNR")
-     parser.add_argument('--lorenzo',"-l",type=int,default=0)
+    parser.add_argument('--lorenzo',"-l",type=int,default=0)
     #parser.add_argument('--size_x','-x',type=int,default=1800)
     #parser.add_argument('--size_y','-y',type=int,default=3600)
     #parser.add_argument('--size_z','-z',type=int,default=512)
