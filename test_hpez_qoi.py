@@ -23,6 +23,7 @@ if __name__=="__main__":
     parser.add_argument('--qoistring',"-r",type=str,default="x^2")
     parser.add_argument('--target',"-t",type=str,default="PSNR")
     parser.add_argument('--lorenzo',"-l",type=int,default=0)
+    parser.add_argument('--earlyter',"-e",type=int,default=0)
     #parser.add_argument('--size_x','-x',type=int,default=1800)
     #parser.add_argument('--size_y','-y',type=int,default=3600)
     #parser.add_argument('--size_z','-z',type=int,default=512)
@@ -56,7 +57,7 @@ if __name__=="__main__":
     hpez_exe_path = "~/packages/HPEZ-QoI/bin/hpez"
     for i,qoieb in enumerate(qoi_ebs):
         eb = 10*qoieb
-        configstr = "[QoISettings]\nqoi = %d \nqoi_string = %s \n" % (args.qoiid,args.qoistring)
+        configstr = "[QoISettings]\nqoi = %d \nqoi_string = %s \nearly_termination = %d \n" % (args.qoiid,args.qoistring,args.earlyter)
         with open("%s.config" % pid,"w") as f:
             f.write(configstr)
         for j,datafile in enumerate(datafiles):
